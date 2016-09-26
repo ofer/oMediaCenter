@@ -3,6 +3,16 @@
     public class MediaFileRecord
     {
         /// <summary>
+        /// A short name to describe the media (i. e. movie name)
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// A more detailed description of the media (i. e. plot summary)
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
         /// Unique hash for each media file
         /// </summary>
         public string Hash { get; set; }

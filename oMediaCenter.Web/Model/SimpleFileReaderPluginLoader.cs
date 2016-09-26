@@ -13,7 +13,7 @@ namespace oMediaCenter.Web.Model
         {
             get
             {
-                return "localhost";
+                return "192.168.1.100";
             }
         }
 
