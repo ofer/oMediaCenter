@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "oMediaCenter.LibTorrent", "oMediaCenter.LibTorrent", "{5307674B-5163-4877-BD35-FC81493EBAE4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,7 +98,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{6D01E42F-41F4-4ED1-A46D-69B7E4153A35} = {5307674B-5163-4877-BD35-FC81493EBAE4}
 		{FEB4E3C1-91AB-4E9C-A702-997D493630E0} = {7549F166-E725-418F-A2FF-BCFC928CD6E8}
 		{694D5E6E-4F5A-4C94-88AD-A7AEE9557B3F} = {7549F166-E725-418F-A2FF-BCFC928CD6E8}
+		{5307674B-5163-4877-BD35-FC81493EBAE4} = {7549F166-E725-418F-A2FF-BCFC928CD6E8}
 	EndGlobalSection
 EndGlobal

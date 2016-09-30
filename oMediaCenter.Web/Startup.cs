@@ -54,6 +54,8 @@ namespace oMediaCenter.Web
 
             app.UseApplicationInsightsExceptionTelemetry();
 
+            app.UseStaticFiles();
+
             app.UseMvc();
         }
     }

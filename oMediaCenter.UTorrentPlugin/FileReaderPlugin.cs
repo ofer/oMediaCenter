@@ -36,7 +36,7 @@ namespace oMediaCenter.UTorrentPlugin
                 mf.MediaFileRecord.Hash = t.Hash;
                 string keyword = t.Name.Split(SPLIT_CHARS)[0].ToLower();
 
-                var candidateFiles = utc.GetTorrent(t.Hash).Result.Files[t.Hash].Where(f => Matches(f.Name, keyword));
+                var candidateFiles = utc.GetFiles(t.Hash).Result.Files[t.Hash].Where(f => Matches(f.Name, keyword));
 
                 UTorrent.Api.Data.File chosenCandidate = candidateFiles.FirstOrDefault();
                 if (candidateFiles.Count() > 1)

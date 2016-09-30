@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es5",
+    "outDir": "./wwwroot/modules/",
+    "sourceRoot": "./wwwsource",
+    "moduleResolution" : "node"
+  },
+  "exclude": [
+    "wwwroot",
+    "node_modules",
+    "wwwsource/lib",
+    "typings/index.d.ts",
+    "typings/globals/core-js/index.d.ts"
+  ],
+  "compileOnSave": true
+}
