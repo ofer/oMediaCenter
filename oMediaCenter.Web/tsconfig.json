@@ -6,9 +6,10 @@
     "removeComments": false,
     "sourceMap": true,
     "target": "es5",
-    "outDir": "./wwwroot/modules/",
+    "outDir": "./wwwroot/omc.app/",
     "sourceRoot": "./wwwsource",
-    "moduleResolution" : "node"
+    "moduleResolution": "node",
+    "module": "commonjs"
   },
   "exclude": [
     "wwwroot",

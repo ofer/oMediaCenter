@@ -3,7 +3,7 @@ import { Headers, Http } from '@angular/http';
 
 import 'rxjs/add/operator/toPromise';
 
-import { MediaFileRecord } from '../classes/MediaFileRecord';
+import { MediaFileRecord } from './omc.mediafilerecord.model';
 
 @Injectable()
 export class MediaDataService {

@@ -1,7 +1,7 @@
 ﻿import { ModuleWithProviders } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { MediaListComponent } from './components/omc.medialistcomponent';
+import { MediaListComponent } from './omc.medialist.component';
 
 const appRoutes: Routes = [
     {
@@ -15,7 +15,7 @@ const appRoutes: Routes = [
     }
 ];
 
-export const routing: ModuleWithProviders = RouterModule.forRoot(appRoutes);
+export const routing: ModuleWithProviders = RouterModule.forRoot(appRoutes, { useHash: true });
 
 
 /*
