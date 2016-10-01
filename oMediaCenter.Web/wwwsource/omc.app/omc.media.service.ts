@@ -16,7 +16,8 @@ export class MediaDataService {
     getMediaFileRecords(): Promise<MediaFileRecord[]> {
         return this.http.get(this.mediaInfoUrl)
             .toPromise()
-            .then(response => response.json().data as MediaFileRecord[])
+            .then(response =>
+                response.json() as MediaFileRecord[])
             .catch(this.handleError);
     }
 

@@ -1,5 +1,4 @@
 ﻿import { Component, OnInit } from '@angular/core';
-
 import { MediaFileRecord } from './omc.mediafilerecord.model';
 
 import { MediaDataService } from './omc.media.service';
@@ -18,6 +17,8 @@ export class MediaListComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        //this.mediaDataService.getMediaFileRecords().then(fileRecords => this.mediaFileList = fileRecords);
+        this.mediaDataService.getMediaFileRecords()
+            .then(fileRecords =>
+                this.mediaFileList = fileRecords);
     }
 }
