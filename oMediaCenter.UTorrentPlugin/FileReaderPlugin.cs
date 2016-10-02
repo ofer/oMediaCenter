@@ -36,7 +36,8 @@ namespace oMediaCenter.UTorrentPlugin
                 mf.MediaFileRecord.Hash = t.Hash;
                 string keyword = t.Name.Split(SPLIT_CHARS)[0].ToLower();
 
-                var candidateFiles = utc.GetFiles(t.Hash).Result.Files[t.Hash].Where(f => Matches(f.Name, keyword));
+                var candidateTorrent = utc.GetTorrent(t.Hash).Result;
+                var candidateFiles = candidateTorrent.Files[t.Hash].Where(f => Matches(f.Name, keyword));
 
                 UTorrent.Api.Data.File chosenCandidate = candidateFiles.FirstOrDefault();
                 if (candidateFiles.Count() > 1)
@@ -49,7 +50,7 @@ namespace oMediaCenter.UTorrentPlugin
 
                 mf.MediaFileRecord.Name = chosenCandidate.NameWithoutPath;
                 mf.MediaFileRecord.MediaType = "video/" + Path.GetExtension(chosenCandidate.Name).ToLower().Substring(1);
-                mf.FilePath = chosenCandidate.Name;
+                mf.FilePath = Path.Combine(candidateTorrent.Torrents.First().Path, chosenCandidate.Name);
                 return mf;
             }
 
