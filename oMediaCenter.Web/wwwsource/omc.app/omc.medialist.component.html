@@ -1,5 +1,5 @@
 ﻿<div>
-    <div *ngFor="let media of mediaFileList">
+    <div *ngFor="let media of mediaFileList" (click)="onSelect(media)">
         {{media.name}}
     </div>
     <!--<ul>

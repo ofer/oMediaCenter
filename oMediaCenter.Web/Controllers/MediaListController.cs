@@ -59,11 +59,10 @@ namespace oMediaCenter.Web.Controllers
             if (selectedMediaFile != null)
             {
                 var requestedRanges = HttpContext.Request.GetTypedHeaders().Range;
-
-                var requestedRange = requestedRanges.Ranges.FirstOrDefault();
-
-                if (requestedRange != null)
+                if (requestedRanges != null && requestedRanges.Ranges.Count > 0)
                 {
+                    var requestedRange = requestedRanges.Ranges.First();
+
                     Stream stream = selectedMediaFile.GetMediaData();
                     stream.Seek(requestedRange.From.Value, SeekOrigin.Begin);
                     long length = stream.Length - requestedRange.From.Value;

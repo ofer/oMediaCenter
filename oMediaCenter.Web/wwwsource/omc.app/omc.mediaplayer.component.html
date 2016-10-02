@@ -1,0 +1,6 @@
+﻿<div *ngIf="mediaFileRecord">
+    <video autoplay controls ng-click="toggleFullScreen()" [src]="'/api/v1/media/' + mediaFileRecord.hash"></video>
+    <h2>{{mediaFileRecord.name}}</h2>
+    <p>{{mediaFileRecord.description}}</p>
+    {{mediaFileRecord}}
+</div>

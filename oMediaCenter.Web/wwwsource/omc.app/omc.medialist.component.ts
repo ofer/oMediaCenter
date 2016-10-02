@@ -1,6 +1,7 @@
 ﻿import { Component, OnInit } from '@angular/core';
-import { MediaFileRecord } from './omc.mediafilerecord.model';
+import { ActivatedRoute, Router, Params } from '@angular/router';
 
+import { MediaFileRecord } from './omc.mediafilerecord.model';
 import { MediaDataService } from './omc.media.service';
 
 
@@ -9,16 +10,21 @@ import { MediaDataService } from './omc.media.service';
     templateUrl: './omc.app/omc.medialist.component.html',
 })
 export class MediaListComponent implements OnInit {
-    title = 'Tour of zeros';
+    title = 'media List';
     mediaFileList: MediaFileRecord[];
 
     constructor(
-        private mediaDataService: MediaDataService
+        private mediaDataService: MediaDataService,
+        private router: Router
     ) { }
 
     ngOnInit(): void {
         this.mediaDataService.getMediaFileRecords()
             .then(fileRecords =>
                 this.mediaFileList = fileRecords);
+    }
+
+    onSelect(media: MediaFileRecord) {
+        this.router.navigate(['/media', media.hash]);
     }
 }

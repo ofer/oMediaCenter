@@ -2,6 +2,7 @@
 import { Routes, RouterModule } from '@angular/router';
 
 import { MediaListComponent } from './omc.medialist.component';
+import { MediaPlayerComponent } from './omc.mediaplayer.component';
 
 const appRoutes: Routes = [
     {
@@ -9,10 +10,8 @@ const appRoutes: Routes = [
         redirectTo: '/medialist',
         pathMatch: 'full'
     },
-    {
-        path: 'medialist',
-        component: MediaListComponent
-    }
+    { path: 'medialist', component: MediaListComponent },
+    { path: 'media/:hash', component: MediaPlayerComponent }
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(appRoutes, { useHash: true });

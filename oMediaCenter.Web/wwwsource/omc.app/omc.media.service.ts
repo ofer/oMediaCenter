@@ -23,7 +23,9 @@ export class MediaDataService {
 
     getMediaFileRecord(hash: string): Promise<MediaFileRecord> {
         return this.getMediaFileRecords()
-            .then(records => records.find(record => record.hash === hash));
+            .then(records =>
+                records.find(record =>
+                    record.hash === hash));
     }
 
     delete(hash: number): Promise<void> {
