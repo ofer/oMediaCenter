@@ -7,6 +7,7 @@ using oMediaCenter.Web.Model;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using oMediaCenter.Interfaces;
+using oMediaCenter.Web.Utilities;
 
 namespace oMediaCenter.Web.Controllers
 {
@@ -58,29 +59,30 @@ namespace oMediaCenter.Web.Controllers
 
             if (selectedMediaFile != null)
             {
-                var requestedRanges = HttpContext.Request.GetTypedHeaders().Range;
-                if (requestedRanges != null && requestedRanges.Ranges.Count > 0)
-                {
-                    var requestedRange = requestedRanges.Ranges.First();
+                Stream stream = selectedMediaFile.GetMediaData();
+                return new ByteRangeStreamResult(stream, selectedMediaFile.MediaFileRecord.MediaType);
+                //var requestedRanges = HttpContext.Request.GetTypedHeaders().Range;
+                //if (requestedRanges != null && requestedRanges.Ranges.Count > 0)
+                //{
+                //    var requestedRange = requestedRanges.Ranges.First();
 
-                    Stream stream = selectedMediaFile.GetMediaData();
-                    stream.Seek(requestedRange.From.Value, SeekOrigin.Begin);
-                    long length = stream.Length - requestedRange.From.Value;
+                //    stream.Seek(requestedRange.From.Value, SeekOrigin.Begin);
+                //    long length = stream.Length - requestedRange.From.Value;
 
-                    if (requestedRange.To != null)
-                        length = requestedRange.To.Value - requestedRange.From.Value;
+                //    if (requestedRange.To != null)
+                //        length = requestedRange.To.Value - requestedRange.From.Value;
 
-                    using (BinaryReader br = new BinaryReader(stream))
-                    {
-                        FileContentResult fcr = new FileContentResult(br.ReadBytes((int)length), selectedMediaFile.MediaFileRecord.MediaType);
-                        return fcr;
-                    }
-                }
-                else
-                {
-                    FileStreamResult fsr = new FileStreamResult(selectedMediaFile.GetMediaData(), selectedMediaFile.MediaFileRecord.MediaType);
-                    return fsr;
-                }
+                //    using (BinaryReader br = new BinaryReader(stream))
+                //    {
+                //        FileContentResult fcr = new FileContentResult(br.ReadBytes((int)length), selectedMediaFile.MediaFileRecord.MediaType);
+                //        return fcr;
+                //    }
+                //}
+                //else
+                //{
+                //    FileStreamResult fsr = new FileStreamResult(selectedMediaFile.GetMediaData(), selectedMediaFile.MediaFileRecord.MediaType);
+                //    return fsr;
+                //}
             }
             else
             {
