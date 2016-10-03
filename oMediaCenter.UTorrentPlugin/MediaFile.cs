@@ -20,7 +20,7 @@ namespace oMediaCenter.UTorrentPlugin
 
         public Stream GetMediaData()
         {
-            return new FileStream(FilePath, FileMode.Open);
+            return new FileStream(FilePath, FileMode.Open, FileAccess.Read);
         }
 
         internal string ThumbnailPath { get; set; }
@@ -28,7 +28,7 @@ namespace oMediaCenter.UTorrentPlugin
         public Stream GetThumbnailData()
         {
             if (ThumbnailPath != null)
-                return new FileStream(ThumbnailPath, FileMode.Open);
+                return new FileStream(ThumbnailPath, FileMode.Open, FileAccess.Read);
             else
                 return null;
         }
