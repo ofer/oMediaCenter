@@ -50,7 +50,7 @@ namespace oMediaCenter.UTorrentPlugin
 
                 mf.MediaFileRecord.Name = chosenCandidate.NameWithoutPath;
                 mf.MediaFileRecord.MediaType = "video/" + Path.GetExtension(chosenCandidate.Name).ToLower().Substring(1);
-                mf.FilePath = Path.Combine(candidateTorrent.Torrents.First().Path, chosenCandidate.Name);
+                mf.FilePath = Path.Combine(t.Path, chosenCandidate.Name);
                 return mf;
             }
 
@@ -73,7 +73,7 @@ namespace oMediaCenter.UTorrentPlugin
 
             var query = utc.GetTorrent(hash);
 
-            return FromUtorrent(utc, query.Result.Torrents.First());
+            return FromUtorrent(utc, query.Result.Torrents.FirstOrDefault(t => t.Hash == hash));
         }
     }
 }
