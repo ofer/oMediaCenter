@@ -50,7 +50,7 @@ namespace oMediaCenter.Web.Utilities
 
             var length = FileStream.Length;
 
-            var range = response.HttpContext.Request.GetTypedHeaders().Range;
+            var range = GetFixedRange(response.HttpContext.Request.GetTypedHeaders().Range);
 
             if (IsMultipartRequest(range))
             {
@@ -102,6 +102,23 @@ namespace oMediaCenter.Web.Utilities
             {
                 await FileStream.CopyToAsync(response.Body);
             }
+        }
+
+        /// <summary>
+        /// We want the range object to have a to value even if it wasn't requrested (assume to the end of file)
+        /// </summary>
+        /// <param name="range"></param>
+        /// <returns>new range header with a to value</returns>
+        private RangeHeaderValue GetFixedRange(RangeHeaderValue range)
+        {
+            if (range == null || range.Ranges.Count == 0)
+                return null;
+            else
+            {
+                var rangeValue = range.Ranges.First();
+                return new RangeHeaderValue(rangeValue.From, rangeValue.To.GetValueOrDefault(FileStream.Length - 1));
+            }
+
         }
 
         private async Task WriteDataToResponseBody(RangeItemHeaderValue rangeValue, HttpResponse response)
