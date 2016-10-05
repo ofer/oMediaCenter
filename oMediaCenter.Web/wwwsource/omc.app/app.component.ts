@@ -4,10 +4,14 @@
     selector: 'my-app',
 
     template: `
-    <h1>{{title}}</h1>
-    <nav>
+    <md-toolbar color="primary">
+        <span>{{title}}</span>
+        <span class="omc-fill-remaining-space"></span>
+        <span><a routerLink="/medialist"><i class="mdi mdi-arrow-left"></i></a></span>
+    </md-toolbar>
+    <!--<nav>
       <a routerLink="/medialist" routerLinkActive="active">Media List</a>
-    </nav>
+    </nav> -->
     <router-outlet></router-outlet>
   `,
     styleUrls: ['omc.app/app.component.css']

@@ -2,7 +2,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-//import { MaterialModule } from '@angular/material';
+import { MaterialModule, MdGridListModule } from '@angular/material';
+//import { MdGridListModule } from '@angular/material/grid-list';
 
 import { AppComponent } from './app.component';
 import { MediaDataService } from './omc.media.service';
@@ -15,7 +16,8 @@ import { routing } from './app.routing'
         BrowserModule,
         FormsModule,
         HttpModule,
-//        MaterialModule.forRoot(),
+        MaterialModule.forRoot(),
+        MdGridListModule.forRoot(),
         routing
     ],
     declarations: [

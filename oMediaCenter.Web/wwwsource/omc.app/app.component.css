@@ -1,3 +1,3 @@
-﻿body {
-   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+﻿.omc-fill-remaining-space {
+    flex: 1 1 auto;
 }

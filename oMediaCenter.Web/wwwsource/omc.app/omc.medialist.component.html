@@ -1,7 +1,13 @@
 ﻿<div>
-    <div *ngFor="let media of mediaFileList" (click)="onSelect(media)">
+    <md-grid-list cols="4">
+        <md-grid-tile *ngFor="let media of mediaFileList" (click)="onSelect(media)">
+            <img [src]="media.thumbnail" />
+            {{media.name}}
+        </md-grid-tile>
+    </md-grid-list>
+    <!--<div *ngFor="let media of mediaFileList" >
         {{media.name}}
-    </div>
+    </div>-->
     <!--<ul>
         <li *ngFor="let media of mediafilelist">
             <span class="badge">{{hero.id}}</span>
