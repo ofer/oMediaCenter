@@ -32,5 +32,7 @@
         /// list of files in the torrent (even though we only expose the main media and thumbnail)
         /// </summary>
         public string TechnicalInfo { get; set; }
+
+        public float LastPlayedTime { get; set; }
     }
 }

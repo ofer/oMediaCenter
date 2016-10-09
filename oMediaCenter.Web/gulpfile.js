@@ -33,6 +33,6 @@ gulp.task('restore', function () {
     //]).pipe(gulp.dest('./wwwroot/libs'));
 
     gulp.src([
-        'node_modules/**/*.js'
+        'node_modules/**/*.js', 'node_modules/**/*.css'
     ]).pipe(gulp.dest('./wwwroot/libs'));
 });

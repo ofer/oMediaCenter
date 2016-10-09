@@ -29,5 +29,6 @@
         /// Extra text info i. e. for torrents it might be file size and
         /// list of files in the torrent (even though we only expose the main media and thumbnail)
         /// </summary>
-        public technicalinfo: string) { }
+        public technicalinfo: string,
+        public lastPlayedTime: number) { }
 }

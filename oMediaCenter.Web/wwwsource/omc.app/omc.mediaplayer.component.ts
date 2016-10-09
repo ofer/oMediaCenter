@@ -1,9 +1,11 @@
 ﻿import {
-    Component, OnInit, HostBinding,
+    Component, OnInit, HostBinding, ViewChild,
+    Renderer, ElementRef,
     trigger, transition, animate,
     style, state
 } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
+//import { Observable, Subscription } from 'rxjs';
 
 import { MediaFileRecord } from './omc.mediafilerecord.model';
 import { MediaDataService } from './omc.media.service';
@@ -48,25 +50,38 @@ export class MediaPlayerComponent implements OnInit {
         return 'absolute';
     }
 
+    @ViewChild('videoElement') player: ElementRef;
+
     mediaFileRecord: MediaFileRecord;
 
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private service: MediaDataService) { }
+        private service: MediaDataService,
+        private renderer: Renderer,
+        private elementRef: ElementRef) {
+    }
 
     ngOnInit() {
         this.route.params.forEach((params: Params) => {
             this.service.getMediaFileRecord(params['hash']).then(mediaFileRecord => {
                 // make sure it returned a media file record, otherwise ignore
-                if (mediaFileRecord)
+                if (mediaFileRecord) {
                     this.mediaFileRecord = mediaFileRecord;
+                    
+                }
             });
         });
     }
 
-    toggleFullScreen() {
-        console.log('fullScreen Requested');
+    onTimeUpdated(currentTime: number) {
+        this.service.updateMediaCurrentTime(this.mediaFileRecord.hash, currentTime);
+    }
+
+    onLoadedData() {
+        if (this.mediaFileRecord)
+            this.player.nativeElement.currentTime = this.mediaFileRecord.lastPlayedTime;
+        this.player.nativeElement.play();
     }
 }
 

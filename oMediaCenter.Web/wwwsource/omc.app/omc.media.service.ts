@@ -12,7 +12,7 @@ export class MediaDataService {
     private mediaInfoUrl = 'api/v1/media';  // URL to web api
 
     constructor(private http: Http) { }
-
+    
     getMediaFileRecords(): Promise<MediaFileRecord[]> {
         return this.http.get(this.mediaInfoUrl)
             .toPromise()
@@ -26,6 +26,10 @@ export class MediaDataService {
             .then(records =>
                 records.find(record =>
                     record.hash === hash));
+    }
+
+    updateMediaCurrentTime(hash: string, currentTime: number) {
+        return this.http.put(this.mediaInfoUrl + '/' + hash, { CurrentTime: currentTime }).toPromise();
     }
 
     delete(hash: number): Promise<void> {

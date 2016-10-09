@@ -30,6 +30,8 @@ namespace oMediaCenter.UTorrentPlugin
 
         private MediaFile FromUtorrent(UTorrentClient utc, Torrent t)
         {
+            if (t == null)
+                return null;
             MediaFile mf = new MediaFile();
             if (t.Progress == 1000)
             {

@@ -46,7 +46,10 @@ namespace oMediaCenter.Web.Model
     {
         public IFileReaderPlugin[] GetPlugins()
         {
-            return new IFileReaderPlugin[] { (IFileReaderPlugin)new UTorrentPlugin.FileReaderPlugin(new ConnectionInformation()) };
+            return new IFileReaderPlugin[] 
+            {
+                (IFileReaderPlugin)new UTorrentPlugin.FileReaderPlugin(new ConnectionInformation()),
+            (IFileReaderPlugin)new oMediaCenter.DirectoryScanPlugin.FileReaderPlugin()};
         }
     }
 }

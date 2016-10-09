@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using oMediaCenter.Interfaces;
 using oMediaCenter.Web.Utilities;
+using Microsoft.Extensions.Logging;
 
 namespace oMediaCenter.Web.Controllers
 {
@@ -15,10 +16,14 @@ namespace oMediaCenter.Web.Controllers
     public class MediaListController : Controller
     {
         FileReader _fileReader;
+        ILogger _logger;
+        MediaCenterContext _dbContext;
 
-        public MediaListController(IFileReaderPluginLoader fileReaderPluginLoader)
+        public MediaListController(IFileReaderPluginLoader fileReaderPluginLoader, ILoggerFactory loggerFactory, MediaCenterContext dbContext)
         {
             _fileReader = new Model.FileReader(fileReaderPluginLoader);
+            _logger = loggerFactory.CreateLogger<MediaListController>();
+            _dbContext = dbContext;
         }
 
         // GET api/values
@@ -26,7 +31,18 @@ namespace oMediaCenter.Web.Controllers
         [Route("media")]
         public IEnumerable<MediaFileRecord> Get()
         {
-            return _fileReader.GetAll().Select(mf => mf.MediaFileRecord);
+            return _fileReader.GetAll().Select(mf => GetFilePositions(mf.MediaFileRecord)).OrderBy(mf => mf.Name);
+        }
+
+        private MediaFileRecord GetFilePositions(MediaFileRecord mediaFileRecord)
+        {
+            FilePosition filePosition = _dbContext.FilePositions.FirstOrDefault(fp => fp.FileHash == mediaFileRecord.Hash);
+            if (filePosition != null)
+                mediaFileRecord.LastPlayedTime = (float)filePosition.LastPlayedPosition.TotalSeconds;
+            else
+                mediaFileRecord.LastPlayedTime = 0;
+
+            return mediaFileRecord;
         }
 
         [HttpGet]
@@ -61,33 +77,28 @@ namespace oMediaCenter.Web.Controllers
             {
                 Stream stream = selectedMediaFile.GetMediaData();
                 return new ByteRangeStreamResult(stream, selectedMediaFile.MediaFileRecord.MediaType);
-                //var requestedRanges = HttpContext.Request.GetTypedHeaders().Range;
-                //if (requestedRanges != null && requestedRanges.Ranges.Count > 0)
-                //{
-                //    var requestedRange = requestedRanges.Ranges.First();
-
-                //    stream.Seek(requestedRange.From.Value, SeekOrigin.Begin);
-                //    long length = stream.Length - requestedRange.From.Value;
-
-                //    if (requestedRange.To != null)
-                //        length = requestedRange.To.Value - requestedRange.From.Value;
-
-                //    using (BinaryReader br = new BinaryReader(stream))
-                //    {
-                //        FileContentResult fcr = new FileContentResult(br.ReadBytes((int)length), selectedMediaFile.MediaFileRecord.MediaType);
-                //        return fcr;
-                //    }
-                //}
-                //else
-                //{
-                //    FileStreamResult fsr = new FileStreamResult(selectedMediaFile.GetMediaData(), selectedMediaFile.MediaFileRecord.MediaType);
-                //    return fsr;
-                //}
             }
             else
             {
                 return null;
             }
+        }
+
+        [HttpPut]
+        [Route("media/{hash}")]
+        public async void UpdateCurrentTime(string hash, [FromBody]MediaUpdateMessage mediaUpdateMessage)
+        {
+            _logger.LogDebug("Recieved from {0} current time {1}", hash, mediaUpdateMessage.CurrentTime);
+            FilePosition foundPosition = _dbContext.FilePositions.FirstOrDefault(fp => fp.FileHash == hash);
+            if (foundPosition == null) {
+                foundPosition = new FilePosition();
+                foundPosition.FileHash = hash;
+                _dbContext.FilePositions.Add(foundPosition);
+            }
+
+            foundPosition.LastPlayedPosition = TimeSpan.FromSeconds(mediaUpdateMessage.CurrentTime);
+
+            await _dbContext.SaveChangesAsync();
         }
 
         [HttpGet]
