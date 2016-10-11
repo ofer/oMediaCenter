@@ -1,5 +1,7 @@
 ﻿import { Component } from '@angular/core';
 
+import { ClientControlService } from './omc.clientcontrol.service';
+
 @Component({
     selector: 'my-app',
 
@@ -8,6 +10,7 @@
         <span>{{title}}</span>
         <span class="omc-fill-remaining-space"></span>
         <span><a routerLink="/medialist"><i class="mdi mdi-arrow-left"></i></a></span>
+        <span><a routerLink="/clientcontrol"><i class="mdi mdi-arrow-right"></i></a></span>
     </md-toolbar>
     <!--<nav>
       <a routerLink="/medialist" routerLinkActive="active">Media List</a>
@@ -18,6 +21,10 @@
 })
 export class AppComponent {
     title = 'Media List';
+
+    constructor(clientService: ClientControlService) {
+        clientService.startPolling();
+    }
 }
 
 /*

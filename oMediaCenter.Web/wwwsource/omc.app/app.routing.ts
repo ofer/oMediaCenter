@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { MediaListComponent } from './omc.medialist.component';
 import { MediaPlayerComponent } from './omc.mediaplayer.component';
-
+import { ClientControlComponent } from './omc.clientcontrol.component';
 const appRoutes: Routes = [
     {
         path: '',
@@ -11,7 +11,8 @@ const appRoutes: Routes = [
         pathMatch: 'full'
     },
     { path: 'medialist', component: MediaListComponent },
-    { path: 'media/:hash', component: MediaPlayerComponent }
+    { path: 'media/:hash', component: MediaPlayerComponent },
+    { path: 'clientcontrol', component: ClientControlComponent }
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(appRoutes, { useHash: true });

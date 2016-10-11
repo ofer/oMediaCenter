@@ -1,0 +1,12 @@
+﻿<div>
+    <select [(ngModel)]="selectedHost">
+        <option *ngFor="let host of hosts" [value]="host">{{host}}</option>
+    </select>
+
+
+    <div *ngFor="let media of mediaFileList">
+        {{media.name}}
+        <button (click)="onSendRequested('play', media.hash)">Play</button>
+        <button (click)="onSendRequested('stop', media.hash)">Stop</button>
+    </div>
+</div>
