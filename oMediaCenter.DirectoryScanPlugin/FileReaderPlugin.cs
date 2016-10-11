@@ -13,12 +13,21 @@ namespace oMediaCenter.DirectoryScanPlugin
 
         public FileReaderPlugin()
         {
+//            _logger = loggerFactory.CreateLogger<FileReaderPlugin>();
         }
 
         public IEnumerable<IMediaFile> GetAll()
         {
-            return 
-                Directory.GetFiles(@"c:\users\ofer achler\Videos", "*.mkv").Select(fn => new MediaFile(fn));
+            try
+            {
+                return
+                    Directory.GetFiles(@"c:\users\ofer achler\Videos", "*.mkv").Select(fn => new MediaFile(fn));
+            }
+            catch (Exception e)
+            {
+  //              _logger.LogWarning(new EventId(), e, "Could not read directory");
+                return new IMediaFile[0];
+            }
         }
 
         public IMediaFile GetByHash(string hash)
