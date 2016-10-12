@@ -1,4 +1,5 @@
-﻿using oMediaCenter.Interfaces;
+﻿using Microsoft.Extensions.Configuration;
+using oMediaCenter.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UTorrent.Api;
 using UTorrent.Api.Data;
+using Microsoft.Extensions.Logging;
 
 namespace oMediaCenter.UTorrentPlugin
 {
@@ -14,10 +16,13 @@ namespace oMediaCenter.UTorrentPlugin
         IConnectionInformation _connectionInfo;
         static readonly char[] SPLIT_CHARS = new char[] { ' ', '.' };
         static readonly string[] VALID_EXTENSIONS = new string[] { "mp4", "avi", "m4v", "mkv" };
+        private ILogger _logger;
 
-        public FileReaderPlugin(IConnectionInformation connectionInformation)
+        public FileReaderPlugin(IConfigurationSection pluginConfigurationSection, ILoggerFactory loggerFactory)
         {
-            _connectionInfo = connectionInformation;
+            ConfigurationConnectionInformation cci = new ConfigurationConnectionInformation(pluginConfigurationSection);
+            _connectionInfo = cci;
+            _logger = loggerFactory.CreateLogger<FileReaderPlugin>();
         }
 
         public IEnumerable<IMediaFile> GetAll()

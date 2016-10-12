@@ -32,6 +32,7 @@ namespace oMediaCenter.Web
         }
 
         public IConfigurationRoot Configuration { get; }
+        public ILoggerFactory LoggerFactory { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
@@ -43,7 +44,7 @@ namespace oMediaCenter.Web
 
             services.AddMvc();
 
-            services.AddSingleton<IFileReaderPluginLoader>(new SimpleFileReaderPluginLoader());
+            services.AddSingleton<IFileReaderPluginLoader>(new SimpleFileReaderPluginLoader(Configuration.GetSection("Plugins")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -51,6 +52,8 @@ namespace oMediaCenter.Web
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.ApplicationServices.GetService<IFileReaderPluginLoader>().SetLoggerFactory(loggerFactory);
 
             app.UseApplicationInsightsRequestTelemetry();
 

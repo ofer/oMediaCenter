@@ -4,52 +4,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace oMediaCenter.Web.Model
 {
-    public class ConnectionInformation : IConnectionInformation
-    {
-        public string IP
-        {
-            get
-            {
-                return "192.168.1.100";
-            }
-        }
-
-        public string Login
-        {
-            get
-            {
-                return "admin";
-            }
-        }
-
-        public string Password
-        {
-            get
-            {
-                return "admin";
-            }
-        }
-
-        public int Port
-        {
-            get
-            {
-                return 8080;
-            }
-        }
-    }
-
     public class SimpleFileReaderPluginLoader : IFileReaderPluginLoader
     {
+        private IConfigurationSection _pluginConfigurationSection;
+        private ILoggerFactory _loggerFactory;
+
+        public SimpleFileReaderPluginLoader(IConfigurationSection pluginConfigurationSection)
+        {
+            _pluginConfigurationSection = pluginConfigurationSection;
+        }
+
         public IFileReaderPlugin[] GetPlugins()
         {
-            return new IFileReaderPlugin[] 
+            return new IFileReaderPlugin[]
             {
-                (IFileReaderPlugin)new UTorrentPlugin.FileReaderPlugin(new ConnectionInformation()),
-            (IFileReaderPlugin)new oMediaCenter.DirectoryScanPlugin.FileReaderPlugin()};
+                (IFileReaderPlugin)new UTorrentPlugin.FileReaderPlugin(_pluginConfigurationSection, _loggerFactory),
+                (IFileReaderPlugin)new oMediaCenter.DirectoryScanPlugin.FileReaderPlugin(_pluginConfigurationSection, _loggerFactory)
+            };
+        }
+
+        public void SetLoggerFactory(ILoggerFactory loggerFactory)
+        {
+            _loggerFactory = loggerFactory;
         }
     }
 }
