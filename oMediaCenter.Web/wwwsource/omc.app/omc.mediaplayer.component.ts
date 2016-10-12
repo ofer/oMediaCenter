@@ -5,10 +5,14 @@
     style, state
 } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
+
+import { ClientControlService } from './omc.clientcontrol.service';
 //import { Observable, Subscription } from 'rxjs';
 
 import { MediaFileRecord } from './omc.mediafilerecord.model';
 import { MediaDataService } from './omc.media.service';
+
+import { IPlayerControl } from './omc.playercontrol.interface';
 
 @Component({
     selector: 'omc-media-player',
@@ -37,7 +41,7 @@ import { MediaDataService } from './omc.media.service';
         ])
     ]
 })
-export class MediaPlayerComponent implements OnInit {
+export class MediaPlayerComponent implements OnInit, IPlayerControl {
     @HostBinding('@routeAnimation') get routeAnimation() {
         return true;
     }
@@ -60,8 +64,10 @@ export class MediaPlayerComponent implements OnInit {
         private router: Router,
         private service: MediaDataService,
         private renderer: Renderer,
-        private elementRef: ElementRef) {
+        private elementRef: ElementRef,
+        private clientControlService: ClientControlService) {
         this.lastUpdatedDate = new Date();
+        clientControlService.setPlayer(this);
     }
 
     ngOnInit() {
@@ -70,7 +76,6 @@ export class MediaPlayerComponent implements OnInit {
                 // make sure it returned a media file record, otherwise ignore
                 if (mediaFileRecord) {
                     this.mediaFileRecord = mediaFileRecord;
-                    
                 }
             });
         });
@@ -88,6 +93,46 @@ export class MediaPlayerComponent implements OnInit {
         if (this.mediaFileRecord)
             this.player.nativeElement.currentTime = this.mediaFileRecord.lastPlayedTime;
         this.player.nativeElement.play();
+    }
+
+    onStop() {
+        this.player.nativeElement.pause();
+        this.player.nativeElement.currentTime = 0;
+    }
+
+    onPlay() {
+        this.player.nativeElement.play();
+    }
+
+    onPause() {
+        this.player.nativeElement.pause();
+    }
+
+    onVolumeUp() {
+        if (this.player.nativeElement.volume < 1)
+            this.player.nativeElement.volume += 0.2;
+    }
+
+    onVolumeDown() {
+        if (this.player.nativeElement.volume > 0)
+            this.player.nativeElement.volume -= 0.2;
+    }
+
+    onToggleFullscreen() {
+        // this doesn't work because it's not initiated by gesture; maybe we'll have a router to a player that doesn't show text
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            if (this.player.nativeElement.requestFullScreen) {
+                this.player.nativeElement.requestFullScreen();
+            } else {
+                this.player.nativeElement.webkitRequestFullScreen();
+            }
+        } else {
+            if (document.fullscreenElement) {
+                this.player.nativeElement.requestFullScreen();
+            } else {
+                document.webkitCancelFullScreen();
+            }
+        }
     }
 }
 

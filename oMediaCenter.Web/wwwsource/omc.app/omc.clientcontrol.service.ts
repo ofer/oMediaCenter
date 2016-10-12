@@ -7,6 +7,7 @@ import { Observable } from 'rxjs/Rx';
 
 import { MediaFileRecord } from './omc.mediafilerecord.model';
 import { ClientCommand } from './omc.clientCommand.model';
+import { IPlayerControl } from './omc.playercontrol.interface';
 
 @Injectable()
 export class ClientControlService {
@@ -16,6 +17,7 @@ export class ClientControlService {
 
     private clientId: string;
     private lastExecutedDate: Date;
+    private playerControl: IPlayerControl;
 
     constructor(private http: Http,
         private router: Router) {
@@ -57,10 +59,31 @@ export class ClientControlService {
     executeCommand(command: ClientCommand) {
         switch (command.command) {
             case 'play':
-                this.router.navigate(['/media', command.parameter]);
+                if (command.parameter)
+                    this.router.navigate(['/media', command.parameter]);
+                else
+                    if (this.playerControl)
+                        this.playerControl.onPlay();
                 break;
             case 'pause':
-                this.router.navigate(['/media', command.parameter]);
+                if (this.playerControl)
+                    this.playerControl.onPause();
+                break;
+            case 'stop':
+                if (this.playerControl)
+                    this.playerControl.onStop();
+                break;
+            case 'volumeUp':
+                if (this.playerControl)
+                    this.playerControl.onVolumeUp();
+                break;
+            case 'volumeDown':
+                if (this.playerControl)
+                    this.playerControl.onVolumeDown();
+                break;
+            case 'toggleFullscreen':
+                if (this.playerControl)
+                    this.playerControl.onToggleFullscreen();
                 break;
             case 'index':
                 this.router.navigate(['/medialist']);
@@ -80,6 +103,9 @@ export class ClientControlService {
         return this.http.put(this.clientCommandUrl + '/' + host, command).toPromise();
     }
 
+    setPlayer(playerControl: IPlayerControl) {
+        this.playerControl = playerControl;
+    }
 
     private handleError(error: any): Promise<any> {
         console.error('An error occurred', error); // for demo purposes only
