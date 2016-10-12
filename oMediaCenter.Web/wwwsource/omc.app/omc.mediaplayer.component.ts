@@ -53,6 +53,7 @@ export class MediaPlayerComponent implements OnInit {
     @ViewChild('videoElement') player: ElementRef;
 
     mediaFileRecord: MediaFileRecord;
+    lastUpdatedDate: Date;
 
     constructor(
         private route: ActivatedRoute,
@@ -60,6 +61,7 @@ export class MediaPlayerComponent implements OnInit {
         private service: MediaDataService,
         private renderer: Renderer,
         private elementRef: ElementRef) {
+        this.lastUpdatedDate = new Date();
     }
 
     ngOnInit() {
@@ -75,7 +77,11 @@ export class MediaPlayerComponent implements OnInit {
     }
 
     onTimeUpdated(currentTime: number) {
-        this.service.updateMediaCurrentTime(this.mediaFileRecord.hash, currentTime);
+        var currentDate = new Date();
+        if (currentDate.valueOf() - this.lastUpdatedDate.valueOf() > 1000) {
+            this.service.updateMediaCurrentTime(this.mediaFileRecord.hash, currentTime);
+            this.lastUpdatedDate = currentDate;
+        }
     }
 
     onLoadedData() {

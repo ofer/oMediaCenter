@@ -89,16 +89,29 @@ namespace oMediaCenter.Web.Controllers
         public async void UpdateCurrentTime(string hash, [FromBody]MediaUpdateMessage mediaUpdateMessage)
         {
             _logger.LogDebug("Recieved from {0} current time {1}", hash, mediaUpdateMessage.CurrentTime);
-            FilePosition foundPosition = _dbContext.FilePositions.FirstOrDefault(fp => fp.FileHash == hash);
-            if (foundPosition == null) {
-                foundPosition = new FilePosition();
-                foundPosition.FileHash = hash;
-                _dbContext.FilePositions.Add(foundPosition);
+            try
+            {
+                using (var transaction = _dbContext.Database.BeginTransaction())
+                {
+                    FilePosition foundPosition = _dbContext.FilePositions.FirstOrDefault(fp => fp.FileHash == hash);
+                    if (foundPosition == null)
+                    {
+                        foundPosition = new FilePosition();
+                        foundPosition.FileHash = hash;
+                        _dbContext.FilePositions.Add(foundPosition);
+                    }
+
+                    foundPosition.LastPlayedPosition = TimeSpan.FromSeconds(mediaUpdateMessage.CurrentTime);
+
+                    await _dbContext.SaveChangesAsync();
+
+                    transaction.Commit();
+                }
             }
-
-            foundPosition.LastPlayedPosition = TimeSpan.FromSeconds(mediaUpdateMessage.CurrentTime);
-
-            await _dbContext.SaveChangesAsync();
+            catch (Exception e)
+            {
+                _logger.LogWarning(1, e, "Could not update current time");
+            }
         }
 
         [HttpGet]

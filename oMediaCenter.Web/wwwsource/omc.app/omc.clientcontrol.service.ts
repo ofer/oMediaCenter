@@ -24,6 +24,7 @@ export class ClientControlService {
 
     startPolling() {
         this.createClientId().then(response => {
+            console.log('received ' + response + ' as the client id');
             this.clientId = response;
             let timer = Observable.interval(5000);
             timer.subscribe(t => this.pollAndProcessCommands());
@@ -32,9 +33,10 @@ export class ClientControlService {
 
     pollAndProcessCommands() {
         this.getLatestCommands().then(command => {
-            if (new Date(command.date) > this.lastExecutedDate) {
+            var commandDate = new Date(command.date);
+            if (commandDate > this.lastExecutedDate) {
                 this.executeCommand(command);
-                this.lastExecutedDate = command.date;
+                this.lastExecutedDate = commandDate;
             }
         });
     }
