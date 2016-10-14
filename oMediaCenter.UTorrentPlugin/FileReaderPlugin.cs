@@ -20,17 +20,25 @@ namespace oMediaCenter.UTorrentPlugin
 
         public FileReaderPlugin(IConfigurationSection pluginConfigurationSection, ILoggerFactory loggerFactory)
         {
-            ConfigurationConnectionInformation cci = new ConfigurationConnectionInformation(pluginConfigurationSection);
-            _connectionInfo = cci;
+            if (pluginConfigurationSection.GetSection("UTorrentConnectionInformation").GetChildren().Count() != 0)
+            {
+                ConfigurationConnectionInformation cci = new ConfigurationConnectionInformation(pluginConfigurationSection);
+                _connectionInfo = cci;
+            }
             _logger = loggerFactory.CreateLogger<FileReaderPlugin>();
         }
 
         public IEnumerable<IMediaFile> GetAll()
         {
-            UTorrent.Api.UTorrentClient utc = new UTorrent.Api.UTorrentClient(_connectionInfo.IP, _connectionInfo.Port, _connectionInfo.Login, _connectionInfo.Password);
+            if (_connectionInfo != null)
+            {
+                UTorrent.Api.UTorrentClient utc = new UTorrent.Api.UTorrentClient(_connectionInfo.IP, _connectionInfo.Port, _connectionInfo.Login, _connectionInfo.Password);
 
-            var torrentList = utc.GetList().Result.Torrents;
-            return torrentList.Select(t => FromUtorrent(utc, t)).Where(mf => mf != null).ToArray();
+                var torrentList = utc.GetList().Result.Torrents;
+                return torrentList.Select(t => FromUtorrent(utc, t)).Where(mf => mf != null).ToArray();
+            }
+            else
+                return new IMediaFile[0];
         }
 
         private MediaFile FromUtorrent(UTorrentClient utc, Torrent t)
@@ -76,11 +84,18 @@ namespace oMediaCenter.UTorrentPlugin
 
         public IMediaFile GetByHash(string hash)
         {
-            UTorrent.Api.UTorrentClient utc = new UTorrent.Api.UTorrentClient(_connectionInfo.IP, _connectionInfo.Port, _connectionInfo.Login, _connectionInfo.Password);
+            if (_connectionInfo != null)
+            {
+                UTorrent.Api.UTorrentClient utc = new UTorrent.Api.UTorrentClient(_connectionInfo.IP, _connectionInfo.Port, _connectionInfo.Login, _connectionInfo.Password);
 
-            var query = utc.GetTorrent(hash);
+                var query = utc.GetTorrent(hash);
 
-            return FromUtorrent(utc, query.Result.Torrents.FirstOrDefault(t => t.Hash == hash));
+                return FromUtorrent(utc, query.Result.Torrents.FirstOrDefault(t => t.Hash == hash));
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

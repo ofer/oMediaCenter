@@ -8,9 +8,10 @@ import { ClientControlService } from './omc.clientcontrol.service';
     template: `
     <md-toolbar color="primary">
         <span>{{title}}</span>
-        <span class="omc-fill-remaining-space"></span>
-        <span><a routerLink="/medialist"><i class="mdi mdi-arrow-left"></i></a></span>
-        <span><a routerLink="/clientcontrol"><i class="mdi mdi-arrow-right"></i></a></span>
+<!--        <span class="omc-fill-remaining-space"></span> -->
+        <span><a routerLink="/medialist">Media List</a></span>
+        <span><a routerLink="/clientcontrol">Client Remote</a></span>
+        <span><a routerLink="/settings">Settings</a></span>
     </md-toolbar>
     <!--<nav>
       <a routerLink="/medialist" routerLinkActive="active">Media List</a>

@@ -2,6 +2,7 @@
     <select [(ngModel)]="selectedHost">
         <option *ngFor="let host of hosts" [value]="host">{{host}}</option>
     </select>
+    <button (click)="refreshHosts()">Refresh</button>
 
     <div>
         <button (click)="onSendRequested('play', null)">Play</button>

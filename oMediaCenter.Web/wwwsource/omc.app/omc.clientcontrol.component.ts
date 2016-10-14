@@ -23,10 +23,13 @@ export class ClientControlComponent implements OnInit {
         private clientControlService: ClientControlService,
         private mediaDataService: MediaDataService
     ) {
-        clientControlService.getAllHosts().then(hosts => this.hosts = hosts);
+        this.refreshHosts();
         mediaDataService.getMediaFileRecords().then(records => this.mediaFileList = records);
     }
 
+    refreshHosts() {
+        this.clientControlService.getAllHosts().then(hosts => this.hosts = hosts);
+    }
 
     ngOnInit(): void {
     }

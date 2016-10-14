@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, Params } from '@angular/router';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Rx';
 
+import { SettingsService } from './omc.settings.service';
 import { MediaFileRecord } from './omc.mediafilerecord.model';
 import { ClientCommand } from './omc.clientCommand.model';
 import { IPlayerControl } from './omc.playercontrol.interface';
@@ -20,7 +21,8 @@ export class ClientControlService {
     private playerControl: IPlayerControl;
 
     constructor(private http: Http,
-        private router: Router) {
+        private router: Router,
+        private settingsService: SettingsService) {
         this.lastExecutedDate = new Date(0);
     }
 
@@ -44,8 +46,7 @@ export class ClientControlService {
     }
 
     createClientId(): Promise<string> {
-        return this.http.post(this.clientCommandUrl, { ClientName: localStorage.getItem('clientName') })
-            .toPromise().then(response => response.text());
+        return this.settingsService.getClientId();
     }
 
     getLatestCommands(): Promise<ClientCommand> {
