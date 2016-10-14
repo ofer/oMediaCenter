@@ -35,8 +35,9 @@ namespace oMediaCenter.Web.Controllers
         [Route("{clientId}")]
         public ClientCommand GetLatestCommands(string clientId)
         {
-            ClientCommand command = s_commandDictionary.GetOrAdd(clientId, fac => new ClientInfo(DateTime.UtcNow)).LatestCommand;
-            return command;
+            ClientInfo info = s_commandDictionary.GetOrAdd(clientId, fac => new ClientInfo(DateTime.UtcNow));
+            info.LastPoll = DateTime.UtcNow;
+            return info.LatestCommand;
         }
 
         [HttpPut]
