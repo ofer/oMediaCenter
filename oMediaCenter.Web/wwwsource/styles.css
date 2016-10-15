@@ -1,0 +1,27 @@
+﻿html, body {
+    /* Height and width fallback for older browsers. */
+    /* Set the height to match that of the viewport. */
+    height: 100vh;
+    /* Set the width to match that of the viewport. */
+    width: 100vw;
+    /* Remove any browser-default margins. */
+    margin: 0;
+}
+
+.omc-fullscreen-container {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.omc-fullscreen-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+}

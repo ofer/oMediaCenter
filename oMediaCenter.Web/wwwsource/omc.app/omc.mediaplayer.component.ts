@@ -58,6 +58,7 @@ export class MediaPlayerComponent implements OnInit, IPlayerControl {
 
     mediaFileRecord: MediaFileRecord;
     lastUpdatedDate: Date;
+    isFullScreen: boolean;
 
     constructor(
         private route: ActivatedRoute,
@@ -68,6 +69,7 @@ export class MediaPlayerComponent implements OnInit, IPlayerControl {
         private clientControlService: ClientControlService) {
         this.lastUpdatedDate = new Date();
         clientControlService.setPlayer(this);
+        this.isFullScreen = false;
     }
 
     ngOnInit() {
@@ -119,20 +121,21 @@ export class MediaPlayerComponent implements OnInit, IPlayerControl {
     }
 
     onToggleFullscreen() {
-        // this doesn't work because it's not initiated by gesture; maybe we'll have a router to a player that doesn't show text
-        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-            if (this.player.nativeElement.requestFullScreen) {
-                this.player.nativeElement.requestFullScreen();
-            } else {
-                this.player.nativeElement.webkitRequestFullScreen();
-            }
-        } else {
-            if (document.fullscreenElement) {
-                this.player.nativeElement.requestFullScreen();
-            } else {
-                document.webkitCancelFullScreen();
-            }
-        }
+        //// this doesn't work because it's not initiated by gesture; maybe we'll have a router to a player that doesn't show text
+        //if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        //    if (this.player.nativeElement.requestFullScreen) {
+        //        this.player.nativeElement.requestFullScreen();
+        //    } else {
+        //        this.player.nativeElement.webkitRequestFullScreen();
+        //    }
+        //} else {
+        //    if (document.fullscreenElement) {
+        //        this.player.nativeElement.requestFullScreen();
+        //    } else {
+        //        document.webkitCancelFullScreen();
+        //    }
+        //}
+        this.isFullScreen = !this.isFullScreen;            
     }
 }
 

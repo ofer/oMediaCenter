@@ -1,6 +1,8 @@
 ﻿<div *ngIf="mediaFileRecord">
     <!--<omc-video [URL]="'/api/v1/media/' + mediaFileRecord.hash" (onTimeUpdated)="onTimeUpdated($event)"></omc-video>-->
-    <video #videoElement autoplay controls [src]="'/api/v1/media/' + mediaFileRecord.hash" (loadeddata)="onLoadedData()" (timeupdate)="onTimeUpdated(videoElement.currentTime)"></video>
+    <div [class]="isFullScreen ? 'omc-fullscreen-container' : ''">
+        <video #videoElement autoplay controls [class]="isFullScreen ? 'omc-fullscreen-video' : ''" [src]="'/api/v1/media/' + mediaFileRecord.hash" (loadeddata)="onLoadedData()" (timeupdate)="onTimeUpdated(videoElement.currentTime)"></video>
+    </div>
     <h2>{{mediaFileRecord.name}}</h2>
     <p>{{mediaFileRecord.description}}</p>
     <!--<md-button (click)="buttonCommand()">sadf</md-button>-->
