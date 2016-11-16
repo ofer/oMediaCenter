@@ -15,7 +15,7 @@ export class SettingsService {
     }
 
     getClientId() : Promise<string> {
-        if (localStorage.getItem('clientId')) {
+		if (localStorage.getItem('clientId')) {
             this.clientId = localStorage.getItem('clientId');
             return new Promise<string>(r => r(this.clientId));
         } else {

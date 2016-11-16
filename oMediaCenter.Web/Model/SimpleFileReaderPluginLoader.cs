@@ -6,31 +6,33 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using oMediaCenter.DirectoryScanPlugin;
 
 namespace oMediaCenter.Web.Model
 {
-    public class SimpleFileReaderPluginLoader : IFileReaderPluginLoader
-    {
-        private IConfigurationSection _pluginConfigurationSection;
-        private ILoggerFactory _loggerFactory;
+	public class SimpleFileReaderPluginLoader : IFileReaderPluginLoader
+	{
+		private ILoggerFactory _loggerFactory;
+		private IConfiguration _configuration;
 
-        public SimpleFileReaderPluginLoader(IConfigurationSection pluginConfigurationSection)
-        {
-            _pluginConfigurationSection = pluginConfigurationSection;
-        }
+		public SimpleFileReaderPluginLoader(IConfiguration pluginConfigurationSection, ILoggerFactory loggerFactory)
+		{
+			_configuration = pluginConfigurationSection.GetSection("Plugins");
+			_loggerFactory = loggerFactory;
+		}
 
-        public IFileReaderPlugin[] GetPlugins()
-        {
-            return new IFileReaderPlugin[]
-            {
-                (IFileReaderPlugin)new UTorrentPlugin.FileReaderPlugin(_pluginConfigurationSection, _loggerFactory),
-                (IFileReaderPlugin)new oMediaCenter.DirectoryScanPlugin.FileReaderPlugin(_pluginConfigurationSection, _loggerFactory)
-            };
-        }
-
-        public void SetLoggerFactory(ILoggerFactory loggerFactory)
-        {
-            _loggerFactory = loggerFactory;
-        }
-    }
+		public IFileReaderPlugin[] GetPlugins()
+		{
+			List<IFileReaderPlugin> plugins = new List<IFileReaderPlugin>();
+			foreach (var setting in _configuration.GetChildren())
+			{
+				if (setting.Key== "UTorrentPlugin")
+					plugins.Add((IFileReaderPlugin)new UTorrentPlugin.FileReaderPlugin(setting, _loggerFactory));
+				if (setting.Key == "DirectoryScanPlugin")
+					plugins.Add((IFileReaderPlugin)new oMediaCenter.DirectoryScanPlugin.FileReaderPlugin(setting, _loggerFactory));
+			}
+			return plugins.ToArray();
+		}
+	}
 }

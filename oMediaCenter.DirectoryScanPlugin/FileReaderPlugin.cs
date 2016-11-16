@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace oMediaCenter.DirectoryScanPlugin
 {
@@ -19,7 +20,7 @@ namespace oMediaCenter.DirectoryScanPlugin
             _logger = loggerFactory.CreateLogger<FileReaderPlugin>();
             try
             {
-                _scanDirectories = pluginConfigurationSection.GetSection("Directories").GetChildren().Select(s => s.Value).ToArray();
+				_scanDirectories = pluginConfigurationSection.GetSection("ScanDirectories").GetChildren().Select(cs => cs.Value).ToArray();
             }
             catch (Exception e)
             {
@@ -44,7 +45,7 @@ namespace oMediaCenter.DirectoryScanPlugin
                 }
                 catch (Exception e)
                 {
-                    _logger.LogInformation(1, "Could not read directory information from {0}", directory);
+                    _logger.LogInformation(1, e,  "Could not read directory information from {0}", directory);
                 }
             }
             return result;

@@ -15,13 +15,13 @@ namespace oMediaCenter.Web.Controllers
     [Route("api/v1")]
     public class MediaListController : Controller
     {
-        FileReader _fileReader;
+        IFileReader _fileReader;
         ILogger _logger;
         MediaCenterContext _dbContext;
 
-        public MediaListController(IFileReaderPluginLoader fileReaderPluginLoader, ILoggerFactory loggerFactory, MediaCenterContext dbContext)
+        public MediaListController(IFileReader fileReader, ILoggerFactory loggerFactory, MediaCenterContext dbContext)
         {
-            _fileReader = new Model.FileReader(fileReaderPluginLoader);
+			_fileReader = fileReader;
             _logger = loggerFactory.CreateLogger<MediaListController>();
             _dbContext = dbContext;
         }

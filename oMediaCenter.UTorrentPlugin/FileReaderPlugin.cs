@@ -8,22 +8,22 @@ using System.Threading.Tasks;
 using UTorrent.Api;
 using UTorrent.Api.Data;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace oMediaCenter.UTorrentPlugin
 {
     public class FileReaderPlugin : IFileReaderPlugin
     {
-        IConnectionInformation _connectionInfo;
+        UtorrentFileReaderPluginSettings _connectionInfo;
         static readonly char[] SPLIT_CHARS = new char[] { ' ', '.' };
         static readonly string[] VALID_EXTENSIONS = new string[] { "mp4", "avi", "m4v", "mkv" };
         private ILogger _logger;
 
         public FileReaderPlugin(IConfigurationSection pluginConfigurationSection, ILoggerFactory loggerFactory)
         {
-            if (pluginConfigurationSection.GetSection("UTorrentConnectionInformation").GetChildren().Count() != 0)
+            if (pluginConfigurationSection != null)
             {
-                ConfigurationConnectionInformation cci = new ConfigurationConnectionInformation(pluginConfigurationSection);
-                _connectionInfo = cci;
+				_connectionInfo = new UtorrentFileReaderPluginSettings(pluginConfigurationSection);
             }
             _logger = loggerFactory.CreateLogger<FileReaderPlugin>();
         }

@@ -36,6 +36,11 @@
 	.phone {
 		display: block !important;
 	}
+
+	button {
+		padding: 10px;
+		margin: 5px;
+	}
 }
 
 .omc-fullscreen-background {

@@ -121,27 +121,6 @@ export class MediaPlayerComponent implements OnInit, IPlayerControl {
     }
 
     onToggleFullscreen() {
-        //// this doesn't work because it's not initiated by gesture; maybe we'll have a router to a player that doesn't show text
-        //if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        //    if (this.player.nativeElement.requestFullScreen) {
-        //        this.player.nativeElement.requestFullScreen();
-        //    } else {
-        //        this.player.nativeElement.webkitRequestFullScreen();
-        //    }
-        //} else {
-        //    if (document.fullscreenElement) {
-        //        this.player.nativeElement.requestFullScreen();
-        //    } else {
-        //        document.webkitCancelFullScreen();
-        //    }
-        //}
         this.isFullScreen = !this.isFullScreen;            
     }
 }
-
-
-/*
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/
