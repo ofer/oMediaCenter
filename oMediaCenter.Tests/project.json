@@ -9,19 +9,19 @@
 	},
 
 	"frameworks": {
-		"netcoreapp1.0": {
-					"imports": [
-						"netcore50",
-						"portable-net45+win8"
-					],
-			"dependencies": {
-				"Microsoft.NETCore.App": {
-					"version": "1.0.2",
-					"type": "platform"
-				},
-				"dotnet-test-mstest": "1.1.1-preview"
+			"netcoreapp1.0": {
+				"imports": [
+					"netcore50",
+					"portable-net45+win8"
+				],
+				"dependencies": {
+					"Microsoft.NETCore.App": {
+						"version": "1.0.1",
+						"type": "platform"
+					},
+					"dotnet-test-mstest": "1.1.1-preview"
+				}
 			}
-		}
 	},
 	"runtimes": {
 		"win10-x64": {}
