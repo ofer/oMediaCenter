@@ -10,6 +10,19 @@
 	background-color: #001600;
 }
 
+button {
+	background-color: #053505;
+	color: #61B061;
+    border: none;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
 .primary {
 	color: #61B061;
 }
