@@ -6,6 +6,20 @@
 	width: 100vw;
 	/* Remove any browser-default margins. */
 	margin: 0;
+	color: #61B061;
+	background-color: #001600;
+}
+
+.primary {
+	color: #61B061;
+}
+
+.secondary {
+	color: #2F792F;
+}
+
+.tertiary {
+	color: #053505;
 }
 
 .desktop {
