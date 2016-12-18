@@ -1,6 +1,8 @@
 ﻿import { Component } from '@angular/core';
+import '../styles.css';
 
 import { ClientControlService } from './omc.clientcontrol.service';
+
 
 @Component({
     selector: 'my-app',
@@ -19,8 +21,8 @@ import { ClientControlService } from './omc.clientcontrol.service';
       <a routerLink="/medialist" routerLinkActive="active">Media List</a>
     </nav> -->
     <router-outlet></router-outlet>
-  `,
-    styleUrls: ['./app.component.css']
+  `//,
+   // styleUrls: ['./app.component.css']
 })
 export class AppComponent {
     title = 'Media List';

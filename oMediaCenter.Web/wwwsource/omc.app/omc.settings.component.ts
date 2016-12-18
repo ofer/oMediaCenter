@@ -53,7 +53,7 @@ export class SettingsComponent implements OnChanges {
         settingsService.getClientId().then(clientId => this.clientId = clientId);
     }
 
-    ngOnChanges(changes) {
+    ngOnChanges(changes: any) {
     }
 
 
