@@ -20,7 +20,7 @@ import { ClientControlService } from './omc.clientcontrol.service';
     </nav> -->
     <router-outlet></router-outlet>
   `,
-    styleUrls: ['omc.app/app.component.css']
+    styleUrls: ['./app.component.css']
 })
 export class AppComponent {
     title = 'Media List';

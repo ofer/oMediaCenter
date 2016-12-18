@@ -8,7 +8,7 @@ import { SettingsService } from './omc.settings.service';
 
 @Component({
     selector: 'omc-settings',
-    templateUrl: './omc.app/omc.settings.component.html',
+    templateUrl: 'omc.settings.component.html',
     animations: [
         trigger('routeAnimation', [
             state('*',
