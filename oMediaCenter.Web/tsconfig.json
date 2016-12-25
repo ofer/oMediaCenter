@@ -1,23 +1,13 @@
 {
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "noImplicitAny": false,
-    "noEmitOnError": true,
-    "removeComments": false,
-    "sourceMap": true,
-    "target": "es5",
-    "outDir": "./wwwroot/omc.app/",
-    "sourceRoot": "./wwwsource",
-    "moduleResolution": "node",
-    "module": "commonjs"
-  },
-  "exclude": [
-    "wwwroot",
-    "node_modules",
-    "wwwsource/lib",
-    "typings/index.d.ts",
-    "typings/globals/core-js/index.d.ts"
-  ],
-  "compileOnSave": true
+	"compilerOptions": {
+		"target": "es5",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"sourceMap": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"lib": [ "es2015", "dom" ],
+		"noImplicitAny": true,
+		"suppressImplicitAnyIndexErrors": true
+	}
 }

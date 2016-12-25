@@ -10,7 +10,7 @@ import { MediaDataService } from './omc.media.service';
 
 @Component({
     selector: 'omc-client-control',
-    templateUrl: './omc.app/omc.clientcontrol.component.html',
+    templateUrl: 'omc.clientcontrol.component.html',
 })
 export class ClientControlComponent implements OnInit {
     title = 'Client Remote Control';
@@ -34,7 +34,7 @@ export class ClientControlComponent implements OnInit {
     ngOnInit(): void {
     }
 
-    onSendRequested(commandType, hash) {
+	onSendRequested(commandType: string, hash: string) {
         this.clientControlService.sendCommand(commandType, this.selectedHost, hash);
     }
 }

@@ -1,8 +1,8 @@
 ﻿export interface IPlayerControl {
-    onStop();
-    onVolumeUp();
-    onVolumeDown();
-    onPause();
-    onPlay();
-    onToggleFullscreen();
+	onStop(): void;
+	onVolumeUp(): void;
+	onVolumeDown(): void;
+	onPause(): void;
+	onPlay(): void;
+	onToggleFullscreen(): void;
 }

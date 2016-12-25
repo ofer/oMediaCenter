@@ -16,7 +16,7 @@ import { IPlayerControl } from './omc.playercontrol.interface';
 
 @Component({
     selector: 'omc-media-player',
-    templateUrl: './omc.app/omc.mediaplayer.component.html',
+    templateUrl: 'omc.mediaplayer.component.html',
     animations: [
         trigger('routeAnimation', [
             state('*',
