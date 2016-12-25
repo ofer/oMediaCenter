@@ -10,7 +10,8 @@
 		"tsc": "tsc",
 		"tsc:w": "tsc -w",
 		"typings": "typings",
-		"build": "webpack --config webpack.config.js"
+		"build": "webpack --config webpack.config.js",
+		"buildproduction": "webpack --config webpack.config.production.js"
 	},
 	"dependencies": {
 		"@angular/common": "~2.3.1",
