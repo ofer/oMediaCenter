@@ -4,52 +4,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using oMediaCenter.DirectoryScanPlugin;
 
 namespace oMediaCenter.Web.Model
 {
-    public class ConnectionInformation : IConnectionInformation
-    {
-        public string IP
-        {
-            get
-            {
-                return "192.168.1.100";
-            }
-        }
+	public class SimpleFileReaderPluginLoader : IFileReaderPluginLoader
+	{
+		private ILoggerFactory _loggerFactory;
+		private IConfiguration _configuration;
 
-        public string Login
-        {
-            get
-            {
-                return "admin";
-            }
-        }
+		public SimpleFileReaderPluginLoader(IConfiguration pluginConfigurationSection, ILoggerFactory loggerFactory)
+		{
+			_configuration = pluginConfigurationSection.GetSection("Plugins");
+			_loggerFactory = loggerFactory;
+		}
 
-        public string Password
-        {
-            get
-            {
-                return "admin";
-            }
-        }
-
-        public int Port
-        {
-            get
-            {
-                return 8080;
-            }
-        }
-    }
-
-    public class SimpleFileReaderPluginLoader : IFileReaderPluginLoader
-    {
-        public IFileReaderPlugin[] GetPlugins()
-        {
-            return new IFileReaderPlugin[] 
-            {
-                (IFileReaderPlugin)new UTorrentPlugin.FileReaderPlugin(new ConnectionInformation()),
-            (IFileReaderPlugin)new oMediaCenter.DirectoryScanPlugin.FileReaderPlugin()};
-        }
-    }
+		public IFileReaderPlugin[] GetPlugins()
+		{
+			List<IFileReaderPlugin> plugins = new List<IFileReaderPlugin>();
+			foreach (var setting in _configuration.GetChildren())
+			{
+				if (setting.Key== "UTorrentPlugin")
+					plugins.Add((IFileReaderPlugin)new UTorrentPlugin.FileReaderPlugin(setting, _loggerFactory));
+				if (setting.Key == "DirectoryScanPlugin")
+					plugins.Add((IFileReaderPlugin)new oMediaCenter.DirectoryScanPlugin.FileReaderPlugin(setting, _loggerFactory));
+			}
+			return plugins.ToArray();
+		}
+	}
 }

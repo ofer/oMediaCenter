@@ -243,3 +243,4 @@ ModelManifest.xml
 *.js
 *.map
 wwwroot/
+typings/

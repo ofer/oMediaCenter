@@ -5,14 +5,18 @@
     style, state
 } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
+
+import { ClientControlService } from './omc.clientcontrol.service';
 //import { Observable, Subscription } from 'rxjs';
 
 import { MediaFileRecord } from './omc.mediafilerecord.model';
 import { MediaDataService } from './omc.media.service';
 
+import { IPlayerControl } from './omc.playercontrol.interface';
+
 @Component({
     selector: 'omc-media-player',
-    templateUrl: './omc.app/omc.mediaplayer.component.html',
+    templateUrl: 'omc.mediaplayer.component.html',
     animations: [
         trigger('routeAnimation', [
             state('*',
@@ -37,7 +41,7 @@ import { MediaDataService } from './omc.media.service';
         ])
     ]
 })
-export class MediaPlayerComponent implements OnInit {
+export class MediaPlayerComponent implements OnInit, IPlayerControl {
     @HostBinding('@routeAnimation') get routeAnimation() {
         return true;
     }
@@ -53,13 +57,19 @@ export class MediaPlayerComponent implements OnInit {
     @ViewChild('videoElement') player: ElementRef;
 
     mediaFileRecord: MediaFileRecord;
+    lastUpdatedDate: Date;
+    isFullScreen: boolean;
 
     constructor(
         private route: ActivatedRoute,
         private router: Router,
         private service: MediaDataService,
         private renderer: Renderer,
-        private elementRef: ElementRef) {
+        private elementRef: ElementRef,
+        private clientControlService: ClientControlService) {
+        this.lastUpdatedDate = new Date();
+        clientControlService.setPlayer(this);
+        this.isFullScreen = false;
     }
 
     ngOnInit() {
@@ -68,14 +78,17 @@ export class MediaPlayerComponent implements OnInit {
                 // make sure it returned a media file record, otherwise ignore
                 if (mediaFileRecord) {
                     this.mediaFileRecord = mediaFileRecord;
-                    
                 }
             });
         });
     }
 
     onTimeUpdated(currentTime: number) {
-        this.service.updateMediaCurrentTime(this.mediaFileRecord.hash, currentTime);
+        var currentDate = new Date();
+        if (currentDate.valueOf() - this.lastUpdatedDate.valueOf() > 1000) {
+            this.service.updateMediaCurrentTime(this.mediaFileRecord.hash, currentTime);
+            this.lastUpdatedDate = currentDate;
+        }
     }
 
     onLoadedData() {
@@ -83,11 +96,31 @@ export class MediaPlayerComponent implements OnInit {
             this.player.nativeElement.currentTime = this.mediaFileRecord.lastPlayedTime;
         this.player.nativeElement.play();
     }
+
+    onStop() {
+        this.player.nativeElement.pause();
+        this.player.nativeElement.currentTime = 0;
+    }
+
+    onPlay() {
+        this.player.nativeElement.play();
+    }
+
+    onPause() {
+        this.player.nativeElement.pause();
+    }
+
+    onVolumeUp() {
+        if (this.player.nativeElement.volume < 1)
+            this.player.nativeElement.volume += 0.2;
+    }
+
+    onVolumeDown() {
+        if (this.player.nativeElement.volume > 0)
+            this.player.nativeElement.volume -= 0.2;
+    }
+
+    onToggleFullscreen() {
+        this.isFullScreen = !this.isFullScreen;            
+    }
 }
-
-
-/*
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/

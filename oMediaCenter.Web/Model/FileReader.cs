@@ -1,4 +1,5 @@
 ﻿using oMediaCenter.Interfaces;
+using ShowInfo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +10,16 @@ namespace oMediaCenter.Web.Model
     /// <summary>
     /// This class is responsible for reading files from the file readers that are set up in the system
     /// </summary>
-    public class FileReader
+    public class FileReader : IFileReader
     {
         private IFileReaderPlugin[] _fileReaderPlugins;
+		private IShowInformationManager _showInfoManager;
 
-        public FileReader(IFileReaderPluginLoader fileReaderPluginLoader)
+        public FileReader(IFileReaderPluginLoader fileReaderPluginLoader, IShowInformationManager showInfoManager)
         {
-            _fileReaderPlugins = fileReaderPluginLoader.GetPlugins();
-        }
+			_fileReaderPlugins = fileReaderPluginLoader.GetPlugins();
+			_showInfoManager = showInfoManager;
+		}
 
         public IEnumerable<IMediaFile> GetAll()
         {
@@ -30,6 +33,11 @@ namespace oMediaCenter.Web.Model
                 IMediaFile foundMediaFile = frp.GetByHash(hash);
                 if (foundMediaFile != null)
                 {
+					if (_showInfoManager != null)
+					{
+						var info = _showInfoManager.GetEpisodeInfoForFilename(foundMediaFile.MediaFileRecord.Name);
+						foundMediaFile.MediaFileRecord.TechnicalInfo = info.EpisodeSummary;
+					}
                     return foundMediaFile;
                 }
             }

@@ -7,7 +7,7 @@ import { MediaDataService } from './omc.media.service';
 
 @Component({
     selector: 'omc-medialist',
-    templateUrl: './omc.app/omc.medialist.component.html',
+    templateUrl: 'omc.medialist.component.html',
 })
 export class MediaListComponent implements OnInit {
     title = 'media List';

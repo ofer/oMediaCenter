@@ -1,23 +1,28 @@
 ﻿import { Component } from '@angular/core';
+import '../styles.css';
 
 import { ClientControlService } from './omc.clientcontrol.service';
+
 
 @Component({
     selector: 'my-app',
 
     template: `
-    <md-toolbar color="primary">
+    <!--<md-toolbar color="primary"> -->
+    <div class="top-bar">
         <span>{{title}}</span>
-        <span class="omc-fill-remaining-space"></span>
-        <span><a routerLink="/medialist"><i class="mdi mdi-arrow-left"></i></a></span>
-        <span><a routerLink="/clientcontrol"><i class="mdi mdi-arrow-right"></i></a></span>
-    </md-toolbar>
+<!--        <span class="omc-fill-remaining-space"></span> -->
+        <span><a routerLink="/medialist">Media List</a></span>
+        <span><a routerLink="/clientcontrol">Client Remote</a></span>
+        <span><a routerLink="/settings">Settings</a></span>
+    </div>
+    <!-- </md-toolbar> -->
     <!--<nav>
       <a routerLink="/medialist" routerLinkActive="active">Media List</a>
     </nav> -->
     <router-outlet></router-outlet>
-  `,
-    styleUrls: ['omc.app/app.component.css']
+  `//,
+   // styleUrls: ['./app.component.css']
 })
 export class AppComponent {
     title = 'Media List';

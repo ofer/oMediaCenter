@@ -1,6 +1,7 @@
 ﻿import { ModuleWithProviders } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
+import { SettingsComponent } from './omc.settings.component';
 import { MediaListComponent } from './omc.medialist.component';
 import { MediaPlayerComponent } from './omc.mediaplayer.component';
 import { ClientControlComponent } from './omc.clientcontrol.component';
@@ -12,7 +13,8 @@ const appRoutes: Routes = [
     },
     { path: 'medialist', component: MediaListComponent },
     { path: 'media/:hash', component: MediaPlayerComponent },
-    { path: 'clientcontrol', component: ClientControlComponent }
+    { path: 'clientcontrol', component: ClientControlComponent },
+    { path: 'settings', component: SettingsComponent }
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(appRoutes, { useHash: true });

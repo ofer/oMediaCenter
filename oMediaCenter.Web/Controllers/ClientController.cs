@@ -11,14 +11,14 @@ namespace oMediaCenter.Web.Controllers
     [Route("api/v1/client")]
     public class ClientController : Controller
     {
-        static ConcurrentDictionary<string, ClientCommand> s_commandDictionary = new ConcurrentDictionary<string, ClientCommand>();
+        static ConcurrentDictionary<string, ClientInfo> s_commandDictionary = new ConcurrentDictionary<string, ClientInfo>();
 
         [HttpPost]
         [Route("")]
         public string CreateId()
         {
             string clientId = Guid.NewGuid().ToString();
-            ClientCommand command = s_commandDictionary.GetOrAdd(clientId, fac => new ClientCommand());
+            ClientCommand command = s_commandDictionary.GetOrAdd(clientId, fac => new ClientInfo(DateTime.UtcNow)).LatestCommand;
             command.Command = "none";
             command.Parameter = null;
             command.Date = DateTime.FromFileTimeUtc(0);
@@ -28,15 +28,16 @@ namespace oMediaCenter.Web.Controllers
         [HttpGet]
         public string[] GetAllClients()
         {
-            return s_commandDictionary.Keys.ToArray();
+            return s_commandDictionary.Where(kvp => kvp.Value.LastPoll > DateTime.UtcNow.AddMinutes(-2)).Select(kvp => kvp.Key).ToArray();
         }
 
         [HttpGet]
         [Route("{clientId}")]
         public ClientCommand GetLatestCommands(string clientId)
         {
-            ClientCommand command = s_commandDictionary.GetOrAdd(clientId, fac => new ClientCommand());
-            return command;
+            ClientInfo info = s_commandDictionary.GetOrAdd(clientId, fac => new ClientInfo(DateTime.UtcNow));
+            info.LastPoll = DateTime.UtcNow;
+            return info.LatestCommand;
         }
 
         [HttpPut]
@@ -45,7 +46,7 @@ namespace oMediaCenter.Web.Controllers
         {
             if (clientCommand != null)
             {
-                ClientCommand command = s_commandDictionary.GetOrAdd(targetClientId, fac => new ClientCommand());
+                ClientCommand command = s_commandDictionary.GetOrAdd(targetClientId, fac => new ClientInfo(DateTime.UtcNow)).LatestCommand;
                 command.Command = clientCommand.Command;
                 command.Parameter = clientCommand.Parameter;
                 command.Date = DateTime.UtcNow;

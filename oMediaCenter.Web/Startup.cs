@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using oMediaCenter.Web.Model;
 using oMediaCenter.Interfaces;
+using ShowInfo;
 
 namespace oMediaCenter.Web
 {
@@ -32,6 +33,7 @@ namespace oMediaCenter.Web
         }
 
         public IConfigurationRoot Configuration { get; }
+        public ILoggerFactory LoggerFactory { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
@@ -41,13 +43,24 @@ namespace oMediaCenter.Web
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
 
-            services.AddMvc();
+			services.AddMvc();
 
-            services.AddSingleton<IFileReaderPluginLoader>(new SimpleFileReaderPluginLoader());
-        }
+			services.AddOptions();
+			services.AddSingleton<IFileReaderPluginLoader, SimpleFileReaderPluginLoader>();
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+			services.AddTransient<IAliasProvider, AliasProvider>();
+			services.AddTransient<IShowInformationManager, ShowInformationManager>();
+
+			services.AddSingleton<IConfiguration>(Configuration);
+
+			services.AddSingleton<IFileReaderPluginLoader, SimpleFileReaderPluginLoader>();
+			//services.AddSingleton<IFileReaderPluginLoader>(new SimpleFileReaderPluginLoader(Configuration.GetSection("Plugins")));
+			//services.AddSingleton<IFileReaderPluginLoader>(new SimpleFileReaderPluginLoader(Configuration.GetSection("Plugins")));
+			services.AddSingleton<IFileReader, FileReader>();
+		}
+
+		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();

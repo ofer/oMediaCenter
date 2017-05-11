@@ -1,20 +1,20 @@
 ﻿<div>
-    <md-grid-list cols="4">
-        <md-grid-tile *ngFor="let media of mediaFileList" (click)="onSelect(media)">
-            <img [src]="media.thumbnail" />
-            {{media.name}}
-        </md-grid-tile>
-    </md-grid-list>
-    <!--<div *ngFor="let media of mediaFileList" >
-        {{media.name}}
-    </div>-->
-    <!--<ul>
-        <li *ngFor="let media of mediafilelist">
-            <span class="badge">{{hero.id}}</span>
-            {{hero.name}}
-        </li>
-    </ul>
-    <h1>{{title}}</h1>
-    <h2>{{hero.name}} details!</h2>
-    <div><label>id: </label>{{hero.id}}</div>-->
+	<md-grid-list class="desktop" cols="4">
+		<md-grid-tile *ngFor="let media of mediaFileList" (click)="onSelect(media)">
+			<img [src]="media.thumbnail" />
+			{{media.name}}
+		</md-grid-tile>
+	</md-grid-list>
+	<md-grid-list class="tablet" cols="2">
+		<md-grid-tile *ngFor="let media of mediaFileList" (click)="onSelect(media)">
+			<img [src]="media.thumbnail" />
+			{{media.name}}
+		</md-grid-tile>
+	</md-grid-list>
+	<div class="phone">
+		<div *ngFor="let media of mediaFileList" (click)="onSelect(media)">
+			<img [src]="media.thumbnail" />
+			{{media.name}}
+		</div>
+	</div>
 </div>

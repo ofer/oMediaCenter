@@ -5,8 +5,10 @@ import { ActivatedRoute, Router, Params } from '@angular/router';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Rx';
 
+import { SettingsService } from './omc.settings.service';
 import { MediaFileRecord } from './omc.mediafilerecord.model';
 import { ClientCommand } from './omc.clientCommand.model';
+import { IPlayerControl } from './omc.playercontrol.interface';
 
 @Injectable()
 export class ClientControlService {
@@ -16,14 +18,17 @@ export class ClientControlService {
 
     private clientId: string;
     private lastExecutedDate: Date;
+    private playerControl: IPlayerControl;
 
     constructor(private http: Http,
-        private router: Router) {
+        private router: Router,
+        private settingsService: SettingsService) {
         this.lastExecutedDate = new Date(0);
     }
 
     startPolling() {
         this.createClientId().then(response => {
+            console.log('received ' + response + ' as the client id');
             this.clientId = response;
             let timer = Observable.interval(5000);
             timer.subscribe(t => this.pollAndProcessCommands());
@@ -32,16 +37,16 @@ export class ClientControlService {
 
     pollAndProcessCommands() {
         this.getLatestCommands().then(command => {
-            if (new Date(command.date) > this.lastExecutedDate) {
+            var commandDate = new Date(command.date);
+            if (commandDate > this.lastExecutedDate) {
                 this.executeCommand(command);
-                this.lastExecutedDate = command.date;
+                this.lastExecutedDate = commandDate;
             }
         });
     }
 
     createClientId(): Promise<string> {
-        return this.http.post(this.clientCommandUrl, { ClientName: localStorage.getItem('clientName') })
-            .toPromise().then(response => response.text());
+        return this.settingsService.getClientId();
     }
 
     getLatestCommands(): Promise<ClientCommand> {
@@ -55,10 +60,31 @@ export class ClientControlService {
     executeCommand(command: ClientCommand) {
         switch (command.command) {
             case 'play':
-                this.router.navigate(['/media', command.parameter]);
+                if (command.parameter)
+                    this.router.navigate(['/media', command.parameter]);
+                else
+                    if (this.playerControl)
+                        this.playerControl.onPlay();
                 break;
             case 'pause':
-                this.router.navigate(['/media', command.parameter]);
+                if (this.playerControl)
+                    this.playerControl.onPause();
+                break;
+            case 'stop':
+                if (this.playerControl)
+                    this.playerControl.onStop();
+                break;
+            case 'volumeUp':
+                if (this.playerControl)
+                    this.playerControl.onVolumeUp();
+                break;
+            case 'volumeDown':
+                if (this.playerControl)
+                    this.playerControl.onVolumeDown();
+                break;
+            case 'toggleFullscreen':
+                if (this.playerControl)
+                    this.playerControl.onToggleFullscreen();
                 break;
             case 'index':
                 this.router.navigate(['/medialist']);
@@ -78,6 +104,9 @@ export class ClientControlService {
         return this.http.put(this.clientCommandUrl + '/' + host, command).toPromise();
     }
 
+    setPlayer(playerControl: IPlayerControl) {
+        this.playerControl = playerControl;
+    }
 
     private handleError(error: any): Promise<any> {
         console.error('An error occurred', error); // for demo purposes only

@@ -7,6 +7,9 @@ import { MaterialModule, MdGridListModule, MdButtonModule } from '@angular/mater
 
 import { AppComponent } from './app.component';
 
+import { SettingsService } from './omc.settings.service';
+import { SettingsComponent } from './omc.settings.component';
+
 import { ClientControlService } from './omc.clientcontrol.service';
 import { ClientControlComponent } from './omc.clientcontrol.component';
 
@@ -29,11 +32,13 @@ import { routing } from './app.routing'
         AppComponent,
         MediaListComponent,
         MediaPlayerComponent,
-        ClientControlComponent
+        ClientControlComponent,
+        SettingsComponent
     ],
     providers: [
         MediaDataService,
-        ClientControlService
+        ClientControlService,
+        SettingsService
     ],
     bootstrap: [AppComponent]
 })

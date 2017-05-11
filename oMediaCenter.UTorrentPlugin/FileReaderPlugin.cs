@@ -1,4 +1,5 @@
-﻿using oMediaCenter.Interfaces;
+﻿using Microsoft.Extensions.Configuration;
+using oMediaCenter.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,26 +7,38 @@ using System.Linq;
 using System.Threading.Tasks;
 using UTorrent.Api;
 using UTorrent.Api.Data;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace oMediaCenter.UTorrentPlugin
 {
     public class FileReaderPlugin : IFileReaderPlugin
     {
-        IConnectionInformation _connectionInfo;
+        UtorrentFileReaderPluginSettings _connectionInfo;
         static readonly char[] SPLIT_CHARS = new char[] { ' ', '.' };
         static readonly string[] VALID_EXTENSIONS = new string[] { "mp4", "avi", "m4v", "mkv" };
+        private ILogger _logger;
 
-        public FileReaderPlugin(IConnectionInformation connectionInformation)
+        public FileReaderPlugin(IConfigurationSection pluginConfigurationSection, ILoggerFactory loggerFactory)
         {
-            _connectionInfo = connectionInformation;
+            if (pluginConfigurationSection != null)
+            {
+				_connectionInfo = new UtorrentFileReaderPluginSettings(pluginConfigurationSection);
+            }
+            _logger = loggerFactory.CreateLogger<FileReaderPlugin>();
         }
 
         public IEnumerable<IMediaFile> GetAll()
         {
-            UTorrent.Api.UTorrentClient utc = new UTorrent.Api.UTorrentClient(_connectionInfo.IP, _connectionInfo.Port, _connectionInfo.Login, _connectionInfo.Password);
+            if (_connectionInfo != null)
+            {
+                UTorrent.Api.UTorrentClient utc = new UTorrent.Api.UTorrentClient(_connectionInfo.IP, _connectionInfo.Port, _connectionInfo.Login, _connectionInfo.Password);
 
-            var torrentList = utc.GetList().Result.Torrents;
-            return torrentList.Select(t => FromUtorrent(utc, t)).Where(mf => mf != null).ToArray();
+                var torrentList = utc.GetList().Result.Torrents;
+                return torrentList.Select(t => FromUtorrent(utc, t)).Where(mf => mf != null).ToArray();
+            }
+            else
+                return new IMediaFile[0];
         }
 
         private MediaFile FromUtorrent(UTorrentClient utc, Torrent t)
@@ -71,11 +84,18 @@ namespace oMediaCenter.UTorrentPlugin
 
         public IMediaFile GetByHash(string hash)
         {
-            UTorrent.Api.UTorrentClient utc = new UTorrent.Api.UTorrentClient(_connectionInfo.IP, _connectionInfo.Port, _connectionInfo.Login, _connectionInfo.Password);
+            if (_connectionInfo != null)
+            {
+                UTorrent.Api.UTorrentClient utc = new UTorrent.Api.UTorrentClient(_connectionInfo.IP, _connectionInfo.Port, _connectionInfo.Login, _connectionInfo.Password);
 
-            var query = utc.GetTorrent(hash);
+                var query = utc.GetTorrent(hash);
 
-            return FromUtorrent(utc, query.Result.Torrents.FirstOrDefault(t => t.Hash == hash));
+                return FromUtorrent(utc, query.Result.Torrents.FirstOrDefault(t => t.Hash == hash));
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
