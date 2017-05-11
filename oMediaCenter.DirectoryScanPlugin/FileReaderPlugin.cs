@@ -17,8 +17,15 @@ namespace oMediaCenter.DirectoryScanPlugin
 
         public IEnumerable<IMediaFile> GetAll()
         {
-            return 
-                Directory.GetFiles(@"c:\users\ofer achler\Videos", "*.mkv").Select(fn => new MediaFile(fn));
+            try
+            {
+                return
+                    Directory.GetFiles(@"c:\users\ofer achler\Videos", "*.mkv").Select(fn => new MediaFile(fn));
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
         public IMediaFile GetByHash(string hash)
