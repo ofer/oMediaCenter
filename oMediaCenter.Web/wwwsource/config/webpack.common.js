@@ -15,6 +15,15 @@ module.exports = {
 	},
 
 	module: {
+		//rules: [
+		//	{
+		//		test: /\.less$/,
+		//		use: [
+		//		  'style-loader',
+		//		  { loader: 'css-loader', options: { importLoaders: 1 } },
+		//		  'less-loader'
+		//	]}
+		//],
 		loaders: [
 			{
 				test: /\.ts$/,
@@ -27,6 +36,10 @@ module.exports = {
 			{
 				test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
 				loader: 'file?name=assets/[name].[hash].[ext]'
+			},
+			{
+				test: /\.less$/,
+				loader: 'style!css!less'
 			},
 			{
 				test: /\.css$/,

@@ -1,5 +1,5 @@
 ﻿import { Component } from '@angular/core';
-import '../styles.css';
+//require('../styles.less');
 
 import { ClientControlService } from './omc.clientcontrol.service';
 
@@ -21,7 +21,10 @@ import { ClientControlService } from './omc.clientcontrol.service';
       <a routerLink="/medialist" routerLinkActive="active">Media List</a>
     </nav> -->
     <router-outlet></router-outlet>
-  `//,
+  `,
+	styles: [
+		require('../styles.less').toString()
+	]
    // styleUrls: ['./app.component.css']
 })
 export class AppComponent {

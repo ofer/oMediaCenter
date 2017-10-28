@@ -36,7 +36,7 @@ namespace oMediaCenter.Web.Model
 					if (_showInfoManager != null)
 					{
 						var info = _showInfoManager.GetEpisodeInfoForFilename(foundMediaFile.MediaFileRecord.Name);
-						foundMediaFile.MediaFileRecord.TechnicalInfo = info.EpisodeSummary;
+						//foundMediaFile.MediaFileRecord.TechnicalInfo = info.EpisodeSummary;
 					}
                     return foundMediaFile;
                 }

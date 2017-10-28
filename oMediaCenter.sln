@@ -1,26 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "oMediaCenter.Web", "oMediaCenter.Web\oMediaCenter.Web.xproj", "{138E85AE-064A-4CD5-9791-9D5ACB82BB49}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "oMediaCenter.Interfaces", "oMediaCenter.Interfaces\oMediaCenter.Interfaces.xproj", "{8FDC6A08-0BD1-42B6-9C33-AAC8D1F292B5}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{7549F166-E725-418F-A2FF-BCFC928CD6E8}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "oMediaCenter.UTorrentPlugin", "oMediaCenter.UTorrentPlugin\oMediaCenter.UTorrentPlugin.xproj", "{FEB4E3C1-91AB-4E9C-A702-997D493630E0}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{914A6AB3-2C53-4186-A08C-B4CE3A758E21}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "oMediaCenter.LibTorrent", "oMediaCenter.LibTorrent", "{5307674B-5163-4877-BD35-FC81493EBAE4}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "oMediaCenter.DirectoryScanPlugin", "oMediaCenter.DirectoryScanPlugin\oMediaCenter.DirectoryScanPlugin.xproj", "{858BAE31-DFD7-4AE4-BECD-0A9067D748E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "oMediaCenter.Web", "oMediaCenter.Web\oMediaCenter.Web.csproj", "{138E85AE-064A-4CD5-9791-9D5ACB82BB49}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "oMediaCenter.Tests", "oMediaCenter.Tests\oMediaCenter.Tests.xproj", "{9A52947E-0567-48FC-994D-E14EC94EFE43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "oMediaCenter.Interfaces", "oMediaCenter.Interfaces\oMediaCenter.Interfaces.csproj", "{8FDC6A08-0BD1-42B6-9C33-AAC8D1F292B5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "oMediaCenter.UTorrentPlugin", "oMediaCenter.UTorrentPlugin\oMediaCenter.UTorrentPlugin.csproj", "{FEB4E3C1-91AB-4E9C-A702-997D493630E0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "oMediaCenter.DirectoryScanPlugin", "oMediaCenter.DirectoryScanPlugin\oMediaCenter.DirectoryScanPlugin.csproj", "{858BAE31-DFD7-4AE4-BECD-0A9067D748E6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "oMediaCenter.Tests", "oMediaCenter.Tests\oMediaCenter.Tests.csproj", "{9A52947E-0567-48FC-994D-E14EC94EFE43}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,8 +94,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{FEB4E3C1-91AB-4E9C-A702-997D493630E0} = {7549F166-E725-418F-A2FF-BCFC928CD6E8}
 		{5307674B-5163-4877-BD35-FC81493EBAE4} = {7549F166-E725-418F-A2FF-BCFC928CD6E8}
+		{FEB4E3C1-91AB-4E9C-A702-997D493630E0} = {7549F166-E725-418F-A2FF-BCFC928CD6E8}
 		{858BAE31-DFD7-4AE4-BECD-0A9067D748E6} = {7549F166-E725-418F-A2FF-BCFC928CD6E8}
 	EndGlobalSection
 EndGlobal

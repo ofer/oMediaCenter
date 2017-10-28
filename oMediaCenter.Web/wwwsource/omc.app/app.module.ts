@@ -16,7 +16,7 @@ import { ClientControlComponent } from './omc.clientcontrol.component';
 import { MediaDataService } from './omc.media.service';
 import { MediaListComponent } from './omc.medialist.component';
 import { MediaPlayerComponent } from './omc.mediaplayer.component';
-import { routing } from './app.routing'
+import { routing } from './app.routing';
 
 @NgModule({
     imports: [
