@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using oMediaCenter.Web.Model;
 using oMediaCenter.Interfaces;
-using ShowInfo;
+//using ShowInfo;
 
 namespace oMediaCenter.Web
 {
@@ -48,8 +48,8 @@ namespace oMediaCenter.Web
 			services.AddOptions();
 			services.AddSingleton<IFileReaderPluginLoader, SimpleFileReaderPluginLoader>();
 
-			services.AddTransient<IAliasProvider, AliasProvider>();
-			services.AddTransient<IShowInformationManager, ShowInformationManager>();
+			//services.AddTransient<IAliasProvider, AliasProvider>();
+			//services.AddTransient<IShowInformationManager, ShowInformationManager>();
 
 			services.AddSingleton<IConfiguration>(Configuration);
 
@@ -64,10 +64,6 @@ namespace oMediaCenter.Web
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
-            app.UseApplicationInsightsRequestTelemetry();
-
-            app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
