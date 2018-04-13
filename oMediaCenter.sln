@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{7549F166-E725-418F-A2FF-BCFC928CD6E8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{914A6AB3-2C53-4186-A08C-B4CE3A758E21}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "oMediaCenter.LibTorrent", "oMediaCenter.LibTorrent", "{5307674B-5163-4877-BD35-FC81493EBAE4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "oMediaCenter.Web", "oMediaCenter.Web\oMediaCenter.Web.csproj", "{138E85AE-064A-4CD5-9791-9D5ACB82BB49}"
 EndProject
@@ -18,6 +16,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "oMediaCenter.DirectoryScanPlugin", "oMediaCenter.DirectoryScanPlugin\oMediaCenter.DirectoryScanPlugin.csproj", "{858BAE31-DFD7-4AE4-BECD-0A9067D748E6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "oMediaCenter.Tests", "oMediaCenter.Tests\oMediaCenter.Tests.csproj", "{9A52947E-0567-48FC-994D-E14EC94EFE43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "oMediaCenter.TransmissionPlugin", "oMediaCenter.TransmissionPlugin\oMediaCenter.TransmissionPlugin.csproj", "{BD8D2B58-2082-412E-8720-C117A5DEA648}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,13 +89,28 @@ Global
 		{9A52947E-0567-48FC-994D-E14EC94EFE43}.Release|x64.Build.0 = Release|Any CPU
 		{9A52947E-0567-48FC-994D-E14EC94EFE43}.Release|x86.ActiveCfg = Release|Any CPU
 		{9A52947E-0567-48FC-994D-E14EC94EFE43}.Release|x86.Build.0 = Release|Any CPU
+		{BD8D2B58-2082-412E-8720-C117A5DEA648}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD8D2B58-2082-412E-8720-C117A5DEA648}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD8D2B58-2082-412E-8720-C117A5DEA648}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BD8D2B58-2082-412E-8720-C117A5DEA648}.Debug|x64.Build.0 = Debug|Any CPU
+		{BD8D2B58-2082-412E-8720-C117A5DEA648}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BD8D2B58-2082-412E-8720-C117A5DEA648}.Debug|x86.Build.0 = Debug|Any CPU
+		{BD8D2B58-2082-412E-8720-C117A5DEA648}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD8D2B58-2082-412E-8720-C117A5DEA648}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD8D2B58-2082-412E-8720-C117A5DEA648}.Release|x64.ActiveCfg = Release|Any CPU
+		{BD8D2B58-2082-412E-8720-C117A5DEA648}.Release|x64.Build.0 = Release|Any CPU
+		{BD8D2B58-2082-412E-8720-C117A5DEA648}.Release|x86.ActiveCfg = Release|Any CPU
+		{BD8D2B58-2082-412E-8720-C117A5DEA648}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{5307674B-5163-4877-BD35-FC81493EBAE4} = {7549F166-E725-418F-A2FF-BCFC928CD6E8}
 		{FEB4E3C1-91AB-4E9C-A702-997D493630E0} = {7549F166-E725-418F-A2FF-BCFC928CD6E8}
 		{858BAE31-DFD7-4AE4-BECD-0A9067D748E6} = {7549F166-E725-418F-A2FF-BCFC928CD6E8}
+		{BD8D2B58-2082-412E-8720-C117A5DEA648} = {7549F166-E725-418F-A2FF-BCFC928CD6E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {84F67551-C40E-4CD8-81E2-B5423D5496E9}
 	EndGlobalSection
 EndGlobal

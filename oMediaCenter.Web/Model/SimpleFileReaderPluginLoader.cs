@@ -27,6 +27,8 @@ namespace oMediaCenter.Web.Model
 			List<IFileReaderPlugin> plugins = new List<IFileReaderPlugin>();
 			foreach (var setting in _configuration.GetChildren())
 			{
+				if (setting.Key == "TransmissionPlugin")
+					plugins.Add((IFileReaderPlugin)new TransmissionPlugin.FileReaderPlugin(setting, _loggerFactory));
 				if (setting.Key== "UTorrentPlugin")
 					plugins.Add((IFileReaderPlugin)new UTorrentPlugin.FileReaderPlugin(setting, _loggerFactory));
 				if (setting.Key == "DirectoryScanPlugin")
