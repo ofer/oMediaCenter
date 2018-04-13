@@ -14,7 +14,7 @@ namespace oMediaCenter.TransmissionPlugin
 		{
 			MediaFileRecord = new MediaFileRecord();
 			MediaFileRecord.Description = ti.Comment;
-			MediaFileRecord.Hash = ti.ID + "aAaA" + string.Format("{0}", file.GetHashCode());
+			MediaFileRecord.Hash = ti.ID + "aAaA" + string.Format("{0}", file.Name.GetHashCode());
 			MediaFileRecord.Name = file.Name;
 			MediaFileRecord.TechnicalInfo = Path.Combine(ti.DownloadDir, file.Name.Replace('/','\\'));
 		}
