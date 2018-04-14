@@ -16,7 +16,6 @@ namespace oMediaCenter.UTorrentPlugin
     {
         UtorrentFileReaderPluginSettings _connectionInfo;
         static readonly char[] SPLIT_CHARS = new char[] { ' ', '.' };
-        static readonly string[] VALID_EXTENSIONS = new string[] { "mp4", "avi", "m4v", "mkv" };
         private ILogger _logger;
 
         public FileReaderPlugin(IConfigurationSection pluginConfigurationSection, ILoggerFactory loggerFactory)
@@ -76,7 +75,7 @@ namespace oMediaCenter.UTorrentPlugin
         {
 
             if (filename.Split(SPLIT_CHARS)[0].ToLower() == keyword &&
-                VALID_EXTENSIONS.Contains(Path.GetExtension(filename).ToLower().Substring(1)))
+                MediaFileRecord.VALID_EXTENSIONS.Contains(Path.GetExtension(filename).ToLower().Substring(1)))
                 return true;
             else
                 return false;
