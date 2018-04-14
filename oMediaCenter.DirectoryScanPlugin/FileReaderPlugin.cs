@@ -40,8 +40,8 @@ namespace oMediaCenter.DirectoryScanPlugin
             {
                 try
                 {
-                    result.AddRange(Directory.GetFiles(directory, "*.mkv").Select(fn => new MediaFile(fn)));
-                    result.AddRange(Directory.GetFiles(directory, "*.mp4").Select(fn => new MediaFile(fn)));
+                    result.AddRange(Directory.EnumerateFiles(directory, "*.mkv", SearchOption.AllDirectories).Select(fn => new MediaFile(fn)));
+                    result.AddRange(Directory.EnumerateFiles(directory, "*.mp4", SearchOption.AllDirectories).Select(fn => new MediaFile(fn)));
                 }
                 catch (Exception e)
                 {
