@@ -49,10 +49,9 @@ namespace oMediaCenter.TransmissionPlugin
 			string[] idSplit = hash.Split("aAaA");
 
 			//Create Transsmission.API.RPC.Client (set host, optional session id,optional login and optional pass).
-			Client client = new Client("HOST", "PARAM_SESSION_ID", "PARAM_LOGIN", "PARAM_PASS");
+			Client client = new Client(_connectionInfo.IP);
 
 			//After initialization, client can call methods:
-			var sessionInfo = client.GetSessionInformation();
 			var selectedTorrent = client.TorrentGet(TorrentFields.ALL_FIELDS, int.Parse(idSplit[0]));
 
 			var foundFile = selectedTorrent.Torrents.First().Files.First(f => f.Name.GetHashCode() == int.Parse(idSplit.Last()));
