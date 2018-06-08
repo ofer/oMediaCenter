@@ -18,12 +18,14 @@ namespace oMediaCenter.Web.Controllers
         IFileReader _fileReader;
         ILogger _logger;
         MediaCenterContext _dbContext;
+		IMediaFileStreamer _mediaFileStreamer;
 
-        public MediaListController(IFileReader fileReader, ILoggerFactory loggerFactory, MediaCenterContext dbContext)
+        public MediaListController(IFileReader fileReader, ILoggerFactory loggerFactory, MediaCenterContext dbContext, IMediaFileStreamer mediaFileStreamer)
         {
 			_fileReader = fileReader;
             _logger = loggerFactory.CreateLogger<MediaListController>();
             _dbContext = dbContext;
+			_mediaFileStreamer = mediaFileStreamer;
         }
 
         // GET api/values
@@ -75,8 +77,8 @@ namespace oMediaCenter.Web.Controllers
 
             if (selectedMediaFile != null)
             {
-                Stream stream = selectedMediaFile.GetMediaData();
-                return new ByteRangeStreamResult(stream, selectedMediaFile.MediaFileRecord.MediaType);
+				Stream stream = _mediaFileStreamer.GetStream(selectedMediaFile);
+                return new ByteRangeStreamResult(stream, _mediaFileStreamer.MediaType);
             }
             else
             {

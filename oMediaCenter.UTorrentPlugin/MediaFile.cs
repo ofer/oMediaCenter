@@ -32,5 +32,10 @@ namespace oMediaCenter.UTorrentPlugin
             else
                 return null;
         }
-    }
+
+		public string GetFullFilePath()
+		{
+			return FilePath;
+		}
+	}
 }

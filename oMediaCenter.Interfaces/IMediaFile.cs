@@ -6,6 +6,8 @@ namespace oMediaCenter.Interfaces
     {
         MediaFileRecord MediaFileRecord { get; }
 
+		string GetFullFilePath();
+
         /// <summary>
         /// Gets the actual data, null if no data exists
         /// </summary>

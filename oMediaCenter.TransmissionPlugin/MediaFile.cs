@@ -22,6 +22,11 @@ namespace oMediaCenter.TransmissionPlugin
 
 		public MediaFileRecord MediaFileRecord { get; private set; }
 
+		public string GetFullFilePath()
+		{
+			return MediaFileRecord.TechnicalInfo;
+		}
+
 		public Stream GetMediaData()
 		{
 			return new FileStream(MediaFileRecord.TechnicalInfo, FileMode.Open, FileAccess.Read);

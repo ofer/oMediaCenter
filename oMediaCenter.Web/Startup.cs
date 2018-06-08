@@ -50,6 +50,10 @@ namespace oMediaCenter.Web
 
 			//services.AddTransient<IAliasProvider, AliasProvider>();
 			//services.AddTransient<IShowInformationManager, ShowInformationManager>();
+			services.AddTransient<IMediaFileStreamer, MediaFileStreamer>();
+
+			services.AddTransient<IMediaFileProber, FfmpegFileProber>();
+			services.AddTransient<IMediaFileConverter, FfmpegFileConverter>();
 
 			services.AddSingleton<IConfiguration>(Configuration);
 

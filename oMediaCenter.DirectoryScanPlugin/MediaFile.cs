@@ -42,7 +42,12 @@ namespace oMediaCenter.DirectoryScanPlugin
             }
         }
 
-        public Stream GetMediaData()
+		public string GetFullFilePath()
+		{
+			return _fileInfo.FullName;
+		}
+
+		public Stream GetMediaData()
         {
             return _fileInfo.OpenRead();
         }
