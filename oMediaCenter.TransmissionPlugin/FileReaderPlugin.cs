@@ -54,7 +54,7 @@ namespace oMediaCenter.TransmissionPlugin
 			//After initialization, client can call methods:
 			var selectedTorrent = client.TorrentGet(TorrentFields.ALL_FIELDS, int.Parse(idSplit[0]));
 
-			var foundFile = selectedTorrent.Torrents.First().Files.First(f => f.Name.GetHashCode() == int.Parse(idSplit.Last()));
+			var foundFile = selectedTorrent.Torrents.First().Files.First(f => string.Format("{0}", System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(f.Name))) == idSplit.Last());
 
 			return new MediaFile(selectedTorrent.Torrents.First(), foundFile);
 		}
