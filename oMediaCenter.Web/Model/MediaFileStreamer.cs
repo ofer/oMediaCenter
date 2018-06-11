@@ -46,8 +46,7 @@ namespace oMediaCenter.Web.Model
 
 					Converter.Convert(selectedMediaFile.GetFullFilePath(), targetVideoCodec, targetAudioCodec, filename);
 				}
-				
-				return File.OpenRead(filename);
+                return File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 			}
 		}
 	}

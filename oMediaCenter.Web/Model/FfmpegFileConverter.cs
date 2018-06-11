@@ -32,7 +32,8 @@ namespace oMediaCenter.Web.Model
 		{
 			_ffmpegProcess.StartInfo.Arguments = string.Format(ARGUMENT_MASK, sourceFile, targetVideoCodec, targetAudioCodec, targetFile);
 			_ffmpegProcess.Start();
-			_ffmpegProcess.WaitForExit();
+            System.Threading.Thread.Sleep(1000);
+//			_ffmpegProcess.WaitForExit();
 		}
 	}
 }
