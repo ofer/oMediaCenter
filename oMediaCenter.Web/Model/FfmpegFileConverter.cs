@@ -13,7 +13,8 @@ namespace oMediaCenter.Web.Model
 		private ILogger<FfmpegFileConverter> _logger;
 		private Process _ffmpegProcess;
 
-		const string ARGUMENT_MASK = "-i \"{0}\" -vcodec {1} -acodec {2} -f mp4 {3}";
+		const string MP4_ARGUMENT_MASK = "-i \"{0}\" -vcodec {1} -acodec {2} -f mp4 {3}";
+        const string HLS_ARGUMENT_MASK = "-i \"{0}\" -bsf:v h264_mp4toannexb -vcodec {1} -acodec {2} -hls_list_size 0 -hls_base_url {4} -hls_time 10 -f hls {3}";
 
 		public FfmpegFileConverter(ILoggerFactory loggerFactory)
 		{
@@ -30,7 +31,7 @@ namespace oMediaCenter.Web.Model
 
 		public void Convert(string sourceFile, string targetVideoCodec, string targetAudioCodec, string targetFile)
 		{
-			_ffmpegProcess.StartInfo.Arguments = string.Format(ARGUMENT_MASK, sourceFile, targetVideoCodec, targetAudioCodec, targetFile);
+			_ffmpegProcess.StartInfo.Arguments = string.Format(HLS_ARGUMENT_MASK, sourceFile, targetVideoCodec, targetAudioCodec, targetFile, "/cache");
 			_ffmpegProcess.Start();
             System.Threading.Thread.Sleep(1000);
 //			_ffmpegProcess.WaitForExit();
