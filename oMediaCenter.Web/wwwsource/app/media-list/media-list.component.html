@@ -1,0 +1,20 @@
+<div>
+	<mat-grid-list class="desktop" cols="4">
+		<mat-grid-tile *ngFor="let media of mediaFileList" (click)="onSelect(media)">
+			<img [src]="media.thumbnail" />
+			{{media.name}}
+		</mat-grid-tile>
+	</mat-grid-list>
+	<mat-grid-list class="tablet" cols="2">
+		<mat-grid-tile *ngFor="let media of mediaFileList" (click)="onSelect(media)">
+			<img [src]="media.thumbnail" />
+			{{media.name}}
+		</mat-grid-tile>
+	</mat-grid-list>
+	<div class="phone">
+		<div *ngFor="let media of mediaFileList" (click)="onSelect(media)">
+			<img [src]="media.thumbnail" />
+			{{media.name}}
+		</div>
+	</div>
+</div>

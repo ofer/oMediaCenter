@@ -1,4 +1,6 @@
-﻿html, body {
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+html, body {
 	/* Height and width fallback for older browsers. */
 	/* Set the height to match that of the viewport. */
 	height: 100vh;

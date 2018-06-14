@@ -1,0 +1,22 @@
+<div>
+  <select [(ngModel)]="selectedHost">
+      <option *ngFor="let host of hosts" [value]="host">{{host}}</option>
+  </select>
+  <button (click)="refreshHosts()">Refresh</button>
+
+  <div>
+      <button (click)="onSendRequested('play', null)">Play</button>
+      <button (click)="onSendRequested('pause', null)">Pause</button>
+      <button (click)="onSendRequested('stop', null)">Stop</button>
+      <div>
+          <button (click)="onSendRequested('volumeUp', null)"><i class="mdi mdi-arrow-up"></i></button>
+          <button (click)="onSendRequested('volumeDown', null)"><i class="mdi mdi-arrow-down"></i></button>
+      </div>
+      <button (click)="onSendRequested('toggleFullscreen', null)"><i class="mdi mdi-fullscreen"></i></button>
+  </div>
+
+  <div *ngFor="let media of mediaFileList">
+      {{media.name}}
+      <button (click)="onSendRequested('play', media.hash)">Play</button>
+  </div>
+</div>
