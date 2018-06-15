@@ -73,6 +73,9 @@ namespace oMediaCenter.Web.Controllers
     [Route("media/{hash}")]
     public ActionResult GetVideo(string hash)
     {
+      if (hash.EndsWith(".m3u8"))
+        hash = hash.Substring(0, hash.Length - 5);
+
       IMediaFile selectedMediaFile = _fileReader.GetByHash(hash);
 
       if (selectedMediaFile != null)

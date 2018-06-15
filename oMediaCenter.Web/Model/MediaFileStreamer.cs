@@ -1,5 +1,6 @@
 using oMediaCenter.Interfaces;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,10 +10,15 @@ namespace oMediaCenter.Web.Model
 {
   public class MediaFileStreamer : IMediaFileStreamer
   {
+    ConcurrentBag<string> _hashesRunning;
+    object _readFileLock;
+
     public MediaFileStreamer(IMediaFileProber fileProber, IMediaFileConverter mediaFileConverter)
     {
       Prober = fileProber;
       Converter = mediaFileConverter;
+      _hashesRunning = new ConcurrentBag<string>();
+      _readFileLock = new object();
     }
 
     const string MP4_MEDIA_TYPE = "video/mp4";
@@ -36,20 +42,24 @@ namespace oMediaCenter.Web.Model
 
         string filename = Path.Combine(CACHE_DIR, string.Format(FILENAME_TEMPLATE, selectedMediaFile.MediaFileRecord.Hash));
 
-        if (!File.Exists(filename))
+        lock (_readFileLock)
         {
-          // convert file to mp4 and send it along, h264 / aac
-          // probe the file, see what conversion it needs
-          MediaFileProbeInformation mfpi = Prober.GetProbeInfo(selectedMediaFile.GetFullFilePath());
-          string targetVideoCodec = "copy";
-          if (mfpi.VideoCodec != "h264")
-            targetVideoCodec = "libx264";
+          if (!File.Exists(filename) && !_hashesRunning.Contains(selectedMediaFile.MediaFileRecord.Hash))
+          {
+            // convert file to mp4 and send it along, h264 / aac
+            // probe the file, see what conversion it needs
+            MediaFileProbeInformation mfpi = Prober.GetProbeInfo(selectedMediaFile.GetFullFilePath());
+            string targetVideoCodec = "copy";
+            if (mfpi.VideoCodec != "h264")
+              targetVideoCodec = "libx264";
 
-          string targetAudioCodec = "copy";
-          if (mfpi.AudioCodec != "aac")
-            targetAudioCodec = "aac";
+            string targetAudioCodec = "copy";
+            if (mfpi.AudioCodec != "aac")
+              targetAudioCodec = "aac";
 
-          Converter.Convert(selectedMediaFile.GetFullFilePath(), targetVideoCodec, targetAudioCodec, filename);
+            Converter.Convert(selectedMediaFile.GetFullFilePath(), targetVideoCodec, targetAudioCodec, filename);
+            _hashesRunning.Add(selectedMediaFile.MediaFileRecord.Hash);
+          }
         }
         return new StreamingFile(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), HLS_MEDIA_TYPE);
       }

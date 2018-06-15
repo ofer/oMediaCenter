@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,7 +50,7 @@ namespace oMediaCenter.Web
 
 			//services.AddTransient<IAliasProvider, AliasProvider>();
 			//services.AddTransient<IShowInformationManager, ShowInformationManager>();
-			services.AddTransient<IMediaFileStreamer, MediaFileStreamer>();
+			services.AddSingleton<IMediaFileStreamer, MediaFileStreamer>();
 
 			services.AddTransient<IMediaFileProber, FfmpegFileProber>();
 			services.AddTransient<IMediaFileConverter, FfmpegFileConverter>();

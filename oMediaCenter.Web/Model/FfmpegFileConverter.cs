@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using oMediaCenter.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -31,7 +31,7 @@ namespace oMediaCenter.Web.Model
 
 		public void Convert(string sourceFile, string targetVideoCodec, string targetAudioCodec, string targetFile)
 		{
-			_ffmpegProcess.StartInfo.Arguments = string.Format(HLS_ARGUMENT_MASK, sourceFile, targetVideoCodec, targetAudioCodec, targetFile, "/cache");
+			_ffmpegProcess.StartInfo.Arguments = string.Format(HLS_ARGUMENT_MASK, sourceFile, targetVideoCodec, targetAudioCodec, targetFile, "/cache/");
 			_ffmpegProcess.Start();
             System.Threading.Thread.Sleep(1000);
 //			_ffmpegProcess.WaitForExit();

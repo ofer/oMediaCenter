@@ -21,9 +21,12 @@
               "wwwsource/favicon.ico"
             ],
             "styles": [
+              "node_modules/videogular2/fonts/videogular.css",
               "wwwsource/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/hls.js/dist/hls.min.js"
+            ]
           },
           "configurations": {
             "production": {

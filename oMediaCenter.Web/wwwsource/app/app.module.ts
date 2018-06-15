@@ -17,6 +17,12 @@ import { SettingsService } from './settings.service';
 import { ClientControlService } from './client-control.service';
 import { HttpModule } from '@angular/http';
 
+import {VgCoreModule} from 'videogular2/core';
+import {VgControlsModule} from 'videogular2/controls';
+import {VgOverlayPlayModule} from 'videogular2/overlay-play';
+import {VgBufferingModule} from 'videogular2/buffering';
+import { VgStreamingModule } from 'videogular2/streaming';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -32,7 +38,12 @@ import { HttpModule } from '@angular/http';
     FormsModule,
     BrowserAnimationsModule,
     MatGridListModule,
-    MatButtonModule
+    MatButtonModule,
+    VgCoreModule,
+    VgControlsModule,
+    VgOverlayPlayModule,
+    VgBufferingModule,
+    VgStreamingModule
   ],
   providers: [
     MediaDataService,
