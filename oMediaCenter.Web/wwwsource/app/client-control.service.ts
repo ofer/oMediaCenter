@@ -5,6 +5,7 @@ import { ClientCommand } from './client-command';
 import { IPlayerControl } from './i-player-control';
 import { SettingsService } from './settings.service';
 import { Observable } from 'rxjs';
+import { timer } from 'rxjs';
 
 
 @Injectable()
@@ -27,8 +28,8 @@ export class ClientControlService {
       this.createClientId().then(response => {
           console.log('received ' + response + ' as the client id');
           this.clientId = response;
-          let timer = Observable.create(5000);
-          timer.subscribe(t => this.pollAndProcessCommands());
+          let pollTimer = timer(5000, 5000);
+          pollTimer.subscribe(t => this.pollAndProcessCommands());
       });
   }
 
