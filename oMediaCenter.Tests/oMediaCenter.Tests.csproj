@@ -8,7 +8,7 @@
     <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
     <NetStandardImplicitPackageVersion>2.0</NetStandardImplicitPackageVersion>
     <PackageTargetFallback>$(PackageTargetFallback);netcoreapp2.0;portable-net45+win8</PackageTargetFallback>
-    <RuntimeFrameworkVersion>2.0.2</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion>2.0.3</RuntimeFrameworkVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
