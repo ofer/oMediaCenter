@@ -6,6 +6,8 @@ namespace oMediaCenter.Interfaces
     {
         MediaFileRecord MediaFileRecord { get; }
 
+		MediaInformation Metadata { get; set; }
+
 		string GetFullFilePath();
 
         /// <summary>

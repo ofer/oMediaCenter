@@ -1,14 +1,12 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using oMediaCenter.Interfaces;
+using oMediaCenter.Web.Model;
+using oMediaCenter.Web.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using oMediaCenter.Web.Model;
-using Microsoft.AspNetCore.Http;
 using System.IO;
-using oMediaCenter.Interfaces;
-using oMediaCenter.Web.Utilities;
-using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace oMediaCenter.Web.Controllers
 {
@@ -33,18 +31,36 @@ namespace oMediaCenter.Web.Controllers
     [Route("media")]
     public IEnumerable<MediaFileRecord> Get()
     {
-      return _fileReader.GetAll().Select(mf => GetFilePositions(mf.MediaFileRecord)).OrderBy(mf => mf.Name);
+      var mediaRecords = _fileReader.GetAll().Select(mf => GetDecoratedMediaFileRecord(mf)).OrderBy(mf => mf.Name);
+
+      return mediaRecords;
     }
 
-    private MediaFileRecord GetFilePositions(MediaFileRecord mediaFileRecord)
+    private MediaFileRecord GetDecoratedMediaFileRecord(IMediaFile mediaFile)
     {
-      FilePosition filePosition = _dbContext.FilePositions.FirstOrDefault(fp => fp.FileHash == mediaFileRecord.Hash);
-      if (filePosition != null)
-        mediaFileRecord.LastPlayedTime = (float)filePosition.LastPlayedPosition.TotalSeconds;
-      else
-        mediaFileRecord.LastPlayedTime = 0;
+      MediaFileRecord result = new MediaFileRecord();
 
-      return mediaFileRecord;
+      if (mediaFile.Metadata != null)
+      {
+        result.Name = mediaFile.Metadata.Title;
+        result.Description = mediaFile.Metadata.OtherInfo;
+      }
+      else
+      {
+        result.Name = mediaFile.MediaFileRecord.Name;
+      }
+
+      result.TechnicalInfo = mediaFile.MediaFileRecord.TechnicalInfo;
+
+      result.Hash = mediaFile.MediaFileRecord.Hash;
+
+      FilePosition filePosition = _dbContext.FilePositions.FirstOrDefault(fp => fp.FileHash == mediaFile.MediaFileRecord.Hash);
+      if (filePosition != null)
+       result.LastPlayedTime = (float)filePosition.LastPlayedPosition.TotalSeconds;
+      else
+        result.LastPlayedTime = 0;
+
+      return result;
     }
 
     [HttpGet]
