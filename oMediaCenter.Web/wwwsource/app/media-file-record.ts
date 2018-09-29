@@ -2,8 +2,8 @@ export interface MediaFileRecord {
     name: string;
     description: string;
     hash: string;
-    mediatype: string;
-    thumbnailtype: string;
-    technicalinfo: string;
+    mediaType: string;
+    thumbnailType: string;
+    technicalInfo: string;
     lastPlayedTime: number;
 }

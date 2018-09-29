@@ -40,23 +40,28 @@ namespace oMediaCenter.Web.Controllers
     {
       MediaFileRecord result = new MediaFileRecord();
 
-      if (mediaFile.Metadata != null)
+      var mediaFileRecord = mediaFile.MediaFileRecord;
+      var metadata = mediaFile.Metadata;
+
+      if (metadata != null)
       {
-        result.Name = mediaFile.Metadata.Title;
-        result.Description = mediaFile.Metadata.OtherInfo;
+        result.Name = metadata.Title;
+        result.Description = metadata.OtherInfo;
       }
       else
       {
-        result.Name = mediaFile.MediaFileRecord.Name;
+        result.Name = mediaFileRecord.Name;
+        result.Description = mediaFileRecord.Description;
       }
 
-      result.TechnicalInfo = mediaFile.MediaFileRecord.TechnicalInfo;
+      result.Hash = mediaFileRecord.Hash;
+      result.MediaType = mediaFileRecord.MediaType;
+      result.TechnicalInfo = mediaFileRecord.TechnicalInfo;
+      result.ThumbnailType = mediaFileRecord.ThumbnailType;
 
-      result.Hash = mediaFile.MediaFileRecord.Hash;
-
-      FilePosition filePosition = _dbContext.FilePositions.FirstOrDefault(fp => fp.FileHash == mediaFile.MediaFileRecord.Hash);
+      FilePosition filePosition = _dbContext.FilePositions.FirstOrDefault(fp => fp.FileHash == result.Hash);
       if (filePosition != null)
-       result.LastPlayedTime = (float)filePosition.LastPlayedPosition.TotalSeconds;
+        result.LastPlayedTime = (float)filePosition.LastPlayedPosition.TotalSeconds;
       else
         result.LastPlayedTime = 0;
 

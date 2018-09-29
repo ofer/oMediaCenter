@@ -71,7 +71,7 @@ export class MediaPlayerComponent implements OnInit {
               // make sure it returned a media file record, otherwise ignore
               if (mediaFileRecord) {
                   this.mediaFileRecord = mediaFileRecord;
-                  let fileType = mediaFileRecord.name.slice(mediaFileRecord.name.length - 3);
+                  let fileType = mediaFileRecord.mediaType.slice(mediaFileRecord.mediaType.length - 3);
                   if (fileType === 'mp4')
                     this.videoUrl = '/api/v1/media/' + mediaFileRecord.hash;
                   else
