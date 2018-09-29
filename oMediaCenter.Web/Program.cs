@@ -10,9 +10,6 @@ namespace oMediaCenter.Web
   {
     public static void Main(string[] args)
     {
-      // needed to enable range processing in .net core 2.1(!)
-      AppContext.SetSwitch("Switch.Microsoft.AspNetCore.Mvc.EnableRangeProcessing", true);
-
       var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("hosting.json", optional: true)
