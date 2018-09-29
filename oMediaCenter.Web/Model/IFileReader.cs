@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using oMediaCenter.Interfaces;
 
 namespace oMediaCenter.Web.Model
@@ -7,5 +7,6 @@ namespace oMediaCenter.Web.Model
 	{
 		IEnumerable<IMediaFile> GetAll();
 		IMediaFile GetByHash(string hash);
-	}
+    IMediaFile GetMetadataByHash(string hash);
+  }
 }

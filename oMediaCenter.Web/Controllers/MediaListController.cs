@@ -139,7 +139,7 @@ namespace oMediaCenter.Web.Controllers
     [Route("media/{hash}/technical")]
     public string GetTechnicalInfo(string hash)
     {
-      IMediaFile selectedMediaFile = _fileReader.GetByHash(hash);
+      IMediaFile selectedMediaFile = _fileReader.GetMetadataByHash(hash);
 
       if (selectedMediaFile != null)
       {

@@ -37,19 +37,31 @@ namespace oMediaCenter.Web.Model
       return mf;
     }
 
-    public IMediaFile GetByHash(string hash)
+    public IMediaFile GetByHash(string hash, bool queryForMetaData = true)
     {
       foreach (IFileReaderPlugin frp in _fileReaderPlugins)
       {
         IMediaFile foundMediaFile = frp.GetByHash(hash);
         if (foundMediaFile != null)
         {
-          SetMetadata(foundMediaFile);
+          if (queryForMetaData)
+            SetMetadata(foundMediaFile);
+
           return foundMediaFile;
         }
       }
 
       return null;
+    }
+
+    public IMediaFile GetByHash(string hash)
+    {
+      return GetByHash(hash, false);
+    }
+
+    public IMediaFile GetMetadataByHash(string hash)
+    {
+      return GetByHash(hash);
     }
   }
 }
