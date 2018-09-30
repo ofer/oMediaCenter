@@ -16,6 +16,8 @@ namespace oMediaCenter.UTorrentPlugin
             get; private set;
         }
 
+		public MediaInformation Metadata { get; set; }
+
         internal string FilePath { get; set; }
 
         public Stream GetMediaData()

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>oMediaCenter.Web</AssemblyName>
     <OutputType>Exe</OutputType>
@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\oMediaCenter.Interfaces\oMediaCenter.Interfaces.csproj" />
+    <ProjectReference Include="..\oMediaCenter.MetaDatabase\oMediaCenter.MetaDatabase.csproj" />
     <ProjectReference Include="..\oMediaCenter.TransmissionPlugin\oMediaCenter.TransmissionPlugin.csproj" />
     <ProjectReference Include="..\oMediaCenter.UTorrentPlugin\oMediaCenter.UTorrentPlugin.csproj" />
     <ProjectReference Include="..\oMediaCenter.DirectoryScanPlugin\oMediaCenter.DirectoryScanPlugin.csproj" />
@@ -31,16 +32,19 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.3" />
   </ItemGroup>
 
   <ItemGroup>

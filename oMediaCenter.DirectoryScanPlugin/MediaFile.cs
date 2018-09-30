@@ -42,6 +42,8 @@ namespace oMediaCenter.DirectoryScanPlugin
             }
         }
 
+		public MediaInformation Metadata { get; set; }
+
 		public string GetFullFilePath()
 		{
 			return _fileInfo.FullName;

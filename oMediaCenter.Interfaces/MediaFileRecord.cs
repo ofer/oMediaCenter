@@ -37,5 +37,7 @@
         public string TechnicalInfo { get; set; }
 
         public float LastPlayedTime { get; set; }
+
+		public bool FoundMetadata { get; set; }
     }
 }

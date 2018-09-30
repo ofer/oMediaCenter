@@ -16,15 +16,20 @@ namespace oMediaCenter.TransmissionPlugin
 			MediaFileRecord.Description = ti.Comment;
 			MediaFileRecord.Hash = ti.ID + "aAaA" + string.Format("{0}", System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(file.Name)));
 			MediaFileRecord.Name = file.Name;
-			MediaFileRecord.TechnicalInfo = Path.Combine(ti.DownloadDir, file.Name.Replace('/','\\'));
+			FullFilePath = Path.Combine(ti.DownloadDir, file.Name.Replace('/', '\\'));
+			MediaFileRecord.TechnicalInfo = Path.Combine(ti.DownloadDir, file.Name.Replace('/', '\\'));
 			MediaFileRecord.MediaType = "video/" + Path.GetExtension(file.Name).ToLower().Substring(1);
 		}
 
+		string FullFilePath { get; set; }
+
 		public MediaFileRecord MediaFileRecord { get; private set; }
+
+		public MediaInformation Metadata { get; set; }
 
 		public string GetFullFilePath()
 		{
-			return MediaFileRecord.TechnicalInfo;
+			return FullFilePath;
 		}
 
 		public Stream GetMediaData()
