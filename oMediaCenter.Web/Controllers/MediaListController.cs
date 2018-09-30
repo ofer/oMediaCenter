@@ -31,7 +31,7 @@ namespace oMediaCenter.Web.Controllers
     [Route("media")]
     public IEnumerable<MediaFileRecord> Get()
     {
-      var mediaRecords = _fileReader.GetAll().Select(mf => GetDecoratedMediaFileRecord(mf)).OrderBy(mf => mf.Name);
+      var mediaRecords = _fileReader.GetAll().Select(mf => GetDecoratedMediaFileRecord(mf)).OrderBy(mf => mf.Name).OrderBy(mf => !mf.FoundMetadata);
 
       return mediaRecords;
     }
@@ -45,6 +45,7 @@ namespace oMediaCenter.Web.Controllers
 
       if (metadata != null)
       {
+        result.FoundMetadata = true;
         result.Name = metadata.Title;
         result.Description = metadata.OtherInfo;
       }
@@ -52,6 +53,7 @@ namespace oMediaCenter.Web.Controllers
       {
         result.Name = mediaFileRecord.Name;
         result.Description = mediaFileRecord.Description;
+        result.FoundMetadata = false;
       }
 
       result.Hash = mediaFileRecord.Hash;

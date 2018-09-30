@@ -23,7 +23,17 @@ namespace oMediaCenter.Web.Model
 
     public IEnumerable<IMediaFile> GetAll()
     {
-      return _fileReaderPlugins.SelectMany(frp => frp.GetAll()).Select(mf => SetMetadata(mf));
+      var candidateMediaFiles = _fileReaderPlugins.SelectMany(frp => frp.GetAll());
+      candidateMediaFiles = candidateMediaFiles.Where(mf => IsValidMediaFile(mf));
+      return candidateMediaFiles.Select(mf => SetMetadata(mf));
+    }
+
+    private bool IsValidMediaFile(IMediaFile mf)
+    {
+      string filename = Path.GetFileName(mf.GetFullFilePath()).ToLower();
+      if (filename.Contains("sample"))
+        return false;
+      return true;
     }
 
     private IMediaFile SetMetadata(IMediaFile mf)

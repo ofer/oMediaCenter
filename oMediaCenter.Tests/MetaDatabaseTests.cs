@@ -5,31 +5,17 @@ namespace oMediaCenter.Tests
 {
 	public class MetaDatabaseTests
 	{
-		[Fact]
-		public void ShouldFindCorrectMovieNameWithDotsInFilename()
+		[InlineData("Despicable.Me.2.2013.720p.BluRay.x264.YIFY.mp4", "Despicable Me 2", "2013")]
+		[InlineData("Zootopia 2016 1080p HDRip x264 AC3-JYK.mkv", "Zootopia", "2016")]
+		[InlineData("Cars[2006]DvDrip[Eng]-aXXo.avi","Cars","2006")]
+		[InlineData("Home Again (2017) English HD - Rip x264 1CD - AAC - Yify - films.com.mp4", "Home Again", "2017")]
+		[Theory]
+		public void ShouldFindCorrectMovieNameWithParanSurroundedYearInFilename(string inputFilename, string moviename, string year)
 		{
 			MediaInformationProvider mip = new MediaInformationProvider(null);
-			FileMetadata metaData = mip.GetFileMetadataFromFilename(@"Despicable.Me.2.2013.720p.BluRay.x264.YIFY.mp4");
-			Assert.Equal("Despicable Me 2", metaData.Title);
-			Assert.Equal("2013", metaData.Year);
-		}
-
-		[Fact]
-		public void ShouldFindCorrectMovieNameWithSpacesInFilename()
-		{
-			MediaInformationProvider mip = new MediaInformationProvider(null);
-			FileMetadata metaData = mip.GetFileMetadataFromFilename(@"Zootopia 2016 1080p HDRip x264 AC3-JYK.mkv");
-			Assert.Equal("Zootopia", metaData.Title);
-			Assert.Equal("2016", metaData.Year);
-		}
-
-		[Fact]
-		public void ShouldFindCorrectMovieNameWithParanSurroundedYearInFilename()
-		{
-			MediaInformationProvider mip = new MediaInformationProvider(null);
-			FileMetadata metaData = mip.GetFileMetadataFromFilename(@"Home Again(2017) English HD - Rip x264 1CD - AAC - Yify - films.com.mp4");
-			Assert.Equal("Home Again", metaData.Title);
-			Assert.Equal("2017", metaData.Year);
+			FileMetadata metaData = mip.GetFileMetadataFromFilename(inputFilename);
+			Assert.Equal(moviename, metaData.Title);
+			Assert.Equal(year, metaData.Year);
 		}
 	}
 }
