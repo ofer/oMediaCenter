@@ -17,5 +17,19 @@ namespace oMediaCenter.Tests
 			Assert.Equal(moviename, metaData.Title);
 			Assert.Equal(year, metaData.Year);
 		}
+
+		[InlineData("Suits.S05E03.HDTV.x264-ASAP.mp4", "Suits", "05", "03")]
+		[InlineData("Suits.S07E11.720p.HDTV.x264-AVS.mkv", "Suits", "07","11")]
+		[InlineData("Dora the Explorer - 1x01 - The Legend of the Big Red Chicken [Mischief].avi", "Dora the Explorer", "1", "01")]
+		[Theory]
+		public void ShouldFindCorrectShowNameWithEpisodeAndSeason(string inputFilename, string moviename, string season, string episode)
+		{
+			MediaInformationProvider mip = new MediaInformationProvider(null);
+			FileMetadata metaData = mip.GetFileMetadataFromFilename(inputFilename);
+			Assert.Equal(moviename, metaData.Title);
+			Assert.Equal(episode, metaData.Episode);
+			Assert.Equal(season, metaData.Season);
+		}
+
 	}
 }

@@ -1,13 +1,13 @@
-    <!--<md-toolbar color="primary"> -->
-      <div class="top-bar">
-        <span>{{title}}</span>
-<!--        <span class="omc-fill-remaining-space"></span> -->
-        <span><a routerLink="/medialist">Media List</a></span>
-        <span><a routerLink="/clientcontrol">Client Remote</a></span>
-        <span><a routerLink="/settings">Settings</a></span>
-    </div>
-    <!-- </md-toolbar> -->
-    <!--<nav>
+<div class="top-bar">
+  <span>{{title}}</span>
+  <!--        <span class="omc-fill-remaining-space"></span> -->
+  <span><a mat-button routerLink="/medialist">Media List</a></span>
+  <span><a mat-button routerLink="/clientcontrol">Client Remote</a></span>
+  <span><a mat-button routerLink="/settings">Settings</a></span>
+</div>
+<div class="top-bar-placeholder"></div>
+<!-- </md-toolbar> -->
+<!--<nav>
       <a routerLink="/medialist" routerLinkActive="active">Media List</a>
     </nav> -->
-    <router-outlet></router-outlet>
+<router-outlet class="content"></router-outlet>

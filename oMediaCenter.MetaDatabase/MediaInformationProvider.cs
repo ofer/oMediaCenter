@@ -1,5 +1,4 @@
 ﻿using oMediaCenter.Interfaces;
-using System;
 using System.Linq;
 using System.Text;
 
@@ -20,7 +19,7 @@ namespace oMediaCenter.MetaDatabase
 
 			// look for something to search for
 			string[] splitname = filename.Split('.', ' ');
-			StringBuilder movieCandidateName = new StringBuilder();
+			StringBuilder mediaCandidateName = new StringBuilder();
 			bool hitYearSection = false;
 			bool firstSection = true;
 			foreach (string section in splitname)
@@ -31,20 +30,23 @@ namespace oMediaCenter.MetaDatabase
 					result.Year = ExtractYear(section);
 					break;
 				}
-				else
+				else if (IsEpisodeSection(section))
 				{
-					if (firstSection)
-					{
-						firstSection = false;
-					}
-					else
-						movieCandidateName.Append(" ");
+					hitYearSection = true;
+					ExtractEpisodeSeason(section, result);
+					break;
 				}
+				else if (firstSection)
+				{
+					firstSection = false;
+				}
+				else
+					mediaCandidateName.Append(" ");
 
-				movieCandidateName.Append(section);
+				mediaCandidateName.Append(section);
 			}
 
-			result.Title = movieCandidateName.ToString();
+			result.Title = mediaCandidateName.ToString();
 
 			if (!hitYearSection)
 			{
@@ -62,6 +64,28 @@ namespace oMediaCenter.MetaDatabase
 			}
 
 			return result;
+		}
+
+		private void ExtractEpisodeSeason(string section, FileMetadata result)
+		{
+			if (section.Length == 6)
+			{
+				result.Season = section.Substring(1, 2);
+				result.Episode = section.Substring(4, 2);
+			}
+		}
+
+		private bool IsEpisodeSection(string section)
+		{
+			if (section.Length == 6 && (section[0] == 'S' || section[0] == 's') &&
+				char.IsDigit(section[1]) && char.IsDigit(section[2]) &&
+				(section[3] == 'E' || section[3] == 'e') &&
+				char.IsDigit(section[4]) && char.IsDigit(section[5]))
+			{
+				return true;
+			}
+
+			return false;
 		}
 
 		private string ExtractYear(string section)
@@ -108,10 +132,14 @@ namespace oMediaCenter.MetaDatabase
 				mediaDatum = _dbContext.MediaDatum.Where(md => md.LowercaseTitle == prependedTitle);
 			}
 
-			if (mediaDatum.Count() != 0)
+			if (mediaDatum.Count() != 0 && !string.IsNullOrEmpty(fileMetadata.Year))
 				mediaData = mediaDatum.ToList().FirstOrDefault(md => md.OriginalString.Split('	')[5] == fileMetadata.Year);
 
-			return mediaData?.ToMediaInformation();
+			if (mediaDatum.Count() != 0 && !string.IsNullOrEmpty(fileMetadata.Season))
+				mediaData = mediaDatum.ToList().FirstOrDefault(md => md.OriginalString.Split('	')[1] == "tvSeries");
+
+
+			return mediaData?.ToMediaInformation(fileMetadata);
 		}
 	}
 }

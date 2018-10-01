@@ -10,7 +10,7 @@ import { MediaListComponent } from './media-list/media-list.component';
 import { MediaPlayerComponent } from './media-player/media-player.component';
 import { SettingsComponent } from './settings/settings.component';
 
-import { MatGridListModule, MatButtonModule } from '@angular/material';
+import { MatGridListModule, MatButtonModule, MatToolbarModule, MatList, MatListModule } from '@angular/material';
 import { AppRoutingModule } from './app-routing.module';
 import { MediaDataService } from './media-data.service';
 import { SettingsService } from './settings.service';
@@ -39,6 +39,7 @@ import { VgStreamingModule } from 'videogular2/streaming';
     BrowserAnimationsModule,
     MatGridListModule,
     MatButtonModule,
+    MatListModule,
     VgCoreModule,
     VgControlsModule,
     VgOverlayPlayModule,

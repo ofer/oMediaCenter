@@ -1,0 +1,9 @@
+.top-bar {
+    position: fixed;
+    top: 0px;
+    background-color: #000;
+}
+
+.top-bar-placeholder {
+    margin-top: 40px;
+}

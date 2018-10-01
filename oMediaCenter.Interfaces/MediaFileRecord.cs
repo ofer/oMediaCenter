@@ -2,7 +2,7 @@
 {
 
 	public class MediaFileRecord
-    {
+	{
 		public static readonly string[] VALID_EXTENSIONS = new string[] { "mp4", "avi", "m4v", "mkv" };
 
 		/// <summary>
@@ -10,34 +10,40 @@
 		/// </summary>
 		public string Name { get; set; }
 
-        /// <summary>
-        /// A more detailed description of the media (i. e. plot summary)
-        /// </summary>
-        public string Description { get; set; }
+		/// <summary>
+		/// A more detailed description of the media (i. e. plot summary)
+		/// </summary>
+		public string Description { get; set; }
 
-        /// <summary>
-        /// Unique hash for each media file
-        /// </summary>
-        public string Hash { get; set; }
-    
-        /// <summary>
-        /// Mime type of the media file
-        /// </summary>
-        public string MediaType { get; set; }
+		/// <summary>
+		/// Unique hash for each media file
+		/// </summary>
+		public string Hash { get; set; }
 
-        /// <summary>
-        /// Mime type of the media's thumbnail
-        /// </summary>
-        public string ThumbnailType { get; set; }
+		/// <summary>
+		/// Mime type of the media file
+		/// </summary>
+		public string MediaType { get; set; }
 
-        /// <summary>
-        /// Extra text info i. e. for torrents it might be file size and
-        /// list of files in the torrent (even though we only expose the main media and thumbnail)
-        /// </summary>
-        public string TechnicalInfo { get; set; }
+		/// <summary>
+		/// Mime type of the media's thumbnail
+		/// </summary>
+		public string ThumbnailType { get; set; }
 
-        public float LastPlayedTime { get; set; }
+		/// <summary>
+		/// Extra text info i. e. for torrents it might be file size and
+		/// list of files in the torrent (even though we only expose the main media and thumbnail)
+		/// </summary>
+		public string TechnicalInfo { get; set; }
+
+		public float LastPlayedTime { get; set; }
 
 		public bool FoundMetadata { get; set; }
-    }
+
+		public string Year { get; set; }
+		public string Episode { get; set; }
+		public string Season { get; set; }
+		public string ImdbNumber { get; set; }
+		public string Genres { get; set; }
+	}
 }

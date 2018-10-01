@@ -48,6 +48,11 @@ namespace oMediaCenter.Web.Controllers
         result.FoundMetadata = true;
         result.Name = metadata.Title;
         result.Description = metadata.OtherInfo;
+        result.Episode = metadata.Episode;
+        result.ImdbNumber = metadata.ImdbNumber;
+        result.Season = metadata.Season;
+        result.Year = metadata.Year;
+        result.Genres = metadata.Genres;
       }
       else
       {
@@ -116,6 +121,8 @@ namespace oMediaCenter.Web.Controllers
     [Route("media/{hash}")]
     public async void UpdateCurrentTime(string hash, [FromBody]MediaUpdateMessage mediaUpdateMessage)
     {
+      if (mediaUpdateMessage == null)
+        return;
       _logger.LogDebug("Recieved from {0} current time {1}", hash, mediaUpdateMessage.CurrentTime);
       try
       {

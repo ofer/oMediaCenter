@@ -17,9 +17,15 @@
 			{{media.name}}
 		</div>
 	</div> -->
-	<div>
+	<!-- <div>
 		<div *ngFor="let media of mediaFileList" (click)="onSelect(media)">
-			{{media.name}}
+			{{media.name}} ({{media.year}}) <span *ngIf="media.season">Season: {{media.season}} Episode: {{media.episode}}</span> <a href="http://www.imdb.com/title/{{media.imdbNumber}}" *ngIf="media.imdbNumber">Imdb Link</a>
 		</div>
-	</div>
+	</div> -->
+	<mat-list>
+		<mat-list-item *ngFor="let media of mediaFileList">
+			<button (click)="onSelect(media)">{{media.name}} <span *ngIf="media.year">({{media.year}})</span> <span *ngIf="media.season">Season: {{media.season}} Episode: {{media.episode}}</span></button>
+			<a href="http://www.imdb.com/title/{{media.imdbNumber}}" target="_blank" *ngIf="media.imdbNumber">Imdb Link</a>
+		</mat-list-item>
+	</mat-list>
 </div>

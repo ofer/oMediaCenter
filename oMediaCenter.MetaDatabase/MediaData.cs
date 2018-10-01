@@ -1,6 +1,5 @@
-﻿using System;
+﻿using oMediaCenter.Interfaces;
 using System.ComponentModel.DataAnnotations;
-using oMediaCenter.Interfaces;
 
 namespace oMediaCenter.MetaDatabase
 {
@@ -15,11 +14,19 @@ namespace oMediaCenter.MetaDatabase
 
 		public string OriginalString { get; set; }
 
-		public MediaInformation ToMediaInformation()
+		public MediaInformation ToMediaInformation(FileMetadata fileMetadata)
 		{
+			string[] sections = OriginalString.Split('	');
+
 			MediaInformation result = new MediaInformation
 			{
 				Title = Title,
+				Year = sections[5],
+				Episode = fileMetadata.Episode,
+				Season = fileMetadata.Season,
+				ImdbNumber = sections[0],
+				VideoType = sections[1],
+				Genres = sections[8],
 				OtherInfo = OriginalString
 			};
 			return result;
