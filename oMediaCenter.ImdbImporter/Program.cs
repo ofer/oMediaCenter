@@ -8,7 +8,7 @@ namespace oMediaCenter.ImdbImporter
 	{
 		static void Main(string[] args)
 		{
-			Console.WriteLine("Hello World!");
+			Console.WriteLine("Imdb TSV importer");
 			MetaDataContext metaDataContext = new MetaDataContext();
 
 			int numEntriesProcessed = 0;
@@ -21,13 +21,13 @@ namespace oMediaCenter.ImdbImporter
 					{
 						string line = tr.ReadLine();
 						string[] splitLine = line.Split('	');
-						//						Console.WriteLine($"{splitLine[1]}, {splitLine[2]}");
+
 						switch (splitLine[1])
 						{
 							case "movie":
 							case "short":
 							case "tvSeries":
-								metaDataContext.MediaDatum.Add(new MediaData() { OriginalString = line, Title = splitLine[2], LowercaseTitle = splitLine[2].ToLower() });
+								metaDataContext.MediaDatum.Add(new MediaData() { OriginalString = line, Title = splitLine[2], LowercaseTitle = splitLine[2].ToSearchableString() });
 								numEntriesProcessed++;
 								break;
 						}

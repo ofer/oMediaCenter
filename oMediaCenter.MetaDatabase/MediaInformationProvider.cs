@@ -111,24 +111,24 @@ namespace oMediaCenter.MetaDatabase
 		{
 			MediaData mediaData = null;
 
-			string lowercaseTitle = fileMetadata.Title.ToLower();
-			var mediaDatum = _dbContext.MediaDatum.Where(md => md.LowercaseTitle == lowercaseTitle);
+			string searchableTitle = fileMetadata.Title.ToSearchableString();
+			var mediaDatum = _dbContext.MediaDatum.Where(md => md.LowercaseTitle == searchableTitle);
 
 			if (mediaDatum.Count() == 0)
 			{
-				string prependedTitle = "the " + lowercaseTitle;
+				string prependedTitle = "the" + searchableTitle;
 				mediaDatum = _dbContext.MediaDatum.Where(md => md.LowercaseTitle == prependedTitle);
 			}
 
 			if (mediaDatum.Count() == 0)
 			{
-				string prependedTitle = "the " + lowercaseTitle + " movie";
+				string prependedTitle = "the" + searchableTitle + "movie";
 				mediaDatum = _dbContext.MediaDatum.Where(md => md.LowercaseTitle == prependedTitle);
 			}
 
 			if (mediaDatum.Count() == 0)
 			{
-				string prependedTitle = lowercaseTitle + " movie";
+				string prependedTitle = searchableTitle + "movie";
 				mediaDatum = _dbContext.MediaDatum.Where(md => md.LowercaseTitle == prependedTitle);
 			}
 
