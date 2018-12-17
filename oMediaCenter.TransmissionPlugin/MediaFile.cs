@@ -11,10 +11,10 @@ namespace oMediaCenter.TransmissionPlugin
 	public class MediaFile : IMediaFile
 	{
 		public MediaFile(TorrentInfo ti, TransmissionTorrentFiles file)
-		{
+        {
 			MediaFileRecord = new MediaFileRecord();
 			MediaFileRecord.Description = ti.Comment;
-			MediaFileRecord.Hash = ti.ID + "aAaA" + string.Format("{0}", System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(file.Name)));
+            MediaFileRecord.Hash = $"TP{ti.ID}aAaA{Array.IndexOf<TransmissionTorrentFiles>(ti.Files, file)}";
 			MediaFileRecord.Name = file.Name;
 			FullFilePath = Path.Combine(ti.DownloadDir, file.Name.Replace('/', '\\'));
 			MediaFileRecord.TechnicalInfo = Path.Combine(ti.DownloadDir, file.Name.Replace('/', '\\'));

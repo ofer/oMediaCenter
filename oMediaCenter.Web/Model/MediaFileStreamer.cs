@@ -57,7 +57,7 @@ namespace oMediaCenter.Web.Model
             if (mfpi.AudioCodec != "aac")
               targetAudioCodec = "aac";
 
-            Converter.Convert(selectedMediaFile.GetFullFilePath(), targetVideoCodec, targetAudioCodec, filename);
+            Converter.Convert(selectedMediaFile.GetFullFilePath(), targetVideoCodec, targetAudioCodec, filename, mfpi.NumberOfAudioChannels == 6);
             _hashesRunning.Add(selectedMediaFile.MediaFileRecord.Hash);
           }
         }

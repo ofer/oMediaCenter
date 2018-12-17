@@ -4,5 +4,6 @@
 	{
 		public string AudioCodec { get; set; }
 		public string VideoCodec { get; set; }
-	}
+        public int NumberOfAudioChannels { get; set; }
+    }
 }
