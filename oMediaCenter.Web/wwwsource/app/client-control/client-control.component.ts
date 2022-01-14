@@ -11,26 +11,26 @@ import { ClientControlService } from '../client-control.service';
 export class ClientControlComponent implements OnInit {
   title = 'Client Remote Control';
 
-  public mediaFileList: MediaFileRecord[];
-  public selectedHost: string;
-  public hosts: string[];
+  public mediaFileList!: MediaFileRecord[];
+  public selectedHost!: string;
+  public hosts!: string[];
 
   constructor(
-      private clientControlService: ClientControlService,
-      private mediaDataService: MediaDataService
+    private clientControlService: ClientControlService,
+    private mediaDataService: MediaDataService
   ) {
-      this.refreshHosts();
-      mediaDataService.getMediaFileRecords().then(records => this.mediaFileList = records);
+    this.refreshHosts();
+    mediaDataService.getMediaFileRecords().then(records => this.mediaFileList = records);
   }
 
   refreshHosts() {
-      this.clientControlService.getAllHosts().then(hosts => this.hosts = hosts);
+    this.clientControlService.getAllHosts().then(hosts => this.hosts = hosts);
   }
 
   ngOnInit(): void {
   }
 
-onSendRequested(commandType: string, hash: string) {
-      this.clientControlService.sendCommand(commandType, this.selectedHost, hash);
+  onSendRequested(commandType: string, hash: string | null) {
+    this.clientControlService.sendCommand(commandType, this.selectedHost, hash);
   }
 }

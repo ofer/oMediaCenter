@@ -44,11 +44,11 @@ export class SettingsComponent implements OnChanges {
       return 'absolute';
   }
 
-  public clientId: string;
+  public clientId!: string;
 
   constructor(
       private settingsService: SettingsService) {
-      settingsService.getClientId().then(clientId => this.clientId = clientId);
+      settingsService.getClientId().then(clientId => this.clientId = clientId as string);
   }
 
   ngOnChanges(changes: any) {

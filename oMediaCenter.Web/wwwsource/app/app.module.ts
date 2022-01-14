@@ -10,18 +10,20 @@ import { MediaListComponent } from './media-list/media-list.component';
 import { MediaPlayerComponent } from './media-player/media-player.component';
 import { SettingsComponent } from './settings/settings.component';
 
-import { MatGridListModule, MatButtonModule, MatToolbarModule, MatList, MatListModule } from '@angular/material';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
 import { AppRoutingModule } from './app-routing.module';
 import { MediaDataService } from './media-data.service';
 import { SettingsService } from './settings.service';
 import { ClientControlService } from './client-control.service';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 
-import {VgCoreModule} from 'videogular2/core';
-import {VgControlsModule} from 'videogular2/controls';
-import {VgOverlayPlayModule} from 'videogular2/overlay-play';
-import {VgBufferingModule} from 'videogular2/buffering';
-import { VgStreamingModule } from 'videogular2/streaming';
+import { VgCoreModule } from '@videogular/ngx-videogular/core';
+import { VgControlsModule } from '@videogular/ngx-videogular/controls';
+import { VgOverlayPlayModule } from '@videogular/ngx-videogular/overlay-play';
+import { VgBufferingModule } from '@videogular/ngx-videogular/buffering';
+import { VgStreamingModule } from '@videogular/ngx-videogular/streaming';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,7 @@ import { VgStreamingModule } from 'videogular2/streaming';
   ],
   imports: [
     BrowserModule,
-    HttpModule,
+    HttpClientModule,
     AppRoutingModule,
     FormsModule,
     BrowserAnimationsModule,

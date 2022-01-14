@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Router, Params } from '@angular/router';
-import { Http } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import { ClientCommand } from './client-command';
 import { IPlayerControl } from './i-player-control';
 import { SettingsService } from './settings.service';
@@ -14,11 +14,11 @@ export class ClientControlService {
   private headers = new Headers({ 'Content-Type': 'application/json' });
   private clientCommandUrl = 'api/v1/client';  // URL to web api
 
-  private clientId: string;
+  private clientId!: string;
   private lastExecutedDate: Date;
-  private playerControl: IPlayerControl;
+  private playerControl!: IPlayerControl;
 
-  constructor(private http: Http,
+  constructor(private http: HttpClient,
       private router: Router,
       private settingsService: SettingsService) {
       this.lastExecutedDate = new Date(0);
@@ -27,7 +27,7 @@ export class ClientControlService {
   startPolling() {
       this.createClientId().then(response => {
           console.log('received ' + response + ' as the client id');
-          this.clientId = response;
+          this.clientId = response as string;
           let pollTimer = timer(5000, 5000);
           pollTimer.subscribe(t => this.pollAndProcessCommands());
       });
@@ -43,7 +43,7 @@ export class ClientControlService {
       });
   }
 
-  createClientId(): Promise<string> {
+  createClientId(): Promise<string | null> {
       return this.settingsService.getClientId();
   }
 
@@ -51,7 +51,7 @@ export class ClientControlService {
       return this.http.get(this.clientCommandUrl + '/' + this.clientId)
           .toPromise()
           .then(response =>
-              response.json() as ClientCommand)
+              response as ClientCommand)
           .catch(this.handleError);
   }
 
@@ -93,10 +93,10 @@ export class ClientControlService {
   getAllHosts() {
       return this.http.get(this.clientCommandUrl)
           .toPromise()
-          .then(response => response.json() as string[]);
+          .then(response => response as string[]);
   }
 
-  sendCommand(commandType: string, host: string, hash: string) {
+  sendCommand(commandType: string, host: string, hash: string | null) {
       let command: ClientCommand = { command: commandType, parameter: hash, date: new Date() };
 
       return this.http.put(this.clientCommandUrl + '/' + host, command).toPromise();

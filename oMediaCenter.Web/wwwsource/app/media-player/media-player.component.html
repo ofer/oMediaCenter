@@ -1,7 +1,7 @@
 <div *ngIf="mediaFileRecord" [class]="isFullScreen ? 'omc-fullscreen-background' : ''">
   <!--<omc-video [URL]="'/api/v1/media/' + mediaFileRecord.hash" (onTimeUpdated)="onTimeUpdated($event)"></omc-video>-->
   <vg-player>
-    <video [vgMedia]="videoElement" #videoElement autoplay [vgHls]="videoUrl" id="singleVideo" preload="auto" controls
+    <video [vgMedia]="$any(videoElement)" #videoElement autoplay [vgHls]="videoUrl" id="singleVideo" preload="auto" controls
       (loadeddata)="onLoadedData()" (timeupdate)="onTimeUpdated(videoElement.currentTime)">
     </video>
   </vg-player>

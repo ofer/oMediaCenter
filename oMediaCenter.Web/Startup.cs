@@ -22,7 +22,7 @@ namespace oMediaCenter.Web
       if (env.IsEnvironment("Development"))
       {
         // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-        builder.AddApplicationInsightsSettings(developerMode: true);
+//        builder.AddApplicationInsightsSettings(developerMode: true);
       }
 
       builder.AddEnvironmentVariables();
@@ -41,7 +41,7 @@ namespace oMediaCenter.Web
       services.AddLogging(builder => builder.AddConsole().AddDebug());
 
       // Add framework services.
-      services.AddApplicationInsightsTelemetry(Configuration);
+      //services.AddApplicationInsightsTelemetry(Configuration);
 
       services.AddMvc();
 
@@ -72,7 +72,7 @@ namespace oMediaCenter.Web
       app.UseDefaultFiles();
       app.UseStaticFiles();
 
-      app.UseMvc();
+      //app.UseMvc();
     }
   }
 }
