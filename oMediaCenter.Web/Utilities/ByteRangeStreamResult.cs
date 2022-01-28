@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
@@ -45,8 +45,8 @@ namespace oMediaCenter.Web.Utilities
 
         protected async Task WriteVideoAsync(HttpResponse response)
         {
-            var bufferingFeature = response.HttpContext.Features.Get<IHttpBufferingFeature>();
-            bufferingFeature?.DisableResponseBuffering();
+            var bufferingFeature = response.HttpContext.Features.Get<IHttpResponseBodyFeature>();
+            bufferingFeature?.DisableBuffering();
 
             var length = FileStream.Length;
 

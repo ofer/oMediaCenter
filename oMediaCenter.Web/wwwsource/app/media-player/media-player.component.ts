@@ -1,4 +1,4 @@
-import { Component, OnInit, HostBinding, ViewChild, Renderer, ElementRef } from '@angular/core';
+import { Component, OnInit, HostBinding, ViewChild, Renderer2, ElementRef } from '@angular/core';
 import { Params, ActivatedRoute, Router } from '@angular/router';
 import { MediaDataService } from '../media-data.service';
 import { ClientControlService } from '../client-control.service';
@@ -46,18 +46,19 @@ export class MediaPlayerComponent implements OnInit {
       return 'absolute';
   }
 
-  @ViewChild('videoElement') player: ElementRef;
+  @ViewChild('videoElement')
+    player!: ElementRef;
 
-  mediaFileRecord: MediaFileRecord;
+  mediaFileRecord!: MediaFileRecord;
   lastUpdatedDate: Date;
   isFullScreen: boolean;
-  videoUrl: string;
+  videoUrl!: string;
 
   constructor(
       private route: ActivatedRoute,
       private router: Router,
       private service: MediaDataService,
-      private renderer: Renderer,
+      private renderer: Renderer2,
       private elementRef: ElementRef,
       private clientControlService: ClientControlService) {
       this.lastUpdatedDate = new Date();

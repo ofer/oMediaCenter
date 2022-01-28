@@ -1,28 +1,28 @@
 import { Injectable } from '@angular/core';
-import { Headers, Http } from '@angular/http';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { MediaFileRecord } from './media-file-record';
 
 @Injectable()
 export class MediaDataService {
 
-  private headers = new Headers({ 'Content-Type': 'application/json' });
+  private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   private mediaInfoUrl = 'api/v1/media';  // URL to web api
 
-  constructor(private http: Http) { }
+  constructor(private http: HttpClient) { }
   
   getMediaFileRecords(): Promise<MediaFileRecord[]> {
       return this.http.get(this.mediaInfoUrl)
           .toPromise()
           .then(response =>
-              response.json() as MediaFileRecord[])
+              response as MediaFileRecord[])
           .catch(this.handleError);
   }
 
   getMediaFileRecord(hash: string): Promise<MediaFileRecord> {
       return this.getMediaFileRecords()
           .then(records =>
-              records.find(record =>
-                  record.hash === hash));
+            records.find(record =>
+              record.hash === hash) as MediaFileRecord);
   }
 
   updateMediaCurrentTime(hash: string, currentTime: number) {

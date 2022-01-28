@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 })
 export class MediaListComponent implements OnInit {
   title = 'media List';
-  mediaFileList: MediaFileRecord[];
+  mediaFileList!: MediaFileRecord[];
 
   constructor(
       private mediaDataService: MediaDataService,

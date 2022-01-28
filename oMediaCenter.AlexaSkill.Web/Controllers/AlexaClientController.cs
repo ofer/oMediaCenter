@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace oMediaCenter.AlexaSkill.Web.Controllers
@@ -92,12 +93,14 @@ namespace oMediaCenter.AlexaSkill.Web.Controllers
 				try
 				{
 					_logger.LogInformation($"Play {record.Name}:{record.Hash} on {clientPlayerName}");
-					await _httpClientFactory.CreateClient().PutAsync<ClientCommand>($"http://192.168.1.100:6543/api/v1/client/{clientPlayerName}",
+					await _httpClientFactory.CreateClient().PutAsync($"http://192.168.1.100:6543/api/v1/client/{clientPlayerName}", JsonContent.Create(
 																						new ClientCommand()
 																						{
 																							Command = "play",
 																							Parameter = record.Hash
-																						}, new System.Net.Http.Formatting.JsonMediaTypeFormatter());
+																						}
+						));
+					// new System.Net.Http.Formatting.JsonMediaTypeFormatter());
 					(innerResponse as PlainTextOutputSpeech).Text = $"Told {clientPlayerName} to play {movieName}.";
 				}
 				catch (Exception e)
