@@ -12,21 +12,23 @@ export class SettingsService {
   constructor(private http: HttpClient) {
   }
 
-  getClientId(): Promise<string | null> {
-    if (localStorage.getItem('clientId')) {
-      this.clientId = localStorage.getItem('clientId');
-      return new Promise<string | null>(r => r(this.clientId));
-    } else {
-      return this.http.post(this.clientCommandUrl, { ClientName: '' })
-        .toPromise().then(response => {
-          if (response) {
-            var clientId = response as string;
-            localStorage.setItem('clientId', clientId);
-            return clientId;
-          }
-          return null;
-        });
-    }
+  getClientId(): string | null {
+
+    return localStorage.getItem('clientId');
+    // if (localStorage.getItem('clientId')) {
+    //   this.clientId = localStorage.getItem('clientId');
+    //   return new Promise<string | null>(r => r(this.clientId));
+    // } else {
+    //   return this.http.post(this.clientCommandUrl, { ClientName: '' })
+    //     .toPromise().then(response => {
+    //       if (response) {
+    //         var clientId = response as string;
+    //         localStorage.setItem('clientId', clientId);
+    //         return clientId;
+    //       }
+    //       return null;
+    //     });
+    // }
   }
 
   setClientId(clientId: string) {
