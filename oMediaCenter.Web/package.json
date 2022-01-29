@@ -20,6 +20,7 @@
     "@angular/platform-browser": "~13.1.0",
     "@angular/platform-browser-dynamic": "~13.1.0",
     "@angular/router": "~13.1.0",
+    "@microsoft/signalr": "^6.0.1",
     "@videogular/ngx-videogular": "^5.0.1",
     "hls.js": "^1.1.2",
     "rxjs": "~7.4.0",

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using oMediaCenter.Interfaces;
 using oMediaCenter.MetaDatabase;
+using oMediaCenter.Web.Hubs;
 using oMediaCenter.Web.Model;
 //using ShowInfo;
 
@@ -22,7 +23,7 @@ namespace oMediaCenter.Web
       if (env.IsEnvironment("Development"))
       {
         // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-//        builder.AddApplicationInsightsSettings(developerMode: true);
+        //        builder.AddApplicationInsightsSettings(developerMode: true);
       }
 
       builder.AddEnvironmentVariables();
@@ -44,8 +45,10 @@ namespace oMediaCenter.Web
       //services.AddApplicationInsightsTelemetry(Configuration);
 
       services.AddMvc();
+      services.AddSignalR();
 
       services.AddOptions();
+      services.AddSingleton<ClientConnectionDictionary>();
       services.AddSingleton<IFileReaderPluginLoader, SimpleFileReaderPluginLoader>();
 
       //services.AddTransient<IAliasProvider, AliasProvider>();
@@ -71,8 +74,13 @@ namespace oMediaCenter.Web
 
       app.UseDefaultFiles();
       app.UseStaticFiles();
-
-      //app.UseMvc();
+      app.UseRouting();
+      app.UseEndpoints(endpoints =>
+      {
+        endpoints.MapHub<CommandHub>("/commandHub");
+        endpoints.MapControllers();
+      }
+      );
     }
   }
 }

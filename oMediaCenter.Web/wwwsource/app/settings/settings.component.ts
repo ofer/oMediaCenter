@@ -48,7 +48,7 @@ export class SettingsComponent implements OnChanges {
 
   constructor(
       private settingsService: SettingsService) {
-      settingsService.getClientId().then(clientId => this.clientId = clientId as string);
+        this.clientId = settingsService.getClientId() as string;
   }
 
   ngOnChanges(changes: any) {
