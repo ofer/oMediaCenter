@@ -4,40 +4,45 @@ using oMediaCenter.Interfaces;
 
 namespace oMediaCenter.UTorrentPlugin
 {
-    public class MediaFile : IMediaFile
+  public class MediaFile : IMediaFile
+  {
+    public MediaFile()
     {
-        public MediaFile()
-        {
-            MediaFileRecord = new MediaFileRecord();
-        }
+      MediaFileRecord = new MediaFileRecord();
+    }
 
-        public MediaFileRecord MediaFileRecord
-        {
-            get; private set;
-        }
+    public MediaFileRecord MediaFileRecord
+    {
+      get; private set;
+    }
 
-		public MediaInformation Metadata { get; set; }
+    public MediaInformation Metadata { get; set; }
 
-        internal string FilePath { get; set; }
+    internal string FilePath { get; set; }
 
-        public Stream GetMediaData()
-        {
-            return new FileStream(FilePath, FileMode.Open, FileAccess.Read);
-        }
+    public Stream GetMediaData()
+    {
+      return new FileStream(FilePath, FileMode.Open, FileAccess.Read);
+    }
 
-        internal string ThumbnailPath { get; set; }
+    internal string ThumbnailPath { get; set; }
 
-        public Stream GetThumbnailData()
-        {
-            if (ThumbnailPath != null)
-                return new FileStream(ThumbnailPath, FileMode.Open, FileAccess.Read);
-            else
-                return null;
-        }
+    public Stream GetThumbnailData()
+    {
+      if (ThumbnailPath != null)
+        return new FileStream(ThumbnailPath, FileMode.Open, FileAccess.Read);
+      else
+        return null;
+    }
 
-		public string GetFullFilePath()
-		{
-			return FilePath;
-		}
-	}
+    public string GetFullFilePath()
+    {
+      return FilePath;
+    }
+
+    public string GetFullSubtitleFilePath()
+    {
+      return null;
+    }
+  }
 }

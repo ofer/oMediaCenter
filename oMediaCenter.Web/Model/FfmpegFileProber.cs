@@ -49,6 +49,8 @@ namespace oMediaCenter.Web.Model
       result.VideoCodec = ffprobeType.streams.FirstOrDefault(s => s.codec_type == "video").codec_name;
       var audioCodec = ffprobeType.streams.FirstOrDefault(s => s.codec_type == "audio");
       result.AudioCodec = audioCodec.codec_name;
+      // only deals with single subtitle track, need to deal with more later
+      result.ContainsSubtitles = ffprobeType.streams.FirstOrDefault(s => s.codec_type == "subtitle") != null;
       result.NumberOfAudioChannels = audioCodec.channels;
 
       return result;

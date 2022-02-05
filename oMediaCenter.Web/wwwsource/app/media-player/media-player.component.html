@@ -3,6 +3,7 @@
   <vg-player>
     <video [vgMedia]="$any(videoElement)" #videoElement autoplay [vgHls]="videoUrl" id="singleVideo" preload="auto" controls
       (loadeddata)="onLoadedData()" (timeupdate)="onTimeUpdated(videoElement.currentTime)">
+      <track kind="subtitles" src="{{subtitleUrl}}">
     </video>
   </vg-player>
   <div [class]="isFullScreen ? 'hide' : 'media-player-info-panel'">

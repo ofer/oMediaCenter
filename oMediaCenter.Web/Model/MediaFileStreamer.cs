@@ -22,9 +22,9 @@ namespace oMediaCenter.Web.Model
     }
 
     const string MP4_MEDIA_TYPE = "video/mp4";
-    const string HLS_MEDIA_TYPE = "application/vnd.apple.mpegurl";
+    public const string HLS_MEDIA_TYPE = "application/vnd.apple.mpegurl";
 
-    const string CACHE_DIR = "wwwroot\\cache";
+    public const string CACHE_DIR = "wwwroot\\cache";
 
     const string FILENAME_TEMPLATE = "{0}.m3u8";
 
@@ -34,17 +34,18 @@ namespace oMediaCenter.Web.Model
     public StreamingFile GetStream(IMediaFile selectedMediaFile)
     {
       if (selectedMediaFile.MediaFileRecord.MediaType == MP4_MEDIA_TYPE)
-        return new StreamingFile(selectedMediaFile.GetMediaData(), MP4_MEDIA_TYPE);
+        return new StreamingFile(File.OpenRead(selectedMediaFile.GetFullFilePath()), MP4_MEDIA_TYPE);
       else
       {
         if (!Directory.Exists(CACHE_DIR))
           Directory.CreateDirectory(CACHE_DIR);
 
-        string filename = Path.Combine(CACHE_DIR, string.Format(FILENAME_TEMPLATE, selectedMediaFile.MediaFileRecord.Hash));
+        string filename = string.Format(FILENAME_TEMPLATE, selectedMediaFile.MediaFileRecord.Hash);
+        string filePath = Path.Combine(CACHE_DIR, filename);
 
         lock (_readFileLock)
         {
-          if (!File.Exists(filename) && !_hashesRunning.Contains(selectedMediaFile.MediaFileRecord.Hash))
+          if (!File.Exists(filePath) && !_hashesRunning.Contains(selectedMediaFile.MediaFileRecord.Hash))
           {
             // convert file to mp4 and send it along, h264 / aac
             // probe the file, see what conversion it needs
@@ -57,11 +58,41 @@ namespace oMediaCenter.Web.Model
             if (mfpi.AudioCodec != "aac")
               targetAudioCodec = "aac";
 
-            Converter.Convert(selectedMediaFile.GetFullFilePath(), targetVideoCodec, targetAudioCodec, filename, mfpi.NumberOfAudioChannels == 6);
+            Converter.Convert(selectedMediaFile.GetFullFilePath(), targetVideoCodec, targetAudioCodec, filename, CACHE_DIR, mfpi.NumberOfAudioChannels == 6, mfpi.ContainsSubtitles);
             _hashesRunning.Add(selectedMediaFile.MediaFileRecord.Hash);
           }
         }
-        return new StreamingFile(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), HLS_MEDIA_TYPE);
+        return new StreamingFile(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read), HLS_MEDIA_TYPE);
+      }
+    }
+
+    public async Task<string> GetSubtitleFilePath(IMediaFile selectedMediaFile)
+    {
+      string cachedSubtitlePath = Path.Combine(CACHE_DIR, selectedMediaFile.MediaFileRecord.Hash + ".vtt");
+      if (File.Exists(cachedSubtitlePath))
+        return cachedSubtitlePath;
+      else
+      {
+        string subtitlePath = selectedMediaFile.GetFullSubtitleFilePath();
+        if (subtitlePath == null)
+          return null;
+
+        if (Path.GetExtension(subtitlePath).ToLowerInvariant() == ".vtt")
+          return subtitlePath;
+
+        if (!Directory.Exists(CACHE_DIR))
+          Directory.CreateDirectory(CACHE_DIR);
+
+        if (!_hashesRunning.Contains(selectedMediaFile.MediaFileRecord.Hash + ".vtt"))
+        {
+          lock (_readFileLock)
+          {
+            _hashesRunning.Add(selectedMediaFile.MediaFileRecord.Hash + ".vtt");
+          }
+          await Converter.ConvertSubtitles(subtitlePath, cachedSubtitlePath);
+        }
+
+        return cachedSubtitlePath;
       }
     }
   }

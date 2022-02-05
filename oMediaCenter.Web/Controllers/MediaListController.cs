@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace oMediaCenter.Web.Controllers
 {
@@ -102,7 +104,13 @@ namespace oMediaCenter.Web.Controllers
     public ActionResult GetVideo(string hash)
     {
       if (hash.EndsWith(".m3u8"))
-        hash = hash.Substring(0, hash.Length - 5);
+      {
+        string targetFilename = Path.Combine(MediaFileStreamer.CACHE_DIR, hash);
+        if (System.IO.File.Exists(targetFilename))
+          return new FileContentResult(System.IO.File.ReadAllBytes(targetFilename), MediaFileStreamer.HLS_MEDIA_TYPE);
+        else
+          hash = hash.Substring(0, hash.Length - 5);
+      }
 
       IMediaFile selectedMediaFile = _fileReader.GetByHash(hash);
 
@@ -117,9 +125,28 @@ namespace oMediaCenter.Web.Controllers
       }
     }
 
+    [HttpGet]
+    [Route("media/{hash}/subtitles")]
+    public async Task<ActionResult> GetVideoSubtitles(string hash)
+    {
+      IMediaFile selectedMediaFile = _fileReader.GetByHash(hash);
+
+
+      if (selectedMediaFile != null && selectedMediaFile.GetFullSubtitleFilePath() != null)
+      {
+        string subtitleFile = await _mediaFileStreamer.GetSubtitleFilePath(selectedMediaFile);
+        return File(System.IO.File.ReadAllBytes(subtitleFile), "text/vtt");
+      }
+      else
+      {
+        return StatusCode((int)HttpStatusCode.NoContent);
+      }
+    }
+
+
     [HttpPut]
     [Route("media/{hash}")]
-    public async void UpdateCurrentTime(string hash, [FromBody]MediaUpdateMessage mediaUpdateMessage)
+    public async void UpdateCurrentTime(string hash, [FromBody] MediaUpdateMessage mediaUpdateMessage)
     {
       if (mediaUpdateMessage == null)
         return;

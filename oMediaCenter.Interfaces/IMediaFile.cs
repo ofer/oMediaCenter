@@ -2,24 +2,20 @@
 
 namespace oMediaCenter.Interfaces
 {
-    public interface IMediaFile
-    {
-        MediaFileRecord MediaFileRecord { get; }
+  public interface IMediaFile
+  {
+    MediaFileRecord MediaFileRecord { get; }
 
-		MediaInformation Metadata { get; set; }
+    MediaInformation Metadata { get; set; }
 
-		string GetFullFilePath();
+    string GetFullFilePath();
 
-        /// <summary>
-        /// Gets the actual data, null if no data exists
-        /// </summary>
-        /// <returns></returns>
-        Stream GetMediaData();
+    string GetFullSubtitleFilePath();
 
-        /// <summary>
-        /// Gets the thumbnail data, null if no thumbnail exists
-        /// </summary>
-        /// <returns></returns>
-        Stream GetThumbnailData();
-    }
+    /// <summary>
+    /// Gets the thumbnail data, null if no thumbnail exists
+    /// </summary>
+    /// <returns></returns>
+    Stream GetThumbnailData();
+  }
 }
