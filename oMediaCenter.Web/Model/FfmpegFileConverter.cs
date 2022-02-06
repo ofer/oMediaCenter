@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using oMediaCenter.Interfaces;
+using oMediaCenter.Web.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -33,7 +34,7 @@ namespace oMediaCenter.Web.Model
     }
 
 
-    public void Convert(string sourceFile, string targetVideoCodec, string targetAudioCodec, string targetFile, string targetDirectory, bool forceStereo, bool hasSubtitles)
+    public void Convert(string sourceFile, string targetVideoCodec, string targetAudioCodec, string targetFile, bool forceStereo, bool hasSubtitles)
     {
       if (forceStereo)
         targetAudioCodec = targetAudioCodec + " " + SIX_CHANNEL_DOWNSAMPLE_FILTER;
@@ -42,7 +43,7 @@ namespace oMediaCenter.Web.Model
 
       lock (_ffmpegStartLock)
       {
-        _ffmpegProcessInfo.Arguments = string.Format(HLS_ARGUMENT_MASK, sourceFile, targetVideoCodec, targetAudioCodec, Path.Combine(targetDirectory, targetFile), targetFile, "/cache/");
+        _ffmpegProcessInfo.Arguments = string.Format(HLS_ARGUMENT_MASK, sourceFile, targetVideoCodec, targetAudioCodec, targetFile.ToCacheDirectoryFile(), targetFile, "/cache/");
         Process.Start(_ffmpegProcessInfo);
       }
       System.Threading.Thread.Sleep(1000);

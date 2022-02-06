@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{7549F166-E725-418F-A2FF-BCFC928CD6E8}"
 EndProject
@@ -23,7 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "oMediaCenter.ImdbImporter",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "oMediaCenter.MetaDatabase", "oMediaCenter.MetaDatabase\oMediaCenter.MetaDatabase.csproj", "{C3244028-03EE-46F4-959F-EDB970AFF0F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "oMediaCenter.Tests", "oMediaCenter.Tests\oMediaCenter.Tests.csproj", "{0B3DD08A-9A91-41A2-A1F1-36A8E640A0D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "oMediaCenter.Tests", "oMediaCenter.Tests\oMediaCenter.Tests.csproj", "{0B3DD08A-9A91-41A2-A1F1-36A8E640A0D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "oMediaCenter.SubtitleProvidier", "oMediaCenter.SubtitleProvidier\oMediaCenter.SubtitleProvidier.csproj", "{2A3C7547-1B50-482B-8BD9-11CEE739062A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -143,6 +145,18 @@ Global
 		{0B3DD08A-9A91-41A2-A1F1-36A8E640A0D4}.Release|x64.Build.0 = Release|Any CPU
 		{0B3DD08A-9A91-41A2-A1F1-36A8E640A0D4}.Release|x86.ActiveCfg = Release|Any CPU
 		{0B3DD08A-9A91-41A2-A1F1-36A8E640A0D4}.Release|x86.Build.0 = Release|Any CPU
+		{2A3C7547-1B50-482B-8BD9-11CEE739062A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A3C7547-1B50-482B-8BD9-11CEE739062A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A3C7547-1B50-482B-8BD9-11CEE739062A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2A3C7547-1B50-482B-8BD9-11CEE739062A}.Debug|x64.Build.0 = Debug|Any CPU
+		{2A3C7547-1B50-482B-8BD9-11CEE739062A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2A3C7547-1B50-482B-8BD9-11CEE739062A}.Debug|x86.Build.0 = Debug|Any CPU
+		{2A3C7547-1B50-482B-8BD9-11CEE739062A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A3C7547-1B50-482B-8BD9-11CEE739062A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A3C7547-1B50-482B-8BD9-11CEE739062A}.Release|x64.ActiveCfg = Release|Any CPU
+		{2A3C7547-1B50-482B-8BD9-11CEE739062A}.Release|x64.Build.0 = Release|Any CPU
+		{2A3C7547-1B50-482B-8BD9-11CEE739062A}.Release|x86.ActiveCfg = Release|Any CPU
+		{2A3C7547-1B50-482B-8BD9-11CEE739062A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

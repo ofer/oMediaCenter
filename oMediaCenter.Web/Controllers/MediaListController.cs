@@ -19,23 +19,25 @@ namespace oMediaCenter.Web.Controllers
     ILogger _logger;
     MediaCenterContext _dbContext;
     IMediaFileStreamer _mediaFileStreamer;
+    private ISubtitleProvider _subtitleProvider;
 
-    public MediaListController(IFileReader fileReader, ILoggerFactory loggerFactory, MediaCenterContext dbContext, IMediaFileStreamer mediaFileStreamer)
+    public MediaListController(IFileReader fileReader, ILoggerFactory loggerFactory, ISubtitleProvider subtitleProvider, MediaCenterContext dbContext, IMediaFileStreamer mediaFileStreamer)
     {
       _fileReader = fileReader;
       _logger = loggerFactory.CreateLogger<MediaListController>();
       _dbContext = dbContext;
       _mediaFileStreamer = mediaFileStreamer;
+      _subtitleProvider = subtitleProvider;
     }
 
     // GET api/values
     [HttpGet]
     [Route("media")]
-    public IEnumerable<MediaFileRecord> Get()
+    public async Task<IEnumerable<MediaFileRecord>> Get()
     {
-      var mediaRecords = _fileReader.GetAll().Select(mf => GetDecoratedMediaFileRecord(mf)).OrderBy(mf => mf.Name).OrderBy(mf => !mf.FoundMetadata);
+      var mediaRecords = await _fileReader.GetAll();
 
-      return mediaRecords;
+      return mediaRecords.Select(mf => GetDecoratedMediaFileRecord(mf)).OrderBy(mf => mf.Name).OrderBy(mf => !mf.FoundMetadata);
     }
 
     private MediaFileRecord GetDecoratedMediaFileRecord(IMediaFile mediaFile)
@@ -105,7 +107,7 @@ namespace oMediaCenter.Web.Controllers
     {
       if (hash.EndsWith(".m3u8"))
       {
-        string targetFilename = Path.Combine(MediaFileStreamer.CACHE_DIR, hash);
+        string targetFilename = hash.ToCacheDirectoryFile();
         if (System.IO.File.Exists(targetFilename))
           return new FileContentResult(System.IO.File.ReadAllBytes(targetFilename), MediaFileStreamer.HLS_MEDIA_TYPE);
         else
@@ -139,7 +141,14 @@ namespace oMediaCenter.Web.Controllers
       }
       else
       {
-        return StatusCode((int)HttpStatusCode.NoContent);
+        string cachedSubtitleFile = selectedMediaFile.MediaFileRecord.Hash.ToCacheDirectoryFile(".vtt");
+        // try to fill up the subtitles
+        if (await _subtitleProvider.GetSubtitleInformation(selectedMediaFile, cachedSubtitleFile))
+          return new FileContentResult(System.IO.File.ReadAllBytes(cachedSubtitleFile), "text/vtt");
+        else
+        {
+          return StatusCode((int)HttpStatusCode.NoContent);
+        }
       }
     }
 

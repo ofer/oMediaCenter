@@ -1,4 +1,5 @@
 using oMediaCenter.Interfaces;
+using oMediaCenter.Web.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,20 +12,21 @@ namespace oMediaCenter.Web.Model
   public class MediaFileStreamer : IMediaFileStreamer
   {
     ConcurrentBag<string> _hashesRunning;
+    private ISubtitleProvider _subtitleProvider;
     object _readFileLock;
 
-    public MediaFileStreamer(IMediaFileProber fileProber, IMediaFileConverter mediaFileConverter)
+    public MediaFileStreamer(IMediaFileProber fileProber, IMediaFileConverter mediaFileConverter, ISubtitleProvider subtitleProvider)
     {
       Prober = fileProber;
       Converter = mediaFileConverter;
       _hashesRunning = new ConcurrentBag<string>();
+      _subtitleProvider = subtitleProvider;
+
       _readFileLock = new object();
     }
 
     const string MP4_MEDIA_TYPE = "video/mp4";
     public const string HLS_MEDIA_TYPE = "application/vnd.apple.mpegurl";
-
-    public const string CACHE_DIR = "wwwroot\\cache";
 
     const string FILENAME_TEMPLATE = "{0}.m3u8";
 
@@ -37,11 +39,8 @@ namespace oMediaCenter.Web.Model
         return new StreamingFile(File.OpenRead(selectedMediaFile.GetFullFilePath()), MP4_MEDIA_TYPE);
       else
       {
-        if (!Directory.Exists(CACHE_DIR))
-          Directory.CreateDirectory(CACHE_DIR);
-
         string filename = string.Format(FILENAME_TEMPLATE, selectedMediaFile.MediaFileRecord.Hash);
-        string filePath = Path.Combine(CACHE_DIR, filename);
+        string filePath = filename.ToCacheDirectoryFile();
 
         lock (_readFileLock)
         {
@@ -58,7 +57,9 @@ namespace oMediaCenter.Web.Model
             if (mfpi.AudioCodec != "aac")
               targetAudioCodec = "aac";
 
-            Converter.Convert(selectedMediaFile.GetFullFilePath(), targetVideoCodec, targetAudioCodec, filename, CACHE_DIR, mfpi.NumberOfAudioChannels == 6, mfpi.ContainsSubtitles);
+            selectedMediaFile.MediaFileRecord.HasEmbeddedSubtitles = mfpi.ContainsSubtitles;
+
+            Converter.Convert(selectedMediaFile.GetFullFilePath(), targetVideoCodec, targetAudioCodec, filename, mfpi.NumberOfAudioChannels == 6, mfpi.ContainsSubtitles);
             _hashesRunning.Add(selectedMediaFile.MediaFileRecord.Hash);
           }
         }
@@ -68,20 +69,23 @@ namespace oMediaCenter.Web.Model
 
     public async Task<string> GetSubtitleFilePath(IMediaFile selectedMediaFile)
     {
-      string cachedSubtitlePath = Path.Combine(CACHE_DIR, selectedMediaFile.MediaFileRecord.Hash + ".vtt");
+      string cachedSubtitlePath = selectedMediaFile.MediaFileRecord.Hash.ToCacheDirectoryFile(".vtt");
       if (File.Exists(cachedSubtitlePath))
         return cachedSubtitlePath;
       else
       {
         string subtitlePath = selectedMediaFile.GetFullSubtitleFilePath();
         if (subtitlePath == null)
+        {
+          // attempt to get a subtitle file online
+          if (await _subtitleProvider.GetSubtitleInformation(selectedMediaFile, cachedSubtitlePath))
+            return cachedSubtitlePath;
+
           return null;
+        }
 
         if (Path.GetExtension(subtitlePath).ToLowerInvariant() == ".vtt")
           return subtitlePath;
-
-        if (!Directory.Exists(CACHE_DIR))
-          Directory.CreateDirectory(CACHE_DIR);
 
         if (!_hashesRunning.Contains(selectedMediaFile.MediaFileRecord.Hash + ".vtt"))
         {

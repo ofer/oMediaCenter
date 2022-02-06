@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\oMediaCenter.Interfaces\oMediaCenter.Interfaces.csproj" />
     <ProjectReference Include="..\oMediaCenter.MetaDatabase\oMediaCenter.MetaDatabase.csproj" />
+    <ProjectReference Include="..\oMediaCenter.SubtitleProvidier\oMediaCenter.SubtitleProvidier.csproj" />
     <ProjectReference Include="..\oMediaCenter.TransmissionPlugin\oMediaCenter.TransmissionPlugin.csproj" />
     <ProjectReference Include="..\oMediaCenter.UTorrentPlugin\oMediaCenter.UTorrentPlugin.csproj" />
     <ProjectReference Include="..\oMediaCenter.DirectoryScanPlugin\oMediaCenter.DirectoryScanPlugin.csproj" />

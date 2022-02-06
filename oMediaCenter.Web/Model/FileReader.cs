@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace oMediaCenter.Web.Model
 {
@@ -14,18 +15,20 @@ namespace oMediaCenter.Web.Model
   {
     private IFileReaderPlugin[] _fileReaderPlugins;
     private IMediaInformationProvider _showInfoProvider;
+    private ISubtitleProvider _subtitleProvider;
 
-    public FileReader(IFileReaderPluginLoader fileReaderPluginLoader, IMediaInformationProvider showInfoProvider)
+    public FileReader(IFileReaderPluginLoader fileReaderPluginLoader, IMediaInformationProvider showInfoProvider, ISubtitleProvider subtitleProvider)
     {
       _fileReaderPlugins = fileReaderPluginLoader.GetPlugins();
       _showInfoProvider = showInfoProvider;
+      _subtitleProvider = subtitleProvider;
     }
 
-    public IEnumerable<IMediaFile> GetAll()
+    public async Task<IEnumerable<IMediaFile>> GetAll()
     {
       var candidateMediaFiles = _fileReaderPlugins.SelectMany(frp => frp.GetAll());
       candidateMediaFiles = candidateMediaFiles.Where(mf => IsValidMediaFile(mf));
-      return candidateMediaFiles.Select(mf => SetMetadata(mf));
+      return candidateMediaFiles.Select(mf => FillWithMetadata(mf));
     }
 
     private bool IsValidMediaFile(IMediaFile mf)
@@ -36,13 +39,25 @@ namespace oMediaCenter.Web.Model
       return true;
     }
 
-    private IMediaFile SetMetadata(IMediaFile mf)
+    private IMediaFile FillWithMetadata(IMediaFile mf)
     {
       if (_showInfoProvider != null)
       {
         var filename = Path.GetFileName(mf.GetFullFilePath());
         var info = _showInfoProvider.GetEpisodeInfoForFilename(filename);
         mf.Metadata = info;
+      }
+      return mf;
+    }
+
+    private async Task<IMediaFile> FillWithSubtitles(IMediaFile mf)
+    {
+      if (_subtitleProvider != null && !mf.MediaFileRecord.HasEmbeddedSubtitles)
+      {
+        if (await _subtitleProvider.GetSubtitleInformation(mf, mf.MediaFileRecord.Hash + ".vtt"))
+          return new CachedMediaFile(mf, mf.MediaFileRecord.Hash + ".vtt");
+        else
+          return mf;
       }
       return mf;
     }
@@ -55,7 +70,7 @@ namespace oMediaCenter.Web.Model
         if (foundMediaFile != null)
         {
           if (queryForMetaData)
-            SetMetadata(foundMediaFile);
+            FillWithMetadata(foundMediaFile);
 
           return foundMediaFile;
         }

@@ -36,6 +36,8 @@
 		/// </summary>
 		public string TechnicalInfo { get; set; }
 
+		public bool HasEmbeddedSubtitles { get; set; }
+
 		public float LastPlayedTime { get; set; }
 
 		public bool FoundMetadata { get; set; }

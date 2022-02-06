@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using oMediaCenter.Interfaces;
 using oMediaCenter.MetaDatabase;
+using oMediaCenter.SubtitleProvidier;
 using oMediaCenter.Web.Hubs;
 using oMediaCenter.Web.Model;
 //using ShowInfo;
@@ -52,6 +53,7 @@ namespace oMediaCenter.Web
       services.AddSingleton<IFileReaderPluginLoader, SimpleFileReaderPluginLoader>();
 
       //services.AddTransient<IAliasProvider, AliasProvider>();
+      services.AddSingleton<ISubtitleProvider, OpenSubtitlesProvider>();
       services.AddTransient<IMediaInformationProvider, MediaInformationProvider>();
       services.AddSingleton<IMediaFileStreamer, MediaFileStreamer>();
 
