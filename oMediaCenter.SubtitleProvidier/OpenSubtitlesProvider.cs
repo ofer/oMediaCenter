@@ -1,6 +1,8 @@
-﻿using oMediaCenter.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using oMediaCenter.Interfaces;
 using OSDBnet;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -13,11 +15,15 @@ namespace oMediaCenter.SubtitleProvidier
   {
     private IOsdbClient _service;
     private IMediaFileConverter _mediaFileConverter;
+    private ILogger<OpenSubtitlesProvider> _logger;
+    private ConcurrentBag<IMediaFile> _checkedMediaFileBag;
 
-    public OpenSubtitlesProvider(IMediaFileConverter mediaFileConverter)
+    public OpenSubtitlesProvider(IMediaFileConverter mediaFileConverter, ILoggerFactory loggerFactory)
     {
       _service = Osdb.Create("TemporaryUserAgent");
       _mediaFileConverter = mediaFileConverter;
+      _logger = loggerFactory.CreateLogger<OpenSubtitlesProvider>();
+      _checkedMediaFileBag = new ConcurrentBag<IMediaFile>();
     }
 
     public async Task<bool> GetSubtitleInformation(IMediaFile mf, string targetFilename)
@@ -27,11 +33,16 @@ namespace oMediaCenter.SubtitleProvidier
 
       try
       {
+        if (_checkedMediaFileBag.Contains(mf))
+          return false;
+
         var subtitles = await _service.SearchSubtitlesFromFile("english", mf.GetFullFilePath());
 
         int subtitlesCount = subtitles.Count;
         if (subtitlesCount == 0)
         {
+          _logger.LogInformation("Could not find any subtitles in english for {0}", mf.MediaFileRecord.Name);
+          _checkedMediaFileBag.Add(mf);
           return false;
         }
         var selectedSubtitle = subtitles.First();
@@ -48,6 +59,7 @@ namespace oMediaCenter.SubtitleProvidier
       }
       catch (Exception ex)
       {
+        _logger.LogWarning(ex, "Could not get subtitle information for target {0}", targetFilename);
         return false;
       }
 

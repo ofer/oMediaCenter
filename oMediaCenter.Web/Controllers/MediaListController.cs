@@ -133,15 +133,19 @@ namespace oMediaCenter.Web.Controllers
     {
       IMediaFile selectedMediaFile = _fileReader.GetByHash(hash);
 
-
       if (selectedMediaFile != null && selectedMediaFile.GetFullSubtitleFilePath() != null)
       {
+        _logger.LogInformation("Subtitle path found at {0}, outputting it ", selectedMediaFile.GetFullSubtitleFilePath());
         string subtitleFile = await _mediaFileStreamer.GetSubtitleFilePath(selectedMediaFile);
+        _logger.LogInformation("Converted file at {0}", subtitleFile);
+
         return File(System.IO.File.ReadAllBytes(subtitleFile), "text/vtt");
       }
       else
       {
+        _logger.LogInformation("No subtitles found for hash {0}, asking subtitle provider to give us subtitles", selectedMediaFile.MediaFileRecord.Hash);
         string cachedSubtitleFile = selectedMediaFile.MediaFileRecord.Hash.ToCacheDirectoryFile(".vtt");
+        _logger.LogInformation("Asking provider to output to {0}", cachedSubtitleFile);
         // try to fill up the subtitles
         if (await _subtitleProvider.GetSubtitleInformation(selectedMediaFile, cachedSubtitleFile))
           return new FileContentResult(System.IO.File.ReadAllBytes(cachedSubtitleFile), "text/vtt");
