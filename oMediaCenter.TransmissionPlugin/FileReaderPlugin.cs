@@ -11,52 +11,54 @@ using Transmission.API.RPC.Entity;
 
 namespace oMediaCenter.TransmissionPlugin
 {
-	public class FileReaderPlugin : IFileReaderPlugin
-	{
-		private ILogger<FileReaderPlugin> _logger;
-		private TransmissionFileReaderPluginSettings _connectionInfo;
+    public class FileReaderPlugin : IFileReaderPlugin
+    {
+        private ILogger<FileReaderPlugin> _logger;
+        private TransmissionFileReaderPluginSettings _connectionInfo;
+        ILoggerFactory _loggerFactory;
 
-		public FileReaderPlugin(IConfigurationSection pluginConfigurationSection, ILoggerFactory loggerFactory)
-		{
-			if (pluginConfigurationSection != null)
-			{
-				_connectionInfo = new TransmissionFileReaderPluginSettings(pluginConfigurationSection);
-			}
-			_logger = loggerFactory.CreateLogger<FileReaderPlugin>();
-		}
+        public FileReaderPlugin(IConfigurationSection pluginConfigurationSection, ILoggerFactory loggerFactory)
+        {
+            if (pluginConfigurationSection != null)
+            {
+                _connectionInfo = new TransmissionFileReaderPluginSettings(pluginConfigurationSection);
+            }
+            _logger = loggerFactory.CreateLogger<FileReaderPlugin>();
+            _loggerFactory = loggerFactory;
+        }
 
-		public IEnumerable<IMediaFile> GetAll()
-		{
-			string host = _connectionInfo.IP;
-			//Create Transsmission.API.RPC.Client (set host, optional session id,optional login and optional pass).
-			Client client = new Client(host);
+        public IEnumerable<IMediaFile> GetAll()
+        {
+            string host = _connectionInfo.IP;
+            //Create Transsmission.API.RPC.Client (set host, optional session id,optional login and optional pass).
+            Client client = new Client(host);
 
-			//After initialization, client can call methods:
-			//var sessionInfo = client.GetSessionInformation();
-			var allTorrents = client.TorrentGet(TorrentFields.ALL_FIELDS);
+            //After initialization, client can call methods:
+            //var sessionInfo = client.GetSessionInformation();
+            var allTorrents = client.TorrentGet(TorrentFields.ALL_FIELDS);
 
-			// get all completed torrents
-			var completedTorrents = allTorrents.Torrents.Where(t => t.PercentDone == 1);
+            // get all completed torrents
+            var completedTorrents = allTorrents.Torrents.Where(t => t.PercentDone == 1);
 
-			// get all files from completed torrents that have valid file extensions
-			var validFiles = completedTorrents.SelectMany(ti => ti.Files.Where(f => MediaFileRecord.VALID_EXTENSIONS.Contains(Path.GetExtension(f.Name).Substring(1))).Select(f => new MediaFile(ti, f)));
+            // get all files from completed torrents that have valid file extensions
+            var validFiles = completedTorrents.SelectMany(ti => ti.Files.Where(f => MediaFileRecord.VALID_EXTENSIONS.Contains(Path.GetExtension(f.Name).Substring(1))).Select(f => new MediaFile(_loggerFactory, ti, f)));
 
-			return validFiles;
-		}
+            return validFiles;
+        }
 
-		public IMediaFile GetByHash(string hash)
-		{
-			string[] idSplit = hash.Split("aAaA");
+        public IMediaFile GetByHash(string hash)
+        {
+            string[] idSplit = hash.Split("aAaA");
 
-			//Create Transsmission.API.RPC.Client (set host, optional session id,optional login and optional pass).
-			Client client = new Client(_connectionInfo.IP);
+            //Create Transsmission.API.RPC.Client (set host, optional session id,optional login and optional pass).
+            Client client = new Client(_connectionInfo.IP);
 
-			//After initialization, client can call methods:
-			var selectedTorrent = client.TorrentGet(TorrentFields.ALL_FIELDS, int.Parse(idSplit[0].Substring(2)));
+            //After initialization, client can call methods:
+            var selectedTorrent = client.TorrentGet(TorrentFields.ALL_FIELDS, int.Parse(idSplit[0].Substring(2)));
 
             var foundFile = selectedTorrent.Torrents.First().Files[int.Parse(idSplit[1])];
 
-			return new MediaFile(selectedTorrent.Torrents.First(), foundFile);
-		}
-	}
+            return new MediaFile(_loggerFactory, selectedTorrent.Torrents.First(), foundFile);
+        }
+    }
 }
