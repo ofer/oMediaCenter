@@ -4,7 +4,7 @@ namespace oMediaCenter.Web.Utilities
 {
   public static class CacheDirectoryUtilities
   {
-    private const string CACHE_DIR = "wwwroot\\cache";
+    private static readonly string CACHE_DIR = "wwwroot" + Path.DirectorySeparatorChar +  "cache";
     private static bool _cacheDirectoryExists = false;
 
     public static string ToCacheDirectoryFile(this string baseFilename, string extension = null)
