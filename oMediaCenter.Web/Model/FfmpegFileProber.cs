@@ -34,6 +34,7 @@ namespace oMediaCenter.Web.Model
     public MediaFileProbeInformation GetProbeInfo(string filename)
     {
       _ffprobeProcess.StartInfo.Arguments = string.Format(ARGUMENT_MASK, filename);
+      _logger.LogInformation("About to execute ffprobe with parameters: {0}", _ffprobeProcess.StartInfo.Arguments);
       _ffprobeProcess.Start();
       string output = _ffprobeProcess.StandardOutput.ReadToEnd();
 
