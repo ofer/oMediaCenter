@@ -65,7 +65,7 @@ namespace oMediaCenter.Web.Model
         if (shouldGenerateMasterPlaylist)
           playListSection = $"-master_pl_name {targetFile}";
 
-        _ffmpegProcessInfo.Arguments = string.Format(HLS_ARGUMENT_MASK, sourceFile, targetVideoCodec, targetAudioCodec, targetFile.ToCacheDirectoryFile(), targetFile, "/cache/");
+        _ffmpegProcessInfo.Arguments = string.Format(HLS_ARGUMENT_MASK, sourceFile, targetVideoCodec, targetAudioCodec, targetFile.ToCacheDirectoryFile(), playListSection, "/cache/");
         _logger.LogInformation("About to execute ffmpeg for conversion with parameters: {0}", _ffmpegProcessInfo.Arguments);
         Process.Start(_ffmpegProcessInfo);
 
