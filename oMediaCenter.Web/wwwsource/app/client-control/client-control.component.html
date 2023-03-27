@@ -16,7 +16,9 @@
   </div>
 
   <div *ngFor="let media of mediaFileList">
-    {{media.name}} ({{media.year}}) <span *ngIf="media.season">Season: {{media.season}} Episode: {{media.episode}}</span>
-    <button (click)="onSendRequested('play', media.hash)">Play</button>
+    {{media.name}} ({{media.mediaFileRecords[0].year}})
+    
+    <span *ngIf="media.mediaFileRecords.length > 1">Season: {{media.mediaFileRecords[0].season}} Episode: {{media.mediaFileRecords[0].episode}}</span>
+    <button (click)="onSendRequested('play', media.mediaFileRecords[0].season)">Play</button>
   </div>
 </div>

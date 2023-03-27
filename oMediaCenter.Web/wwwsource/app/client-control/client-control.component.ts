@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MediaDataService } from '../media-data.service';
 import { MediaFileRecord } from '../media-file-record';
 import { ClientControlService } from '../client-control.service';
+import { GroupedMediaFileRecords } from '../grouped-media-file-records';
 
 @Component({
   selector: 'app-client-control',
@@ -11,7 +12,7 @@ import { ClientControlService } from '../client-control.service';
 export class ClientControlComponent implements OnInit {
   title = 'Client Remote Control';
 
-  public mediaFileList!: MediaFileRecord[];
+  public mediaFileList!: GroupedMediaFileRecords[];
   public selectedHost!: string;
   public hosts!: string[];
 
@@ -20,7 +21,7 @@ export class ClientControlComponent implements OnInit {
     private mediaDataService: MediaDataService
   ) {
     this.refreshHosts();
-    mediaDataService.getMediaFileRecords().then(records => this.mediaFileList = records);
+    mediaDataService.getGroupedMediaFileRecords().then(records => this.mediaFileList = records);
   }
 
   refreshHosts() {

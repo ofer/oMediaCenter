@@ -22,10 +22,29 @@
 			{{media.name}} ({{media.year}}) <span *ngIf="media.season">Season: {{media.season}} Episode: {{media.episode}}</span> <a href="http://www.imdb.com/title/{{media.imdbNumber}}" *ngIf="media.imdbNumber">Imdb Link</a>
 		</div>
 	</div> -->
-	<mat-list>
-		<mat-list-item *ngFor="let media of mediaFileList">
-			<button (click)="onSelect(media)">{{media.name}} <span *ngIf="media.year">({{media.year}})</span> <span *ngIf="media.season">Season: {{media.season}} Episode: {{media.episode}}</span></button>
-			<a href="http://www.imdb.com/title/{{media.imdbNumber}}" target="_blank" *ngIf="media.imdbNumber">Imdb Link</a>
-		</mat-list-item>
-	</mat-list>
+	<div class="omc-media-list">
+		<div class="omc-list-item" *ngFor="let media of mediaFileList">
+			<div *ngIf="media.mediaFileRecords.length > 1" class="omc-show-with-seasons-container">
+				{{media.name}}
+				<span *ngIf="media.mediaFileRecords[0].year">({{media.mediaFileRecords[0].year}})</span>
+				<div *ngFor="let fileList of getSeasons(media.mediaFileRecords)">
+					Season {{fileList[0].season}}
+					<button *ngFor="let file of fileList" (click)="onSelect(file)">
+						E: {{file.episode}}
+					</button>
+				</div>
+				<a href="http://www.imdb.com/title/{{media.mediaFileRecords[0].imdbNumber}}" target="_blank"
+					*ngIf="media.mediaFileRecords[0].imdbNumber">Imdb Link</a>
+			</div>
+			<div *ngIf="media.mediaFileRecords.length == 1">
+				<button (click)="onSelect(media.mediaFileRecords[0])">{{media.name}} <span
+						*ngIf="media.mediaFileRecords[0].year">({{media.mediaFileRecords[0].year}})</span>
+					<span *ngIf="media.mediaFileRecords[0].season">Season: {{media.mediaFileRecords[0].season}} Episode:
+						{{media.mediaFileRecords[0].episode}}</span>
+				</button>
+				<a href="http://www.imdb.com/title/{{media.mediaFileRecords[0].imdbNumber}}" target="_blank"
+					*ngIf="media.mediaFileRecords[0].imdbNumber">Imdb Link</a>
+			</div>
+		</div>
+	</div>
 </div>

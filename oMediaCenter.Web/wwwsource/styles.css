@@ -79,6 +79,9 @@ button {
 	}
 }
 
+.omc-show-with-seasons-container {
+    color: white;
+}
 .omc-fullscreen-background {
 	background-color: black;
 	width: 100vw;
