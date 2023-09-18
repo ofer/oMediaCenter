@@ -19,6 +19,6 @@
     {{media.name}} ({{media.mediaFileRecords[0].year}})
     
     <span *ngIf="media.mediaFileRecords.length > 1">Season: {{media.mediaFileRecords[0].season}} Episode: {{media.mediaFileRecords[0].episode}}</span>
-    <button (click)="onSendRequested('play', media.mediaFileRecords[0].season)">Play</button>
+    <button (click)="onSendRequested('play', media.mediaFileRecords[0].hash)">Play</button>
   </div>
 </div>
