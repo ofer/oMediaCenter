@@ -13,6 +13,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
 import { AppRoutingModule } from './app-routing.module';
 import { MediaDataService } from './media-data.service';
 import { SettingsService } from './settings.service';
@@ -42,6 +43,7 @@ import { VgStreamingModule } from '@videogular/ngx-videogular/streaming';
     MatGridListModule,
     MatButtonModule,
     MatListModule,
+    MatIconModule,
     VgCoreModule,
     VgControlsModule,
     VgOverlayPlayModule,

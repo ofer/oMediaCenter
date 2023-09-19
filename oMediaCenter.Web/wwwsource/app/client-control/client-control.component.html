@@ -9,10 +9,10 @@
       <button (click)="onSendRequested('pause', null)">Pause</button>
       <button (click)="onSendRequested('stop', null)">Stop</button>
       <div>
-          <button (click)="onSendRequested('volumeUp', null)"><i class="mdi mdi-arrow-up"></i></button>
-          <button (click)="onSendRequested('volumeDown', null)"><i class="mdi mdi-arrow-down"></i></button>
+          <button (click)="onSendRequested('volumeUp', null)"><mat-icon>volume_up</mat-icon></button>
+          <button (click)="onSendRequested('volumeDown', null)"><mat-icon>volume_down</mat-icon></button>
       </div>
-      <button (click)="onSendRequested('toggleFullscreen', null)"><i class="mdi mdi-fullscreen"></i></button>
+      <button (click)="onSendRequested('toggleFullscreen', null)"><mat-icon>fullscreen</mat-icon></button>
   </div>
 
   <div *ngFor="let media of mediaFileList">
