@@ -1,0 +1,15 @@
+.omc-media-list {
+    display: flex;
+    flex-direction:row;
+    flex-wrap: wrap;
+}
+.omc-list-item {
+    margin: 2px;
+    background: rgba(255,255,255,0.1);
+    padding: 10px;
+}
+.omc-list-item-movie {
+    display:flex;
+    flex-direction: column; 
+    align-items: center;
+}

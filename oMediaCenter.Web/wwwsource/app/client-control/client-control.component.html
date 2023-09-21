@@ -1,24 +1,27 @@
 <div>
   <select [(ngModel)]="selectedHost">
-      <option *ngFor="let host of hosts" [value]="host">{{host}}</option>
+    <option *ngFor="let host of hosts" [value]="host">{{host}}</option>
   </select>
   <button (click)="refreshHosts()">Refresh</button>
 
   <div>
-      <button (click)="onSendRequested('play', null)">Play</button>
-      <button (click)="onSendRequested('pause', null)">Pause</button>
-      <button (click)="onSendRequested('stop', null)">Stop</button>
-      <div>
-          <button (click)="onSendRequested('volumeUp', null)"><mat-icon>volume_up</mat-icon></button>
-          <button (click)="onSendRequested('volumeDown', null)"><mat-icon>volume_down</mat-icon></button>
-      </div>
-      <button (click)="onSendRequested('toggleFullscreen', null)"><mat-icon>fullscreen</mat-icon></button>
+    <button (click)="onSendRequested('play', null)">Play</button>
+    <button (click)="onSendRequested('pause', null)">Pause</button>
+    <button (click)="onSendRequested('stop', null)">Stop</button>
+    <div>
+      <button (click)="onSendRequested('volumeUp', null)"><mat-icon>volume_up</mat-icon></button>
+      <button (click)="onSendRequested('volumeDown', null)"><mat-icon>volume_down</mat-icon></button>
+    </div>
+    <button (click)="onSendRequested('toggleFullscreen', null)"><mat-icon>fullscreen</mat-icon></button>
   </div>
 
-  <div *ngFor="let media of mediaFileList">
-    {{media.name}} ({{media.mediaFileRecords[0].year}})
-    
-    <span *ngIf="media.mediaFileRecords.length > 1">Season: {{media.mediaFileRecords[0].season}} Episode: {{media.mediaFileRecords[0].episode}}</span>
-    <button (click)="onSendRequested('play', media.mediaFileRecords[0].hash)">Play</button>
+  <div class="media-list-container">
+    <div class="media-list-item" *ngFor="let media of mediaFileList">
+      {{media.name}} ({{media.mediaFileRecords[0].year}})
+
+      <span *ngIf="media.mediaFileRecords.length > 1">Season: {{media.mediaFileRecords[0].season}} Episode:
+        {{media.mediaFileRecords[0].episode}}</span>
+      <button (click)="onSendRequested('play', media.mediaFileRecords[0].hash)">Play</button>
+    </div>
   </div>
 </div>

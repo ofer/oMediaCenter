@@ -36,7 +36,7 @@
 				<a href="http://www.imdb.com/title/{{media.mediaFileRecords[0].imdbNumber}}" target="_blank"
 					*ngIf="media.mediaFileRecords[0].imdbNumber">Imdb Link</a>
 			</div>
-			<div *ngIf="media.mediaFileRecords.length == 1">
+			<div class="omc-list-item-movie" *ngIf="media.mediaFileRecords.length == 1">
 				<button (click)="onSelect(media.mediaFileRecords[0])">{{media.name}} <span
 						*ngIf="media.mediaFileRecords[0].year">({{media.mediaFileRecords[0].year}})</span>
 					<span *ngIf="media.mediaFileRecords[0].season">Season: {{media.mediaFileRecords[0].season}} Episode:
