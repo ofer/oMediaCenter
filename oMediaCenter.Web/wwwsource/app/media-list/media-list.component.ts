@@ -44,6 +44,10 @@ export class MediaListComponent implements OnInit {
   }
 
   sort(fileRecords: GroupedMediaFileRecords[]): GroupedMediaFileRecords[] {
+    fileRecords.sort((gmfra, gmfrb) => {
+      let nameComparison = gmfra.name.localeCompare(gmfrb.name);
+      return nameComparison;
+    });
     for (const groupRecord of fileRecords) {
       groupRecord.mediaFileRecords.sort((mfra, mfrb) => {
         let nameComparison = mfra.name.localeCompare(mfrb.name);
