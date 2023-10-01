@@ -9,6 +9,7 @@ namespace oMediaCenter.Tests
 		[InlineData("Zootopia 2016 1080p HDRip x264 AC3-JYK.mkv", "Zootopia", "2016")]
 		[InlineData("Cars[2006]DvDrip[Eng]-aXXo.avi","Cars","2006")]
 		[InlineData("Home Again (2017) English HD - Rip x264 1CD - AAC - Yify - films.com.mp4", "Home Again", "2017")]
+		[InlineData("Three.Thousand.Years.of.Longing.2022.HDRip.XviD.AC3-EVO.avi", "Three Thousand Years of Longing", "2022")]
 		[Theory]
 		public void ShouldFindCorrectMovieNameWithParanSurroundedYearInFilename(string inputFilename, string moviename, string year)
 		{

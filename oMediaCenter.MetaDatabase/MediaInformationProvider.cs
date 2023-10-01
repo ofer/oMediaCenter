@@ -104,7 +104,18 @@ namespace oMediaCenter.MetaDatabase
 		public MediaInformation GetEpisodeInfoForFilename(string filename)
 		{
 			var movieCandidate = GetFileMetadataFromFilename(filename);
-			return SearchDatabaseForName(movieCandidate);
+			var databaseCandidate = SearchDatabaseForName(movieCandidate);
+			if (databaseCandidate == null)
+			{
+				MediaInformation nonDatabaseMediaInformation = new MediaInformation();
+				nonDatabaseMediaInformation.Episode = movieCandidate.Episode;
+				nonDatabaseMediaInformation.Year = movieCandidate.Year;
+				nonDatabaseMediaInformation.Title = movieCandidate.Title;
+				nonDatabaseMediaInformation.Season = movieCandidate.Season;
+				return nonDatabaseMediaInformation;
+			}
+			else
+				return databaseCandidate;
 		}
 
 		private MediaInformation SearchDatabaseForName(FileMetadata fileMetadata)
