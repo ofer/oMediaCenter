@@ -128,6 +128,15 @@ namespace oMediaCenter.Web.Controllers
     }
 
     [HttpGet]
+    [Route("media/{hash}/file")]
+    public ActionResult DownloadFile(string hash)
+    {
+      IMediaFile selectedMediaFile = _fileReader.GetByHash(hash);
+      
+      return File(System.IO.File.ReadAllBytes(selectedMediaFile.GetFullFilePath()), "application/octet-stream", Path.GetFileName(selectedMediaFile.GetFullFilePath()));
+    }
+
+    [HttpGet]
     [Route("media/{hash}/subtitles")]
     public async Task<ActionResult> GetVideoSubtitles(string hash)
     {
