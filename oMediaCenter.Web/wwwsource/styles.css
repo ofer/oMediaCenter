@@ -111,5 +111,9 @@ button {
 	width: 100vw;
 }
 
+.top-bar span {
+	padding: 0px 10px;
+}
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
