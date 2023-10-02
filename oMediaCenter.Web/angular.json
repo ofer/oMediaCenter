@@ -24,7 +24,8 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "wwwsource/favicon.ico",
-              "wwwsource/assets"
+              "wwwsource/assets",
+              "wwwsource/manifest.webmanifest"
             ],
             "styles": [
               "wwwsource/custom-theme.scss",
@@ -95,7 +96,8 @@
             "karmaConfig": "karma.conf.js",
             "assets": [
               "wwwsource/favicon.ico",
-              "wwwsource/assets"
+              "wwwsource/assets",
+              "wwwsource/manifest.webmanifest"
             ],
             "styles": [
               "wwwsource/styles.css"
