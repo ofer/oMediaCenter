@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { MediaListComponent } from './media-list/media-list.component';
 import { MediaPlayerComponent } from './media-player/media-player.component';
 import { ClientControlComponent } from './client-control/client-control.component';
 import { SettingsComponent } from './settings/settings.component';
+import { MediaListPageComponent } from './media-list-page/media-list-page.component';
 
 const routes: Routes = [
     {
@@ -11,7 +11,7 @@ const routes: Routes = [
         redirectTo: '/medialist',
         pathMatch: 'full'
     },
-    { path: 'medialist', component: MediaListComponent },
+    { path: 'medialist', component: MediaListPageComponent },
     { path: 'media/:hash', component: MediaPlayerComponent },
     { path: 'clientcontrol', component: ClientControlComponent },
     { path: 'settings', component: SettingsComponent }

@@ -25,6 +25,8 @@ import { VgControlsModule } from '@videogular/ngx-videogular/controls';
 import { VgOverlayPlayModule } from '@videogular/ngx-videogular/overlay-play';
 import { VgBufferingModule } from '@videogular/ngx-videogular/buffering';
 import { VgStreamingModule } from '@videogular/ngx-videogular/streaming';
+import { MediaListPageComponent } from './media-list-page/media-list-page.component';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,8 @@ import { VgStreamingModule } from '@videogular/ngx-videogular/streaming';
     ClientControlComponent,
     MediaListComponent,
     MediaPlayerComponent,
-    SettingsComponent
+    SettingsComponent,
+    MediaListPageComponent
   ],
   imports: [
     BrowserModule,
@@ -44,6 +47,7 @@ import { VgStreamingModule } from '@videogular/ngx-videogular/streaming';
     MatButtonModule,
     MatListModule,
     MatIconModule,
+    MatExpansionModule,
     VgCoreModule,
     VgControlsModule,
     VgOverlayPlayModule,

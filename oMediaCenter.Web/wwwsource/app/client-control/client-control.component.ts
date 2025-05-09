@@ -31,6 +31,10 @@ export class ClientControlComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  playVideo(hash: string) {
+    this.clientControlService.sendCommand("play", this.selectedHost, hash);
+  }
+
   onSendRequested(commandType: string, hash: string | null) {
     this.clientControlService.sendCommand(commandType, this.selectedHost, hash);
   }

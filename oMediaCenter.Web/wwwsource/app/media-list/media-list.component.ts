@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MediaFileRecord } from '../media-file-record';
 import { MediaDataService } from '../media-data.service';
 import { Router } from '@angular/router';
@@ -12,6 +12,7 @@ import { GroupedMediaFileRecords } from '../grouped-media-file-records';
 export class MediaListComponent implements OnInit {
   title = 'media List';
   mediaFileList!: GroupedMediaFileRecords[];
+  @Output() mediaSelected: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(
     private mediaDataService: MediaDataService,
@@ -30,8 +31,7 @@ export class MediaListComponent implements OnInit {
     let lastSeasonNumber = fileList[0].season;
     let seasonEpisodes: MediaFileRecord[] = [];
     for (const file of fileList) {
-      if (lastSeasonNumber != file.season)
-      {
+      if (lastSeasonNumber != file.season) {
         result.push(seasonEpisodes);
         seasonEpisodes = [];
         lastSeasonNumber = file.season;
@@ -69,6 +69,7 @@ export class MediaListComponent implements OnInit {
   }
 
   onSelect(media: MediaFileRecord) {
-    this.router.navigate(['/media', media.hash]);
+    this.mediaSelected.emit(media.hash);
+    // this.router.navigate(['/media', media.hash]);
   }
 }

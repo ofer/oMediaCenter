@@ -15,6 +15,7 @@
     <button (click)="onSendRequested('toggleFullscreen', null)"><mat-icon>fullscreen</mat-icon></button>
   </div>
 
+  <app-media-list (mediaSelected)="playVideo($event)"></app-media-list>
   <div class="media-list-container">
     <div class="media-list-item" *ngFor="let media of mediaFileList">
       {{media.name}} ({{media.mediaFileRecords[0].year}})
