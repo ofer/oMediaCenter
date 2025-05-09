@@ -1,0 +1,8 @@
+<div>
+	<button (click)="toggleShowFileList()">Season List</button>
+	<div *ngIf="shouldShowFileList">
+		<button *ngFor="let file of seasonFileList" (click)="onSelect(file)">
+			E: {{file.episode}}
+		</button>
+	</div>
+</div>

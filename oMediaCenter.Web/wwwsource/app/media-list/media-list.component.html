@@ -28,10 +28,11 @@
 				{{media.name}}
 				<span *ngIf="media.mediaFileRecords[0].year">({{media.mediaFileRecords[0].year}})</span>
 				<div *ngFor="let fileList of getSeasons(media.mediaFileRecords)">
-					Season {{fileList[0].season}}
+					<app-season-list-expansion [seasonFileList]="fileList"></app-season-list-expansion>
+					<!-- Season {{fileList[0].season}}
 					<button *ngFor="let file of fileList" (click)="onSelect(file)">
 						E: {{file.episode}}
-					</button>
+					</button> -->
 				</div>
 				<a href="http://www.imdb.com/title/{{media.mediaFileRecords[0].imdbNumber}}" target="_blank"
 					*ngIf="media.mediaFileRecords[0].imdbNumber">Imdb Link</a>
