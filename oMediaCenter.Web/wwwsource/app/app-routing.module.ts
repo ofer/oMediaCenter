@@ -4,13 +4,15 @@ import { MediaPlayerComponent } from './media-player/media-player.component';
 import { ClientControlComponent } from './client-control/client-control.component';
 import { SettingsComponent } from './settings/settings.component';
 import { MediaListPageComponent } from './media-list-page/media-list-page.component';
+import { RecentlyPlayedPageComponent } from './recently-played-page/recently-played-page.component';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: '/medialist',
+        redirectTo: '/recentlyplayed',
         pathMatch: 'full'
     },
+    { path: 'recentlyplayed', component: RecentlyPlayedPageComponent },
     { path: 'medialist', component: MediaListPageComponent },
     { path: 'media/:hash', component: MediaPlayerComponent },
     { path: 'clientcontrol', component: ClientControlComponent },
