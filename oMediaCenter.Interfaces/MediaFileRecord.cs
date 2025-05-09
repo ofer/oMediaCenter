@@ -1,4 +1,6 @@
-﻿namespace oMediaCenter.Interfaces
+﻿using System;
+
+namespace oMediaCenter.Interfaces
 {
 
 	public class MediaFileRecord
@@ -39,6 +41,8 @@
 		public bool HasEmbeddedSubtitles { get; set; }
 
 		public float LastPlayedTime { get; set; }
+
+		public DateTime? LastPlayedDate { get; set; }
 
 		public bool FoundMetadata { get; set; }
 

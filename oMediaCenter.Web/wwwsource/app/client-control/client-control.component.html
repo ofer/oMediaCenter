@@ -16,7 +16,7 @@
   </div>
 
   <app-media-list (mediaSelected)="playVideo($event)"></app-media-list>
-  <div class="media-list-container">
+  <!-- <div class="media-list-container">
     <div class="media-list-item" *ngFor="let media of mediaFileList">
       {{media.name}} ({{media.mediaFileRecords[0].year}})
 
@@ -24,5 +24,5 @@
         {{media.mediaFileRecords[0].episode}}</span>
       <button (click)="onSendRequested('play', media.mediaFileRecords[0].hash)">Play</button>
     </div>
-  </div>
+  </div> -->
 </div>

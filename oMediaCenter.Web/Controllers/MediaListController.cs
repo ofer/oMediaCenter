@@ -71,8 +71,10 @@ namespace oMediaCenter.Web.Controllers
       result.ThumbnailType = mediaFileRecord.ThumbnailType;
 
       FilePosition filePosition = _dbContext.FilePositions.FirstOrDefault(fp => fp.FileHash == result.Hash);
-      if (filePosition != null)
+      if (filePosition != null) { 
         result.LastPlayedTime = (float)filePosition.LastPlayedPosition.TotalSeconds;
+        result.LastPlayedDate = filePosition.LastPlayed;
+      }
       else
         result.LastPlayedTime = 0;
 
@@ -186,6 +188,7 @@ namespace oMediaCenter.Web.Controllers
           }
 
           foundPosition.LastPlayedPosition = TimeSpan.FromSeconds(mediaUpdateMessage.CurrentTime);
+          foundPosition.LastPlayed = DateTime.UtcNow;
 
           await _dbContext.SaveChangesAsync();
 

@@ -50,6 +50,18 @@ namespace oMediaCenter.MetaDatabase
 
 			if (!hitYearSection)
 			{
+				// try Naruto style parsing (Naruto Shippuden Episode 001 Homecoming.mkv)
+				int episodeIndex = filename.IndexOf("Episode");
+				if (episodeIndex != -1)
+				{
+					if (int.TryParse(filename.Substring(episodeIndex + 7, 3), out int episodeNumber))
+					{
+						result.Episode = episodeNumber.ToString();
+						result.Title = filename.Substring(0, episodeIndex);
+						result.Episode = filename.Substring(episodeIndex + 7);
+					}
+				}
+
 				// try using [] with no space in the year
 				int yearStartCandidate = filename.IndexOfAny(new char[] { '[', '{' });
 				if (yearStartCandidate > 0)

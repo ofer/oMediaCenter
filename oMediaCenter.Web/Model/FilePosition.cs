@@ -11,5 +11,6 @@ namespace oMediaCenter.Web.Model
         [Key]
         public string FileHash { get; set; }
         public TimeSpan LastPlayedPosition { get; set; }
+        public DateTime LastPlayed { get; set; }
     }
 }

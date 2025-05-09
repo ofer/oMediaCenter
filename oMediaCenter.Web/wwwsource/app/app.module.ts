@@ -28,6 +28,7 @@ import { VgStreamingModule } from '@videogular/ngx-videogular/streaming';
 import { MediaListPageComponent } from './media-list-page/media-list-page.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { SeasonListExpansionComponent } from './season-list-expansion/season-list-expansion.component';
+import { RecentlyPlayedPageComponent } from './recently-played-page/recently-played-page.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { SeasonListExpansionComponent } from './season-list-expansion/season-lis
     MediaPlayerComponent,
     SettingsComponent,
     MediaListPageComponent,
-    SeasonListExpansionComponent
+    SeasonListExpansionComponent,
+    RecentlyPlayedPageComponent
   ],
   imports: [
     BrowserModule,

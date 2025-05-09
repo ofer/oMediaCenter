@@ -1,4 +1,5 @@
 export interface MediaFileRecord {
+  lastPlayedDate: Date;
   name: string;
   description: string;
   hash: string;
