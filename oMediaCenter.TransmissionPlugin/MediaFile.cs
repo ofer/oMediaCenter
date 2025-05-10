@@ -27,7 +27,8 @@ namespace oMediaCenter.TransmissionPlugin
       MediaFileRecord.TechnicalInfo = Path.Combine(ti.DownloadDir, file.Name.Replace('/', Path.DirectorySeparatorChar));
       MediaFileRecord.MediaType = "video/" + Path.GetExtension(file.Name).ToLower().Substring(1);
 
-      var filenameWithoutExtention = (string)Path.GetFileNameWithoutExtension(file.Name);
+      string directory = Path.GetDirectoryName(file.Name) != string.Empty ? Path.GetDirectoryName(file.Name) + '/' : string.Empty;
+      var filenameWithoutExtention = directory + (string)Path.GetFileNameWithoutExtension(file.Name);
 
       // find any subtitle file
       var subtitleFile = ti.Files.FirstOrDefault(f => SUBTITLE_EXTENSION_LIST.Select(ext => filenameWithoutExtention + ext).Any(pf => pf == f.Name));
