@@ -1,4 +1,5 @@
-﻿using oMediaCenter.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using oMediaCenter.Interfaces;
 using System.Linq;
 using System.Text;
 
@@ -6,11 +7,11 @@ namespace oMediaCenter.MetaDatabase
 {
 	public class MediaInformationProvider : IMediaInformationProvider
 	{
-		private MetaDataContext _dbContext;
+		private IDbContextFactory<MetaDataContext> _dbContextFactory;
 
-		public MediaInformationProvider(MetaDataContext dbContext)
+		public MediaInformationProvider(IDbContextFactory<MetaDataContext>  dbContextFactory)
 		{
-			_dbContext = dbContext;
+			_dbContextFactory = dbContextFactory;
 		}
 
 		public FileMetadata GetFileMetadataFromFilename(string filename)
@@ -135,32 +136,34 @@ namespace oMediaCenter.MetaDatabase
 			MediaData mediaData = null;
 
 			string searchableTitle = fileMetadata.Title.ToSearchableString();
-			var mediaDatum = _dbContext.MediaDatum.Where(md => md.LowercaseTitle == searchableTitle);
-
-			if (mediaDatum.Count() == 0)
+			using (var dbContext = _dbContextFactory.CreateDbContext())
 			{
-				string prependedTitle = "the" + searchableTitle;
-				mediaDatum = _dbContext.MediaDatum.Where(md => md.LowercaseTitle == prependedTitle);
+				var mediaDatum = dbContext.MediaDatum.Where(md => md.LowercaseTitle == searchableTitle);
+
+				if (mediaDatum.Count() == 0)
+				{
+					string prependedTitle = "the" + searchableTitle;
+					mediaDatum = dbContext.MediaDatum.Where(md => md.LowercaseTitle == prependedTitle);
+				}
+
+				if (mediaDatum.Count() == 0)
+				{
+					string prependedTitle = "the" + searchableTitle + "movie";
+					mediaDatum = dbContext.MediaDatum.Where(md => md.LowercaseTitle == prependedTitle);
+				}
+
+				if (mediaDatum.Count() == 0)
+				{
+					string prependedTitle = searchableTitle + "movie";
+					mediaDatum = dbContext.MediaDatum.Where(md => md.LowercaseTitle == prependedTitle);
+				}
+
+				if (mediaDatum.Count() != 0 && !string.IsNullOrEmpty(fileMetadata.Year))
+					mediaData = mediaDatum.ToList().FirstOrDefault(md => md.OriginalString.Split('	')[5] == fileMetadata.Year);
+
+				if (mediaDatum.Count() != 0 && !string.IsNullOrEmpty(fileMetadata.Season))
+					mediaData = mediaDatum.ToList().FirstOrDefault(md => md.OriginalString.Split('	')[1] == "tvSeries");
 			}
-
-			if (mediaDatum.Count() == 0)
-			{
-				string prependedTitle = "the" + searchableTitle + "movie";
-				mediaDatum = _dbContext.MediaDatum.Where(md => md.LowercaseTitle == prependedTitle);
-			}
-
-			if (mediaDatum.Count() == 0)
-			{
-				string prependedTitle = searchableTitle + "movie";
-				mediaDatum = _dbContext.MediaDatum.Where(md => md.LowercaseTitle == prependedTitle);
-			}
-
-			if (mediaDatum.Count() != 0 && !string.IsNullOrEmpty(fileMetadata.Year))
-				mediaData = mediaDatum.ToList().FirstOrDefault(md => md.OriginalString.Split('	')[5] == fileMetadata.Year);
-
-			if (mediaDatum.Count() != 0 && !string.IsNullOrEmpty(fileMetadata.Season))
-				mediaData = mediaDatum.ToList().FirstOrDefault(md => md.OriginalString.Split('	')[1] == "tvSeries");
-
 
 			return mediaData?.ToMediaInformation(fileMetadata);
 		}
