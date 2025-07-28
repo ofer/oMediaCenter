@@ -11,6 +11,11 @@
     width: 200px;
 }
 
+.omc-list-item-type {
+    color: #2F792F;
+    background: rgba(255,255,255,0.1);
+}
+
 .omc-list-item-movie {
     display:flex;
     flex-direction: column; 

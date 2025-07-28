@@ -1,3 +1,171 @@
 .media-player-info-panel {
     margin: 40px;
 }
+
+/* TV Show Seasons Panel Styles */
+.tv-show-seasons-panel {
+    margin-top: 20px;
+    border-top: 1px solid #444;
+    padding-top: 20px;
+}
+
+.episode-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(52, 73, 94, 0.3);
+    border-radius: 6px;
+}
+/* 
+.nav-button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    min-width: 100px;
+} */
+
+.nav-button:hover:not(:disabled) {
+    background: #2980b9;
+    transform: translateY(-1px);
+}
+
+.nav-button:disabled {
+    background: #7f8c8d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.episode-progress {
+    color: #ecf0f1;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    flex: 1;
+    margin: 0 15px;
+}
+
+/* .seasons-toggle-button {
+    background: #2c3e50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+} */
+
+/* .seasons-toggle-button:hover {
+    background: #34495e;
+} */
+
+.seasons-container {
+    margin-top: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.season-section {
+    margin-bottom: 20px;
+}
+
+.season-section:last-child {
+    margin-bottom: 0;
+}
+
+.season-title {
+    color: #ecf0f1;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #3498db;
+}
+
+.episodes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* .episode-button {
+    background: #34495e;
+    color: white;
+    border: 1px solid #2c3e50;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    min-width: 50px;
+    text-align: center;
+}
+
+.episode-button:hover {
+    background: #3498db;
+    border-color: #2980b9;
+    transform: translateY(-1px);
+}
+
+.episode-button.current-episode {
+    background: #e74c3c;
+    border-color: #c0392b;
+    box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+}
+
+.episode-button.current-episode:hover {
+    background: #c0392b;
+} */
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .episode-navigation {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px;
+    }
+    
+    .nav-button {
+        min-width: 120px;
+        padding: 10px 20px;
+    }
+    
+    .episode-progress {
+        margin: 0;
+        order: -1;
+    }
+    
+    .episodes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+        gap: 6px;
+    }
+    
+    .episode-button {
+        padding: 6px 8px;
+        font-size: 11px;
+        min-width: 40px;
+    }
+    
+    .seasons-container {
+        max-height: 300px;
+        padding: 10px;
+    }
+    
+    .media-player-info-panel {
+        margin: 20px;
+    }
+}

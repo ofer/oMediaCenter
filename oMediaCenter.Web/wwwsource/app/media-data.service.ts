@@ -15,6 +15,7 @@ export class MediaDataService {
         return this.http.get(this.mediaInfoUrl)
             .toPromise()
             .then(response => {
+                console.log('getGroupedMediaFileRecords received records');
                 return this.groupToTopLevel(response as MediaFileRecord[]);
             })
             .catch(this.handleError);
@@ -37,6 +38,13 @@ export class MediaDataService {
         });
 
         return Object.values(result).flat();
+    }
+
+    getGroupedMediaFileRecord(hash: string): Promise<GroupedMediaFileRecords | undefined> {
+        return this.getGroupedMediaFileRecords()
+            .then(records => {
+                return records.find(record => record.mediaFileRecords.some(mfr => mfr.hash === hash));
+            });
     }
 
     getMediaFileRecord(hash: string): Promise<MediaFileRecord> {

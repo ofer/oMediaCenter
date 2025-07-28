@@ -1,5 +1,4 @@
 <div *ngIf="mediaFileRecord" [class]="isFullScreen ? 'omc-fullscreen-background' : ''">
-  <!--<omc-video [URL]="'/api/v1/media/' + mediaFileRecord.hash" (onTimeUpdated)="onTimeUpdated($event)"></omc-video>-->
   <vg-player>
     <video [vgMedia]="$any(videoElement)" #videoElement autoplay [vgHls]="videoUrl" id="singleVideo" preload="auto" controls
       (loadeddata)="onLoadedData()" (timeupdate)="onTimeUpdated(videoElement.currentTime)">
@@ -9,14 +8,56 @@
   <div [class]="isFullScreen ? 'hide' : 'media-player-info-panel'">
     <div>
       <span style="font-weight: bold">{{mediaFileRecord.name}}</span>
-      <span *ngIf="mediaFileRecord.year">({{mediaFileRecord.year}})</span><span *ngIf="mediaFileRecord.season">Season:
-        {{mediaFileRecord.season}}
-        Episode: {{mediaFileRecord.episode}}</span>
+      <span *ngIf="mediaFileRecord.year">({{mediaFileRecord.year}})</span>
+      <span *ngIf="mediaFileRecord.season">Season: {{mediaFileRecord.season}} Episode: {{mediaFileRecord.episode}}</span>
     </div>
     <div>
       {{mediaFileRecord.genres}}
       <a class="button" href="/api/v1/media/{{mediaFileRecord.hash}}/file">Click here to download original file</a><br>
       <a class="button" href="/api/v1/media/{{mediaFileRecord.hash}}">Copy url to stream</a>
+    </div>
+    
+    <!-- TV Show Seasons Panel -->
+    <div *ngIf="isTVShow() && hasMultipleEpisodes()" class="tv-show-seasons-panel">
+      <div class="episode-navigation">
+        <button 
+          class="nav-button prev-button" 
+          [disabled]="!hasPreviousEpisode()"
+          (click)="playPreviousEpisode()"
+          title="Previous Episode">
+          ← Previous
+        </button>
+        <span class="episode-progress">
+          Episode {{mediaFileRecord.episode}} of {{currentEpisodeMetadata?.endEpisode}}
+        </span>
+        <button 
+          class="nav-button next-button" 
+          [disabled]="!hasNextEpisode()"
+          (click)="playNextEpisode()"
+          title="Next Episode">
+          Next →
+        </button>
+      </div>
+      
+      <button class="seasons-toggle-button" (click)="toggleSeasonsPanel()">
+        {{ showSeasonsPanel ? 'Hide' : 'Show' }} All Seasons ({{seasons.length}})
+      </button>
+      
+      <div *ngIf="showSeasonsPanel" class="seasons-container">
+        <div *ngFor="let season of seasons; let seasonIndex = index" class="season-section">
+          <h3 class="season-title">Season {{season[0].season}}</h3>
+          <div class="episodes-grid">
+            <button 
+              *ngFor="let episode of season" 
+              class="episode-button"
+              [class.current-episode]="episode.hash === mediaFileRecord.hash"
+              (click)="playEpisode(episode)"
+              [title]="'Episode ' + episode.episode">
+              E{{episode.episode}}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

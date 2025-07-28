@@ -22,7 +22,7 @@ export class RecentlyPlayedPageComponent {
     this.mediaDataService.getGroupedMediaFileRecords()
       .then(fileRecords => {
         this.mediaFileList = this.sortAndFilter(fileRecords);
-        
+
       });
   }
 
@@ -32,7 +32,7 @@ export class RecentlyPlayedPageComponent {
       // require view to be updated
       console.log('MediaListComponent markForCheck');
       this.ref.markForCheck();
-      
+
     }, 1000);
 
 
@@ -61,14 +61,23 @@ export class RecentlyPlayedPageComponent {
     fileRecords = fileRecords.filter(gmfr => {
       for (const mfr of gmfr.mediaFileRecords) {
         if (mfr.lastPlayedDate) {
-          return true;
+          let lastPlayedDate = new Date(mfr.lastPlayedDate);
+          let now = new Date();
+          let diff = now.getTime() - lastPlayedDate.getTime();
+          if (diff <= 7 * 24 * 60 * 60 * 1000) {
+            return true;
+          }
+          else {
+            return false;
+          }
         }
       }
       return false;
-  });
+    });
     fileRecords.sort((gmfra, gmfrb) => {
-      let nameComparison = gmfra.name.localeCompare(gmfrb.name);
-      return nameComparison;
+      if (gmfra.mediaFileRecords[0].lastPlayedDate == gmfrb.mediaFileRecords[0].lastPlayedDate)
+        return 0;
+      return gmfra.mediaFileRecords[0].lastPlayedDate < gmfrb.mediaFileRecords[0].lastPlayedDate ? 1 : -1;
     });
     for (const groupRecord of fileRecords) {
       groupRecord.mediaFileRecords.sort((mfra, mfrb) => {
@@ -91,7 +100,7 @@ export class RecentlyPlayedPageComponent {
   }
 
   onSelect(media: MediaFileRecord) {
-    
+
     this.router.navigate(['/media', media.hash]);
   }
 
