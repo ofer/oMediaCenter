@@ -23,12 +23,10 @@ export interface CurrentEpisodeMetadata {
     styleUrls: ['./media-player.component.css'],
     animations: [
         trigger('routeAnimation', [
-            state('*',
-                style({
-                    opacity: 1,
-                    transform: 'translateX(0)'
-                })
-            ),
+            state('*', style({
+                opacity: 1,
+                transform: 'translateX(0)'
+            })),
             transition('void => *', [
                 style({
                     opacity: 0,
@@ -43,7 +41,8 @@ export interface CurrentEpisodeMetadata {
                 }))
             ])
         ])
-    ]
+    ],
+    standalone: false
 })
 export class MediaPlayerComponent implements OnInit {
     @HostBinding('@routeAnimation') get routeAnimation() {

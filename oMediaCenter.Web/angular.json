@@ -15,12 +15,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "wwwroot",
+            "outputPath": {
+              "base": "wwwroot"
+            },
             "index": "wwwsource/index.html",
-            "main": "wwwsource/main.ts",
-            "polyfills": "wwwsource/polyfills.ts",
+            "polyfills": [
+              "wwwsource/polyfills.ts"
+            ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "wwwsource/favicon.ico",
@@ -34,7 +37,8 @@
             ],
             "scripts": [
               "node_modules/hls.js/dist/hls.min.js"
-            ]
+            ],
+            "browser": "wwwsource/main.ts"
           },
           "configurations": {
             "production": {
@@ -59,9 +63,7 @@
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true

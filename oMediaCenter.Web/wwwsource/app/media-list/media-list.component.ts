@@ -5,10 +5,11 @@ import { Router } from '@angular/router';
 import { GroupedMediaFileRecords } from '../grouped-media-file-records';
 
 @Component({
-  selector: 'app-media-list',
-  templateUrl: './media-list.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['./media-list.component.css']
+    selector: 'app-media-list',
+    templateUrl: './media-list.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    styleUrls: ['./media-list.component.css'],
+    standalone: false
 })
 /**
  * Represents a component for displaying a list of media files.

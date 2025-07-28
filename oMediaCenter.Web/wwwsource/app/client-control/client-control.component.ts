@@ -5,9 +5,10 @@ import { ClientControlService } from '../client-control.service';
 import { GroupedMediaFileRecords } from '../grouped-media-file-records';
 
 @Component({
-  selector: 'app-client-control',
-  templateUrl: './client-control.component.html',
-  styleUrls: ['./client-control.component.css']
+    selector: 'app-client-control',
+    templateUrl: './client-control.component.html',
+    styleUrls: ['./client-control.component.css'],
+    standalone: false
 })
 export class ClientControlComponent implements OnInit {
   title = 'Client Remote Control';

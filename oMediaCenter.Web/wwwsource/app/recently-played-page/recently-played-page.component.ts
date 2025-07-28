@@ -5,9 +5,10 @@ import { MediaFileRecord } from '../media-file-record';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-recently-played-page',
-  templateUrl: './recently-played-page.component.html',
-  styleUrls: ['./recently-played-page.component.css']
+    selector: 'app-recently-played-page',
+    templateUrl: './recently-played-page.component.html',
+    styleUrls: ['./recently-played-page.component.css'],
+    standalone: false
 })
 export class RecentlyPlayedPageComponent {
   title = 'media List';

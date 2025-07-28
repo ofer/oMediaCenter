@@ -2,10 +2,11 @@ import { Component, OnInit, Input, EventEmitter, Output, OnDestroy, ChangeDetect
 import { MediaFileRecord } from '../media-file-record';
 
 @Component({
-  selector: 'app-season-list-expansion',
-  templateUrl: './season-list-expansion.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['./season-list-expansion.component.css']
+    selector: 'app-season-list-expansion',
+    templateUrl: './season-list-expansion.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    styleUrls: ['./season-list-expansion.component.css'],
+    standalone: false
 })
 export class SeasonListExpansionComponent implements OnInit, OnDestroy {
   @Input() seasonFileList: MediaFileRecord[] | null = null;
