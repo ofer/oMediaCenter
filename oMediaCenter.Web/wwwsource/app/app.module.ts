@@ -18,7 +18,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { MediaDataService } from './media-data.service';
 import { SettingsService } from './settings.service';
 import { ClientControlService } from './client-control.service';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 import { VgCoreModule } from '@videogular/ngx-videogular/core';
 import { VgControlsModule } from '@videogular/ngx-videogular/controls';
@@ -31,38 +31,37 @@ import { SeasonListExpansionComponent } from './season-list-expansion/season-lis
 import { RecentlyPlayedPageComponent } from './recently-played-page/recently-played-page.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    ClientControlComponent,
-    MediaListComponent,
-    MediaPlayerComponent,
-    SettingsComponent,
-    MediaListPageComponent,
-    SeasonListExpansionComponent,
-    RecentlyPlayedPageComponent
-  ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    AppRoutingModule,
-    FormsModule,
-    BrowserAnimationsModule,
-    MatGridListModule,
-    MatButtonModule,
-    MatListModule,
-    MatIconModule,
-    MatExpansionModule,
-    VgCoreModule,
-    VgControlsModule,
-    VgOverlayPlayModule,
-    VgBufferingModule,
-    VgStreamingModule
-  ],
-  providers: [
-    MediaDataService,
-    ClientControlService,
-    SettingsService
-  ],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        ClientControlComponent,
+        MediaListComponent,
+        MediaPlayerComponent,
+        SettingsComponent,
+        MediaListPageComponent,
+        SeasonListExpansionComponent,
+        RecentlyPlayedPageComponent
+    ],
+    bootstrap: [AppComponent],
+    imports: [BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        BrowserAnimationsModule,
+        MatGridListModule,
+        MatButtonModule,
+        MatListModule,
+        MatIconModule,
+        MatExpansionModule,
+        VgCoreModule,
+        VgControlsModule,
+        VgOverlayPlayModule,
+        VgBufferingModule,
+        VgStreamingModule],
+
+    providers: [
+        MediaDataService,
+        ClientControlService,
+        SettingsService,
+        provideHttpClient(withInterceptorsFromDi())
+    ]
 })
 export class AppModule { }
