@@ -28,13 +28,20 @@ namespace oMediaCenter.TransmissionPlugin
       MediaFileRecord.MediaType = "video/" + Path.GetExtension(file.Name).ToLower().Substring(1);
 
       string directory = Path.GetDirectoryName(file.Name) != string.Empty ? Path.GetDirectoryName(file.Name) + '/' : string.Empty;
-      var filenameWithoutExtention = directory + (string)Path.GetFileNameWithoutExtension(file.Name);
+      // var filenameWithoutExtention = directory + (string)Path.GetFileNameWithoutExtension(file.Name);
+      var filenameWithoutExtention = (string)Path.GetFileNameWithoutExtension(file.Name);
 
       // find any subtitle file
-      var subtitleFile = ti.Files.FirstOrDefault(f => SUBTITLE_EXTENSION_LIST.Select(ext => filenameWithoutExtention + ext).Any(pf => pf == f.Name));
+      var subtitleFile = ti.Files.FirstOrDefault(f => SUBTITLE_EXTENSION_LIST.Select(ext => filenameWithoutExtention + ext).Any(pf => pf == Path.GetFileName(f.Name)));
       if (subtitleFile != null)
+      {
+        _logger.LogDebug("Subtitle file found: {0}", subtitleFile.Name);
         _subtitleFile = Path.Combine(ti.DownloadDir, subtitleFile.Name.Replace('/', Path.DirectorySeparatorChar));
-
+      }
+      else
+      {
+        _logger.LogDebug("No subtitle file found for {0}", file.Name);
+      }
     }
 
     string FullFilePath { get; set; }
