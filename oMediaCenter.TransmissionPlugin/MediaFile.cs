@@ -11,7 +11,7 @@ namespace oMediaCenter.TransmissionPlugin
 {
   public class MediaFile : IMediaFile
   {
-    readonly string[] SUBTITLE_EXTENSION_LIST = new string[] { ".srt", ".ssa", ".ttml", ".sbv", ".vtt" };
+    readonly string[] SUBTITLE_EXTENSION_LIST = new string[] { ".eng.srt", ".srt", ".ssa", ".ttml", ".sbv", ".vtt" };
     private string _subtitleFile;
     ILogger _logger;
 

@@ -71,7 +71,8 @@ namespace oMediaCenter.Web.Controllers
       result.ThumbnailType = mediaFileRecord.ThumbnailType;
 
       FilePosition filePosition = _dbContext.FilePositions.FirstOrDefault(fp => fp.FileHash == result.Hash);
-      if (filePosition != null) { 
+      if (filePosition != null)
+      {
         result.LastPlayedTime = (float)filePosition.LastPlayedPosition.TotalSeconds;
         result.LastPlayedDate = filePosition.LastPlayed;
       }
@@ -134,20 +135,36 @@ namespace oMediaCenter.Web.Controllers
     public ActionResult DownloadFile(string hash)
     {
       IMediaFile selectedMediaFile = _fileReader.GetByHash(hash);
-      
+
       return File(System.IO.File.ReadAllBytes(selectedMediaFile.GetFullFilePath()), "application/octet-stream", Path.GetFileName(selectedMediaFile.GetFullFilePath()));
     }
 
     [HttpGet]
     [Route("media/{hash}/subtitles")]
-    public async Task<ActionResult> GetVideoSubtitles(string hash)
+    public async Task<ActionResult> GetVideoSubtitleList(string hash)
     {
       IMediaFile selectedMediaFile = _fileReader.GetByHash(hash);
+      var subtitleList = await _mediaFileStreamer.GetSubtitleList(selectedMediaFile);
+      return new JsonResult(subtitleList);
+    }
 
-      if (selectedMediaFile != null && selectedMediaFile.GetFullSubtitleFilePath() != null)
+
+    [HttpGet]
+    [Route("media/{hash}/subtitles/{num}")]
+    public async Task<ActionResult> GetVideoSubtitles(string hash, int num)
+    {
+      IMediaFile selectedMediaFile = _fileReader.GetByHash(hash);
+      var subtitleList = await _mediaFileStreamer.GetSubtitleList(selectedMediaFile);
+      if (num < 0 || num >= subtitleList.Length)
+        return StatusCode((int)HttpStatusCode.BadRequest);
+
+      var subtitleRecord = subtitleList[num];
+
+
+      if (selectedMediaFile != null && subtitleRecord.FilePath != null)
       {
-        _logger.LogInformation("Subtitle path found at {0}, outputting it ", selectedMediaFile.GetFullSubtitleFilePath());
-        string subtitleFile = await _mediaFileStreamer.GetSubtitleFilePath(selectedMediaFile);
+        _logger.LogInformation("Subtitle path found at {0}, outputting it ", subtitleRecord.FilePath);
+        string subtitleFile = subtitleRecord.FilePath;
         _logger.LogInformation("Converted file at {0}", subtitleFile);
 
         return File(System.IO.File.ReadAllBytes(subtitleFile), "text/vtt");

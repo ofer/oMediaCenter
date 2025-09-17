@@ -9,7 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace oMediaCenter.SubtitleProvidier
+namespace oMediaCenter.SubtitleProvider
 {
   public class OpenSubtitlesProvider : ISubtitleProvider
   {
@@ -18,12 +18,15 @@ namespace oMediaCenter.SubtitleProvidier
     private ILogger<OpenSubtitlesProvider> _logger;
     private ConcurrentBag<IMediaFile> _checkedMediaFileBag;
 
-    public OpenSubtitlesProvider(IMediaFileConverter mediaFileConverter, ILoggerFactory loggerFactory)
+    private ISubtitleFileCache _subtitleFileCache;
+
+    public OpenSubtitlesProvider(IMediaFileConverter mediaFileConverter, ILoggerFactory loggerFactory, ISubtitleFileCache subtitleFileCache)
     {
       _service = Osdb.Create("TemporaryUserAgent");
       _mediaFileConverter = mediaFileConverter;
       _logger = loggerFactory.CreateLogger<OpenSubtitlesProvider>();
       _checkedMediaFileBag = new ConcurrentBag<IMediaFile>();
+      _subtitleFileCache = subtitleFileCache;
     }
 
     public async Task<bool> GetSubtitleInformation(IMediaFile mf, string targetFilename)
@@ -77,6 +80,71 @@ namespace oMediaCenter.SubtitleProvidier
       //  }
       //  else
       //    return false;
+    }
+
+    public async Task<ISubtitleRecord[]> GetSubtitleList(IMediaFile mf)
+    {
+      var cachedRecords = _subtitleFileCache.GetCachedSubtitleRecords(mf.MediaFileRecord.Hash);
+
+      if (cachedRecords.Length > 0)
+        return cachedRecords;
+
+      if (mf.MediaFileRecord.HasEmbeddedSubtitles)
+        return new ISubtitleRecord[0];
+      try
+      {
+        if (_checkedMediaFileBag.Contains(mf))
+          return new ISubtitleRecord[0];
+
+        var subtitles = await _service.SearchSubtitlesFromFile("english", mf.GetFullFilePath());
+
+        int subtitlesCount = subtitles.Count;
+        if (subtitlesCount == 0)
+        {
+          _logger.LogInformation("Could not find any subtitles in english for {0}", mf.MediaFileRecord.Name);
+          _checkedMediaFileBag.Add(mf);
+          return new ISubtitleRecord[0];
+        }
+
+        // generate subtitle file, put them in cache
+        var subtitleRecords = subtitles.Select(s => GenerateSubtitleWithRecord(s)).ToArray();
+
+        if (Path.GetExtension(selectedSubtitle.SubtitleFileName).Substring(1).ToLowerInvariant() != "vtt")
+        {
+          string subtitleFile = await _service.DownloadSubtitleToPath(Path.GetDirectoryName(targetFilename), selectedSubtitle);
+          await _mediaFileConverter.ConvertSubtitles(subtitleFile, targetFilename);
+        }
+        else
+          await _service.DownloadSubtitleToPath(Path.GetDirectoryName(targetFilename), selectedSubtitle, Path.GetFileName(targetFilename));
+
+        return true;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogWarning(ex, "Could not get subtitle information for target {0}", targetFilename);
+        return false;
+      }
+
+      //string subtitleHash = MovieCollection.OpenSubtitles.OpenSubtitlesHasher.GetFileHash(mf.GetFullFilePath());
+
+      //  var search = new NewSubtitleSearch { MovieHash = subtitleHash };
+      //  var subtitleSearchResults = await _service.SearchSubtitlesAsync(search);
+      //  if (subtitleSearchResults.TotalCount > 0)
+      //  {
+      //    int fileId = subtitleSearchResults.Data.First().Attributes.Files.First().FileId;
+      //    var fileRecordResult = await _service.GetSubtitleForDownloadAsync(new NewDownload() { FileId = fileId });
+      //    var webClient = new HttpClient();
+      //    await File.WriteAllBytesAsync(targetFilename, await webClient.GetByteArrayAsync(fileRecordResult.Link));
+      //    return true;
+      //  }
+      //  else
+      //    return false;
+    }
+
+    private OpenSubtitleRecord GenerateSubtitleWithRecord(Subtitle subtitle)
+    {
+      
+      return new OpenSubtitleRecord { Language = s.LanguageName, FilePath = null };
     }
   }
 }

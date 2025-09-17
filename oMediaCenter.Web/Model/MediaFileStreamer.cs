@@ -78,10 +78,13 @@ namespace oMediaCenter.Web.Model
         if (subtitlePath == null)
         {
           // attempt to get a subtitle file online
+          var subtitleList = await _subtitleProvider.GetSubtitleList(selectedMediaFile);
+
+          if (subtitleList == null || subtitleList.Length == 0)
+            return null; 
+
           if (await _subtitleProvider.GetSubtitleInformation(selectedMediaFile, cachedSubtitlePath))
             return cachedSubtitlePath;
-
-          return null;
         }
 
         if (Path.GetExtension(subtitlePath).ToLowerInvariant() == ".vtt")
@@ -98,6 +101,11 @@ namespace oMediaCenter.Web.Model
 
         return cachedSubtitlePath;
       }
+    }
+
+    public Task<SubtitleRecord[]> GetSubtitleList(IMediaFile selectedMediaFile)
+    {
+      
     }
   }
 }
