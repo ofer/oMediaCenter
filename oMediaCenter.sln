@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "oMediaCenter.MetaDatabase",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "oMediaCenter.Tests", "oMediaCenter.Tests\oMediaCenter.Tests.csproj", "{0B3DD08A-9A91-41A2-A1F1-36A8E640A0D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "oMediaCenter.SubtitleProvidier", "oMediaCenter.SubtitleProvidier\oMediaCenter.SubtitleProvidier.csproj", "{2A3C7547-1B50-482B-8BD9-11CEE739062A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "oMediaCenter.SubtitleProvider", "oMediaCenter.SubtitleProvider\oMediaCenter.SubtitleProvider.csproj", "{2A3C7547-1B50-482B-8BD9-11CEE739062A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
