@@ -35,7 +35,7 @@ builder.Services.AddSingleton<IFileReaderPluginLoader, SimpleFileReaderPluginLoa
 
 //builder.Services.AddTransient<IAliasProvider, AliasProvider>();
 builder.Services.AddSingleton<ISubtitleProvider, OpenSubtitlesProvider>();
-builder.Services.AddTransient<IMediaInformationProvider, MediaInformationProvider>();
+builder.Services.AddTransient<IMediaInformationProvider, AiMediaInformationProvider>();
 builder.Services.AddSingleton<IMediaFileStreamer, MediaFileStreamer>();
 
 builder.Services.AddTransient<IMediaFileProber, FfmpegFileProber>();

@@ -5,13 +5,11 @@ using System.Text;
 
 namespace oMediaCenter.MetaDatabase
 {
-	public class MediaInformationProvider : IMediaInformationProvider
+	public class MediaInformationProvider : MediaInformationProviderBase, IMediaInformationProvider
 	{
-		private IDbContextFactory<MetaDataContext> _dbContextFactory;
-
 		public MediaInformationProvider(IDbContextFactory<MetaDataContext>  dbContextFactory)
+			: base(dbContextFactory)
 		{
-			_dbContextFactory = dbContextFactory;
 		}
 
 		public FileMetadata GetFileMetadataFromFilename(string filename)
@@ -119,53 +117,9 @@ namespace oMediaCenter.MetaDatabase
 			var movieCandidate = GetFileMetadataFromFilename(filename);
 			var databaseCandidate = SearchDatabaseForName(movieCandidate);
 			if (databaseCandidate == null)
-			{
-				MediaInformation nonDatabaseMediaInformation = new MediaInformation();
-				nonDatabaseMediaInformation.Episode = movieCandidate.Episode;
-				nonDatabaseMediaInformation.Year = movieCandidate.Year;
-				nonDatabaseMediaInformation.Title = movieCandidate.Title;
-				nonDatabaseMediaInformation.Season = movieCandidate.Season;
-				return nonDatabaseMediaInformation;
-			}
+				return CreateFallbackMediaInformation(movieCandidate);
 			else
 				return databaseCandidate;
-		}
-
-		private MediaInformation SearchDatabaseForName(FileMetadata fileMetadata)
-		{
-			MediaData mediaData = null;
-
-			string searchableTitle = fileMetadata.Title.ToSearchableString();
-			using (var dbContext = _dbContextFactory.CreateDbContext())
-			{
-				var mediaDatum = dbContext.MediaDatum.Where(md => md.LowercaseTitle == searchableTitle);
-
-				if (mediaDatum.Count() == 0)
-				{
-					string prependedTitle = "the" + searchableTitle;
-					mediaDatum = dbContext.MediaDatum.Where(md => md.LowercaseTitle == prependedTitle);
-				}
-
-				if (mediaDatum.Count() == 0)
-				{
-					string prependedTitle = "the" + searchableTitle + "movie";
-					mediaDatum = dbContext.MediaDatum.Where(md => md.LowercaseTitle == prependedTitle);
-				}
-
-				if (mediaDatum.Count() == 0)
-				{
-					string prependedTitle = searchableTitle + "movie";
-					mediaDatum = dbContext.MediaDatum.Where(md => md.LowercaseTitle == prependedTitle);
-				}
-
-				if (mediaDatum.Count() != 0 && !string.IsNullOrEmpty(fileMetadata.Year))
-					mediaData = mediaDatum.ToList().FirstOrDefault(md => md.OriginalString.Split('	')[5] == fileMetadata.Year);
-
-				if (mediaDatum.Count() != 0 && !string.IsNullOrEmpty(fileMetadata.Season))
-					mediaData = mediaDatum.ToList().FirstOrDefault(md => md.OriginalString.Split('	')[1] == "tvSeries");
-			}
-
-			return mediaData?.ToMediaInformation(fileMetadata);
 		}
 	}
 }
