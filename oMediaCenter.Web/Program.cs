@@ -9,6 +9,7 @@ using oMediaCenter.MetaDatabase;
 using oMediaCenter.SubtitleProvidier;
 using oMediaCenter.Web.Hubs;
 using oMediaCenter.Web.Model;
+using oMediaCenter.Web.Services;
 using System;
 using System.IO;
 
@@ -19,7 +20,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 
-builder.Services.AddDbContext<MediaCenterContext>();
+//builder.Services.AddDbContext<MediaCenterContext>();
+
+builder.Services.AddDbContextFactory<MediaCenterContext>();
 
 builder.Services.AddDbContextFactory<MetaDataContext>();
 
@@ -35,7 +38,8 @@ builder.Services.AddSingleton<IFileReaderPluginLoader, SimpleFileReaderPluginLoa
 
 //builder.Services.AddTransient<IAliasProvider, AliasProvider>();
 builder.Services.AddSingleton<ISubtitleProvider, OpenSubtitlesProvider>();
-builder.Services.AddTransient<IMediaInformationProvider, MediaInformationProvider>();
+builder.Services.AddSingleton<AiMediaInformationProvider>();
+builder.Services.AddSingleton<IMediaInformationProvider, CachedMediaInformationProvider>();
 builder.Services.AddSingleton<IMediaFileStreamer, MediaFileStreamer>();
 
 builder.Services.AddTransient<IMediaFileProber, FfmpegFileProber>();

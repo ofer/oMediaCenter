@@ -24,11 +24,29 @@ namespace oMediaCenter.Web.Model
       _subtitleProvider = subtitleProvider;
     }
 
-    public async Task<IEnumerable<IMediaFile>> GetAll()
+    public Task<IEnumerable<IMediaFile>> GetAll()
     {
-      var candidateMediaFiles = _fileReaderPlugins.SelectMany(frp => frp.GetAll());
-      candidateMediaFiles = candidateMediaFiles.Where(mf => IsValidMediaFile(mf));
-      return candidateMediaFiles.Select(mf => FillWithMetadata(mf));
+      var candidateMediaFiles = _fileReaderPlugins
+        .SelectMany(frp => frp.GetAll())
+        .Where(IsValidMediaFile)
+        .ToList();
+
+      if (_showInfoProvider != null)
+      {
+        var filenames = candidateMediaFiles
+          .Select(mf => Path.GetFileName(mf.GetFullFilePath()))
+          .ToList();
+
+        var metadataMap = _showInfoProvider.GetEpisodeInfoForFilenames(filenames);
+        foreach (var mf in candidateMediaFiles)
+        {
+          var filename = Path.GetFileName(mf.GetFullFilePath());
+          if (metadataMap.TryGetValue(filename, out var info))
+            mf.Metadata = info;
+        }
+      }
+
+      return Task.FromResult<IEnumerable<IMediaFile>>(candidateMediaFiles);
     }
 
     private bool IsValidMediaFile(IMediaFile mf)

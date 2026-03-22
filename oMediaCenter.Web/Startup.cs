@@ -33,6 +33,7 @@ namespace oMediaCenter.Web
     {
       services.AddDbContext<MediaCenterContext>();
       services.AddDbContext<MetaDataContext>();
+      services.AddDbContextFactory<MetaDataContext>();
 
       services.AddLogging(builder => builder.AddConsole().AddDebug());
 
@@ -48,7 +49,7 @@ namespace oMediaCenter.Web
 
       //services.AddTransient<IAliasProvider, AliasProvider>();
       services.AddSingleton<ISubtitleProvider, OpenSubtitlesProvider>();
-      services.AddTransient<IMediaInformationProvider, MediaInformationProvider>();
+      services.AddTransient<IMediaInformationProvider, AiMediaInformationProvider>();
       services.AddSingleton<IMediaFileStreamer, MediaFileStreamer>();
 
       services.AddTransient<IMediaFileProber, FfmpegFileProber>();
