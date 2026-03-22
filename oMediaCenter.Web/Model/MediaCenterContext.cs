@@ -11,11 +11,21 @@ namespace oMediaCenter.Web.Model
         public MediaCenterContext(DbContextOptions<MediaCenterContext> options) : base(options) { }
 
         public DbSet<FilePosition> FilePositions { get; set; }
+        public DbSet<CachedMediaInformation> CachedMediaInformationRecords { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Filename=oMediaCenter.db");
             base.OnConfiguring(optionsBuilder);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<CachedMediaInformation>()
+                .HasIndex(c => c.Filename)
+                .IsUnique();
         }
     }
 }
