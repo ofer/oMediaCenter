@@ -9,6 +9,7 @@ using oMediaCenter.MetaDatabase;
 using oMediaCenter.SubtitleProvidier;
 using oMediaCenter.Web.Hubs;
 using oMediaCenter.Web.Model;
+using oMediaCenter.Web.Services;
 using System;
 using System.IO;
 
@@ -40,6 +41,8 @@ builder.Services.AddSingleton<IMediaFileStreamer, MediaFileStreamer>();
 
 builder.Services.AddTransient<IMediaFileProber, FfmpegFileProber>();
 builder.Services.AddTransient<IMediaFileConverter, FfmpegFileConverter>();
+
+builder.Services.AddSingleton<TranscodingJobManager>();
 
 //builder.Services.AddSingleton<IConfiguration>(Configuration);
 

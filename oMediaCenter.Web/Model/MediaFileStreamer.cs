@@ -1,4 +1,5 @@
 using oMediaCenter.Interfaces;
+using oMediaCenter.Web.Services;
 using oMediaCenter.Web.Utilities;
 using System;
 using System.Collections.Concurrent;
@@ -11,16 +12,17 @@ namespace oMediaCenter.Web.Model
 {
   public class MediaFileStreamer : IMediaFileStreamer
   {
-    ConcurrentBag<string> _hashesRunning;
+    private readonly TranscodingJobManager _jobManager;
+    private readonly ConcurrentDictionary<string, bool> _subtitleConversionsRunning = new();
     private ISubtitleProvider _subtitleProvider;
     object _readFileLock;
 
-    public MediaFileStreamer(IMediaFileProber fileProber, IMediaFileConverter mediaFileConverter, ISubtitleProvider subtitleProvider)
+    public MediaFileStreamer(IMediaFileProber fileProber, IMediaFileConverter mediaFileConverter, ISubtitleProvider subtitleProvider, TranscodingJobManager jobManager)
     {
       Prober = fileProber;
       Converter = mediaFileConverter;
-      _hashesRunning = new ConcurrentBag<string>();
       _subtitleProvider = subtitleProvider;
+      _jobManager = jobManager;
 
       _readFileLock = new object();
     }
@@ -39,12 +41,13 @@ namespace oMediaCenter.Web.Model
         return new StreamingFile(File.OpenRead(selectedMediaFile.GetFullFilePath()), MP4_MEDIA_TYPE);
       else
       {
-        string filename = string.Format(FILENAME_TEMPLATE, selectedMediaFile.MediaFileRecord.Hash);
+        string hash = selectedMediaFile.MediaFileRecord.Hash;
+        string filename = string.Format(FILENAME_TEMPLATE, hash);
         string filePath = filename.ToCacheDirectoryFile();
 
         lock (_readFileLock)
         {
-          if (!File.Exists(filePath) && !_hashesRunning.Contains(selectedMediaFile.MediaFileRecord.Hash))
+          if (!File.Exists(filePath) && !_jobManager.HasActiveJob(hash))
           {
             // convert file to mp4 and send it along, h264 / aac
             // probe the file, see what conversion it needs
@@ -59,8 +62,11 @@ namespace oMediaCenter.Web.Model
 
             selectedMediaFile.MediaFileRecord.HasEmbeddedSubtitles = mfpi.ContainsSubtitles;
 
+            // Use the TranscodingJobManager to start the transcoding job
+            _jobManager.StartTranscoding(hash, selectedMediaFile.GetFullFilePath(), 0, mfpi);
+
+            // Also run the legacy converter for backward compatibility during transition
             Converter.Convert(selectedMediaFile.GetFullFilePath(), targetVideoCodec, targetAudioCodec, filename, mfpi.NumberOfAudioChannels == 6, mfpi.ContainsSubtitles);
-            _hashesRunning.Add(selectedMediaFile.MediaFileRecord.Hash);
           }
         }
         return new StreamingFile(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read), HLS_MEDIA_TYPE);
@@ -87,12 +93,9 @@ namespace oMediaCenter.Web.Model
         if (Path.GetExtension(subtitlePath).ToLowerInvariant() == ".vtt")
           return subtitlePath;
 
-        if (!_hashesRunning.Contains(selectedMediaFile.MediaFileRecord.Hash + ".vtt"))
+        string subtitleKey = selectedMediaFile.MediaFileRecord.Hash + ".vtt";
+        if (_subtitleConversionsRunning.TryAdd(subtitleKey, true))
         {
-          lock (_readFileLock)
-          {
-            _hashesRunning.Add(selectedMediaFile.MediaFileRecord.Hash + ".vtt");
-          }
           await Converter.ConvertSubtitles(subtitlePath, cachedSubtitlePath);
         }
 
