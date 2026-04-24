@@ -134,16 +134,10 @@ namespace oMediaCenter.Web.Services
       switch (codec)
       {
         case "h264":
+          // H.264 is passed through (copy) — report actual profile/level
           return GetH264CodecString(probeResult.VideoProfile, probeResult.VideoLevel);
-        case "hevc":
-        case "h265":
-          return "hev1.1.6.L93.B0"; // conservative HEVC Main profile
-        case "vp9":
-          return "vp09.00.10.08";
-        case "av1":
-          return "av01.0.01M.08";
         default:
-          // When transcoding to libx264, the output will be H.264 High
+          // Everything else (HEVC, VP9, AV1, etc.) is transcoded to libx264 H.264 High
           return "avc1.640028";
       }
     }
@@ -200,18 +194,10 @@ namespace oMediaCenter.Web.Services
       switch (codec)
       {
         case "aac":
-          return "mp4a.40.2"; // AAC-LC
-        case "ac3":
-          return "mp4a.a5";
-        case "eac3":
-        case "e-ac-3":
-          return "mp4a.a6";
-        case "opus":
-          return "Opus";
-        case "flac":
-          return "fLaC";
+          // AAC is passed through (copy) — report AAC-LC
+          return "mp4a.40.2";
         default:
-          // When transcoding to AAC, output will be AAC-LC
+          // Everything else (AC3, EAC3, Opus, FLAC, etc.) is transcoded to AAC
           return "mp4a.40.2";
       }
     }
