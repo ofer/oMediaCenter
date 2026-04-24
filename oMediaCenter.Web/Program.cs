@@ -43,6 +43,8 @@ builder.Services.AddTransient<IMediaFileProber, FfmpegFileProber>();
 builder.Services.AddTransient<IMediaFileConverter, FfmpegFileConverter>();
 
 builder.Services.AddSingleton<TranscodingJobManager>();
+builder.Services.AddSingleton<ITranscodingJobManager>(sp => sp.GetRequiredService<TranscodingJobManager>());
+builder.Services.AddSingleton<HlsPlaylistGenerator>();
 
 //builder.Services.AddSingleton<IConfiguration>(Configuration);
 

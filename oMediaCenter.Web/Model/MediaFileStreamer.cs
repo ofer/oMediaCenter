@@ -12,12 +12,12 @@ namespace oMediaCenter.Web.Model
 {
   public class MediaFileStreamer : IMediaFileStreamer
   {
-    private readonly TranscodingJobManager _jobManager;
+    private readonly ITranscodingJobManager _jobManager;
     private readonly ConcurrentDictionary<string, bool> _subtitleConversionsRunning = new();
     private ISubtitleProvider _subtitleProvider;
     object _readFileLock;
 
-    public MediaFileStreamer(IMediaFileProber fileProber, IMediaFileConverter mediaFileConverter, ISubtitleProvider subtitleProvider, TranscodingJobManager jobManager)
+    public MediaFileStreamer(IMediaFileProber fileProber, IMediaFileConverter mediaFileConverter, ISubtitleProvider subtitleProvider, ITranscodingJobManager jobManager)
     {
       Prober = fileProber;
       Converter = mediaFileConverter;

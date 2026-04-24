@@ -444,5 +444,137 @@ namespace oMediaCenter.Tests
       // Assert
       Assert.Equal(3, job.ActiveSegmentIndex);
     }
+
+    // =========================================================
+    // ffmpeg command construction tests (Phase 3 regression tests)
+    // =========================================================
+
+    [Fact]
+    public void StartTranscoding_BuildsCommand_IncludesSeekArgument()
+    {
+      // Starting from segment 5 with 6s segments = seek to 30s
+      string hash = "seek_cmd_hash";
+      string sourceFile = CreateFakeSourceFile();
+      var probe = CreateProbeResult();
+
+      var job = _manager.StartTranscoding(hash, sourceFile, 5, probe);
+
+      string args = job.FfmpegProcess.StartInfo.Arguments;
+      Assert.Contains("-ss 30.000", args);
+    }
+
+    [Fact]
+    public void StartTranscoding_BuildsCommand_Segment0_NoSeekOrZero()
+    {
+      // Starting from segment 0 — no seek or seek to 0
+      string hash = "seg0_cmd_hash";
+      string sourceFile = CreateFakeSourceFile();
+      var probe = CreateProbeResult();
+
+      var job = _manager.StartTranscoding(hash, sourceFile, 0, probe);
+
+      string args = job.FfmpegProcess.StartInfo.Arguments;
+      // Should not contain a non-zero -ss argument
+      Assert.DoesNotContain("-ss 1", args);
+      Assert.DoesNotContain("-ss 2", args);
+    }
+
+    [Fact]
+    public void StartTranscoding_BuildsCommand_IncludesStartNumber()
+    {
+      string hash = "startnum_cmd_hash";
+      string sourceFile = CreateFakeSourceFile();
+      var probe = CreateProbeResult();
+
+      var job = _manager.StartTranscoding(hash, sourceFile, 7, probe);
+
+      string args = job.FfmpegProcess.StartInfo.Arguments;
+      Assert.Contains("-start_number 7", args);
+    }
+
+    [Fact]
+    public void StartTranscoding_BuildsCommand_IncludesCopyTs()
+    {
+      string hash = "copyts_cmd_hash";
+      string sourceFile = CreateFakeSourceFile();
+      var probe = CreateProbeResult();
+
+      var job = _manager.StartTranscoding(hash, sourceFile, 0, probe);
+
+      string args = job.FfmpegProcess.StartInfo.Arguments;
+      Assert.Contains("-copyts", args);
+      Assert.Contains("-avoid_negative_ts disabled", args);
+    }
+
+    [Fact]
+    public void StartTranscoding_BuildsCommand_IncludesForceKeyframes_WhenTranscoding()
+    {
+      // Non-h264 input forces libx264 transcoding → should have -force_key_frames
+      string hash = "keyframes_cmd_hash";
+      string sourceFile = CreateFakeSourceFile();
+      var probe = CreateProbeResult(videoCodec: "hevc");
+
+      var job = _manager.StartTranscoding(hash, sourceFile, 0, probe);
+
+      string args = job.FfmpegProcess.StartInfo.Arguments;
+      Assert.Contains("-force_key_frames", args);
+      Assert.Contains($"n_forced*{_manager.DefaultSegmentLength}", args);
+    }
+
+    [Fact]
+    public void StartTranscoding_BuildsCommand_NoForceKeyframes_WhenCopying()
+    {
+      // h264 input → codec copy → should NOT have -force_key_frames
+      string hash = "no_keyframes_cmd_hash";
+      string sourceFile = CreateFakeSourceFile();
+      var probe = CreateProbeResult(videoCodec: "h264");
+
+      var job = _manager.StartTranscoding(hash, sourceFile, 0, probe);
+
+      string args = job.FfmpegProcess.StartInfo.Arguments;
+      Assert.DoesNotContain("-force_key_frames", args);
+    }
+
+    [Fact]
+    public void StartTranscoding_BuildsCommand_OutputPathIsPerJob()
+    {
+      string hash = "output_path_cmd_hash";
+      string sourceFile = CreateFakeSourceFile();
+      var probe = CreateProbeResult();
+
+      var job = _manager.StartTranscoding(hash, sourceFile, 0, probe);
+
+      // Output path should be under the test base path with the hash as subdirectory
+      Assert.Contains(hash, job.OutputPath);
+      Assert.StartsWith(_testOutputBase, job.OutputPath);
+
+      // ffmpeg args should reference the per-job output directory
+      string args = job.FfmpegProcess.StartInfo.Arguments;
+      Assert.Contains(job.OutputPath, args);
+    }
+
+    // =========================================================
+    // Probe cache tests
+    // =========================================================
+
+    [Fact]
+    public void GetOrCacheProbeResult_CachesResult()
+    {
+      string hash = "cache_probe_hash";
+      string sourceFile = "/fake/source.mkv";
+      var expectedProbe = CreateProbeResult();
+
+      _proberMock.Setup(p => p.GetProbeInfo(sourceFile)).Returns(expectedProbe);
+
+      // First call — should invoke the prober
+      var result1 = _manager.GetOrCacheProbeResult(hash, sourceFile);
+      Assert.Same(expectedProbe, result1);
+
+      // Second call — should return cached result without invoking the prober again
+      var result2 = _manager.GetOrCacheProbeResult(hash, sourceFile);
+      Assert.Same(expectedProbe, result2);
+
+      _proberMock.Verify(p => p.GetProbeInfo(sourceFile), Times.Once);
+    }
   }
 }

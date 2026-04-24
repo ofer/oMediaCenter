@@ -15,9 +15,10 @@ namespace oMediaCenter.Web.Services
   /// Maintains a dictionary of active jobs keyed by media hash, handles starting/stopping
   /// ffmpeg, polling for segment readiness, and automatic cleanup of idle jobs.
   /// </summary>
-  public class TranscodingJobManager : IDisposable
+  public class TranscodingJobManager : ITranscodingJobManager, IDisposable
   {
     private readonly ConcurrentDictionary<string, TranscodingJob> _activeJobs = new();
+    private readonly ConcurrentDictionary<string, MediaFileProbeInformation> _probeCache = new();
     private readonly ILogger<TranscodingJobManager> _logger;
     private readonly Timer _idleCleanupTimer;
     private readonly IMediaFileProber _prober;
@@ -34,8 +35,8 @@ namespace oMediaCenter.Web.Services
     /// <summary>Interval in milliseconds for the idle cleanup timer (default 10s).</summary>
     public int IdleCleanupIntervalMs { get; set; } = 10_000;
 
-    /// <summary>Default HLS segment length in seconds.</summary>
-    public int DefaultSegmentLength { get; set; } = 10;
+    /// <summary>Default HLS segment length in seconds. Must match HlsPlaylistGenerator.DefaultSegmentLength.</summary>
+    public int DefaultSegmentLength { get; set; } = 6;
 
     /// <summary>Base directory for transcoding output. Each job gets a subdirectory.</summary>
     public string TranscodingOutputBasePath { get; set; }
@@ -56,6 +57,14 @@ namespace oMediaCenter.Web.Services
     {
       _activeJobs.TryGetValue(hash, out var job);
       return job;
+    }
+
+    /// <summary>
+    /// Returns cached probe results for the given hash, or probes the file and caches the result.
+    /// </summary>
+    public MediaFileProbeInformation GetOrCacheProbeResult(string hash, string sourceFile)
+    {
+      return _probeCache.GetOrAdd(hash, _ => _prober.GetProbeInfo(sourceFile));
     }
 
     /// <summary>
