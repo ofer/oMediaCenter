@@ -50,13 +50,26 @@ namespace oMediaCenter.TransmissionPlugin
         {
             string[] idSplit = hash.Split("aAaA");
 
+            if (idSplit.Length != 2 || idSplit[0].Length < 3
+                || !int.TryParse(idSplit[0].Substring(2), out int torrentId)
+                || !int.TryParse(idSplit[1], out int fileIndex))
+            {
+                return null;
+            }
+
             //Create Transsmission.API.RPC.Client (set host, optional session id,optional login and optional pass).
             Client client = new Client(_connectionInfo.IP);
 
             //After initialization, client can call methods:
-            var selectedTorrent = client.TorrentGet(TorrentFields.ALL_FIELDS, int.Parse(idSplit[0].Substring(2)));
+            var selectedTorrent = client.TorrentGet(TorrentFields.ALL_FIELDS, torrentId);
 
-            var foundFile = selectedTorrent.Torrents.First().Files[int.Parse(idSplit[1])];
+            if (selectedTorrent.Torrents == null || !selectedTorrent.Torrents.Any()
+                || fileIndex < 0 || fileIndex >= selectedTorrent.Torrents.First().Files.Length)
+            {
+                return null;
+            }
+
+            var foundFile = selectedTorrent.Torrents.First().Files[fileIndex];
 
             return new MediaFile(_loggerFactory, selectedTorrent.Torrents.First(), foundFile);
         }
