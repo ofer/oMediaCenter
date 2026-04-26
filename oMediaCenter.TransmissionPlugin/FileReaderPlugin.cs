@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Transmission.API.RPC;
 using Transmission.API.RPC.Entity;
 
@@ -16,6 +17,19 @@ namespace oMediaCenter.TransmissionPlugin
         private ILogger<FileReaderPlugin> _logger;
         private TransmissionFileReaderPluginSettings _connectionInfo;
         ILoggerFactory _loggerFactory;
+
+        /// <summary>
+        /// All fields to request from the Transmission RPC API.
+        /// </summary>
+        private static readonly string[] AllFields = new[]
+        {
+            TorrentFields.ID,
+            TorrentFields.NAME,
+            TorrentFields.COMMENT,
+            TorrentFields.DOWNLOAD_DIR,
+            TorrentFields.PERCENT_DONE,
+            TorrentFields.FILES,
+        };
 
         public FileReaderPlugin(IConfigurationSection pluginConfigurationSection, ILoggerFactory loggerFactory)
         {
@@ -34,8 +48,7 @@ namespace oMediaCenter.TransmissionPlugin
             Client client = new Client(host);
 
             //After initialization, client can call methods:
-            //var sessionInfo = client.GetSessionInformation();
-            var allTorrents = client.TorrentGet(TorrentFields.ALL_FIELDS);
+            var allTorrents = client.TorrentGetAsync(AllFields, ids: null).GetAwaiter().GetResult();
 
             // get all completed torrents
             var completedTorrents = allTorrents.Torrents.Where(t => t.PercentDone == 1);
@@ -61,7 +74,7 @@ namespace oMediaCenter.TransmissionPlugin
             Client client = new Client(_connectionInfo.IP);
 
             //After initialization, client can call methods:
-            var selectedTorrent = client.TorrentGet(TorrentFields.ALL_FIELDS, torrentId);
+            var selectedTorrent = client.TorrentGetAsync(AllFields, new[] { torrentId }).GetAwaiter().GetResult();
 
             if (selectedTorrent.Torrents == null || !selectedTorrent.Torrents.Any()
                 || fileIndex < 0 || fileIndex >= selectedTorrent.Torrents.First().Files.Length)

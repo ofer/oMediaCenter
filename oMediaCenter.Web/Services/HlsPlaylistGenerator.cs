@@ -137,7 +137,7 @@ namespace oMediaCenter.Web.Services
           // H.264 is passed through (copy) — report actual profile/level
           return GetH264CodecString(probeResult.VideoProfile, probeResult.VideoLevel);
         default:
-          // Everything else (HEVC, VP9, AV1, etc.) is transcoded to libx264 H.264 High
+          // Everything else (HEVC, VP9, AV1, etc.) is transcoded to libx264 H.264 High Level 4.0
           return "avc1.640028";
       }
     }
@@ -196,8 +196,11 @@ namespace oMediaCenter.Web.Services
         case "aac":
           // AAC is passed through (copy) — report AAC-LC
           return "mp4a.40.2";
+        case "opus":
+          // Opus passthrough (fMP4 segments)
+          return "Opus";
         default:
-          // Everything else (AC3, EAC3, Opus, FLAC, etc.) is transcoded to AAC
+          // Everything else (AC3, EAC3, FLAC, etc.) is transcoded to AAC
           return "mp4a.40.2";
       }
     }
