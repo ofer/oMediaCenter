@@ -1,18 +1,16 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+﻿var builder = WebApplication.CreateBuilder(args);
 
-namespace oMediaCenter.AlexaSkill.Web
+builder.Services.AddControllers();
+builder.Services.AddHttpClient();
+builder.WebHost.UseUrls("http://*:6543");
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
 {
-	public class Program
-	{
-		public static void Main(string[] args)
-		{
-			CreateWebHostBuilder(args).Build().Run();
-		}
-
-		public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-			WebHost.CreateDefaultBuilder(args)
-				.UseUrls("http://*:6543")
-				.UseStartup<Startup>();
-	}
+	app.UseDeveloperExceptionPage();
 }
+
+app.MapControllers();
+
+app.Run();

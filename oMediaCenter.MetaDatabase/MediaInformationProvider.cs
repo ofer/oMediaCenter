@@ -47,7 +47,7 @@ namespace oMediaCenter.MetaDatabase
 				mediaCandidateName.Append(section);
 			}
 
-			result.Title = mediaCandidateName.ToString();
+			result.Title = mediaCandidateName.ToString().TrimEnd(' ', '-');
 
 			if (!hitYearSection)
 			{
@@ -81,21 +81,42 @@ namespace oMediaCenter.MetaDatabase
 
 		private void ExtractEpisodeSeason(string section, FileMetadata result)
 		{
-			if (section.Length == 6)
+			// S01E02 format (6 chars)
+			if (section.Length == 6 && (section[0] == 'S' || section[0] == 's'))
 			{
 				result.Season = section.Substring(1, 2);
 				result.Episode = section.Substring(4, 2);
+				return;
+			}
+
+			// NxNN format (e.g., 1x01, 12x03)
+			int xIndex = section.IndexOf('x');
+			if (xIndex > 0)
+			{
+				result.Season = section.Substring(0, xIndex);
+				result.Episode = section.Substring(xIndex + 1);
 			}
 		}
 
 		private bool IsEpisodeSection(string section)
 		{
+			// Match S01E02 format (6 chars)
 			if (section.Length == 6 && (section[0] == 'S' || section[0] == 's') &&
 				char.IsDigit(section[1]) && char.IsDigit(section[2]) &&
 				(section[3] == 'E' || section[3] == 'e') &&
 				char.IsDigit(section[4]) && char.IsDigit(section[5]))
 			{
 				return true;
+			}
+
+			// Match NxNN format (e.g., 1x01, 12x03)
+			int xIndex = section.IndexOf('x');
+			if (xIndex > 0 && xIndex < section.Length - 1)
+			{
+				string seasonPart = section.Substring(0, xIndex);
+				string episodePart = section.Substring(xIndex + 1);
+				if (seasonPart.All(c => char.IsDigit(c)) && episodePart.All(c => char.IsDigit(c)))
+					return true;
 			}
 
 			return false;
