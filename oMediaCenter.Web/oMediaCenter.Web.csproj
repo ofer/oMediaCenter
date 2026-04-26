@@ -9,7 +9,7 @@
     <!--<RuntimeIdentifiers>win7-x64</RuntimeIdentifiers>-->
     <!--<PackageTargetFallback>$(PackageTargetFallback);netcoreapp2.0;portable-net45+win8</PackageTargetFallback>-->
     <!--<RuntimeFrameworkVersion>2.0.2</RuntimeFrameworkVersion>-->
-    <TypeScriptToolsVersion>4.4</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>6.0</TypeScriptToolsVersion>
   </PropertyGroup>
 
   <ItemGroup>

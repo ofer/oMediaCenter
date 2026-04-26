@@ -228,13 +228,16 @@ namespace oMediaCenter.Tests
     }
 
     [Fact]
-    public void GenerateMasterPlaylist_HevcCodec_ReturnsHevcString()
+    public void GenerateMasterPlaylist_HevcCodec_ReportsTranscodedH264()
     {
+      // HEVC sources are transcoded to H.264 by ffmpeg, so the master playlist
+      // must advertise the output codec (avc1) not the source codec (hev1).
       var probe = CreateProbeResult(videoCodec: "hevc", audioCodec: "aac");
 
       string playlist = _generator.GenerateMasterPlaylist(probe, "testhash");
 
-      Assert.Contains("hev1.1.6.L93.B0", playlist);
+      Assert.Contains("avc1.640028", playlist);
+      Assert.DoesNotContain("hev1", playlist);
     }
 
     [Fact]

@@ -136,12 +136,8 @@ namespace oMediaCenter.Web.Services
         case "h264":
           // H.264 is passed through (copy) — report actual profile/level
           return GetH264CodecString(probeResult.VideoProfile, probeResult.VideoLevel);
-        case "hevc":
-        case "h265":
-          // HEVC Main profile, level 3.1 (93 = 3.1 * 30)
-          return "hev1.1.6.L93.B0";
         default:
-          // Everything else (VP9, AV1, etc.) is transcoded to libx264 H.264 High
+          // Everything else (HEVC, VP9, AV1, etc.) is transcoded to libx264 H.264 High Level 4.0
           return "avc1.640028";
       }
     }
