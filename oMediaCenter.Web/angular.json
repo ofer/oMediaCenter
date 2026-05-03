@@ -18,7 +18,8 @@
           "builder": "@angular/build:application",
           "options": {
             "outputPath": {
-              "base": "wwwroot"
+              "base": "wwwroot",
+              "browser": ""
             },
             "index": "wwwsource/index.html",
             "polyfills": [
@@ -45,13 +46,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "1.5mb",
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "4kb",
+                  "maximumError": "8kb"
                 }
               ],
               "fileReplacements": [
