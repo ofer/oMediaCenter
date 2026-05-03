@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { SeasonListExpansionComponent } from './season-list-expansion.component';
 
 describe('SeasonListExpansionComponent', () => {
@@ -8,9 +8,9 @@ describe('SeasonListExpansionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SeasonListExpansionComponent ]
-    })
-    .compileComponents();
+      declarations: [SeasonListExpansionComponent],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
   });
 
   beforeEach(() => {

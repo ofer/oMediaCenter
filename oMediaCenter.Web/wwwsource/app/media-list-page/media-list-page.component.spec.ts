@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { provideRouter } from '@angular/router';
 import { MediaListPageComponent } from './media-list-page.component';
 
 describe('MediaListPageComponent', () => {
@@ -8,7 +9,9 @@ describe('MediaListPageComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [MediaListPageComponent]
+      declarations: [MediaListPageComponent],
+      providers: [provideRouter([])],
+      schemas: [NO_ERRORS_SCHEMA]
     });
     fixture = TestBed.createComponent(MediaListPageComponent);
     component = fixture.componentInstance;

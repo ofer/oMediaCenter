@@ -1,15 +1,19 @@
-import { TestBed, inject } from '@angular/core/testing';
-
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { SettingsService } from './settings.service';
 
 describe('SettingsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [SettingsService]
+      providers: [
+        SettingsService,
+        provideHttpClient(withInterceptorsFromDi())
+      ]
     });
   });
 
-  it('should be created', inject([SettingsService], (service: SettingsService) => {
+  it('should be created', () => {
+    const service = TestBed.inject(SettingsService);
     expect(service).toBeTruthy();
-  }));
+  });
 });
