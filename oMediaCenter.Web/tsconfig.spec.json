@@ -8,11 +8,12 @@
     ]
   },
   "files": [
-    "src/test.ts",
-    "src/polyfills.ts"
+    "wwwsource/test.ts",
+    "wwwsource/polyfills.ts"
   ],
   "include": [
-    "src/**/*.spec.ts",
-    "src/**/*.d.ts"
-  ]
+    "wwwsource/**/*.spec.ts",
+    "wwwsource/**/*.d.ts"
+  ],
+  "exclude": []
 }

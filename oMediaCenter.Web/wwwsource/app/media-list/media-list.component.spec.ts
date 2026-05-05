@@ -1,16 +1,24 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 import { MediaListComponent } from './media-list.component';
+import { MediaDataService } from '../media-data.service';
 
 describe('MediaListComponent', () => {
   let component: MediaListComponent;
   let fixture: ComponentFixture<MediaListComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ MediaListComponent ]
-    })
-    .compileComponents();
+      declarations: [MediaListComponent],
+      providers: [
+        MediaDataService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideRouter([])
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
   }));
 
   beforeEach(() => {
