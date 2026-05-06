@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MediaDataService } from '../media-data.service';
 import { MediaFileRecord } from '../media-file-record';
 import { ClientControlService } from '../client-control.service';
@@ -19,10 +19,14 @@ export class ClientControlComponent implements OnInit {
 
   constructor(
     private clientControlService: ClientControlService,
-    private mediaDataService: MediaDataService
+    private mediaDataService: MediaDataService,
+    private ref: ChangeDetectorRef
   ) {
     this.refreshHosts();
-    mediaDataService.getGroupedMediaFileRecords().then(records => this.mediaFileList = records);
+    mediaDataService.getGroupedMediaFileRecords().then(records => {
+      this.mediaFileList = records;
+      this.ref.detectChanges();
+    });
   }
 
   refreshHosts() {
