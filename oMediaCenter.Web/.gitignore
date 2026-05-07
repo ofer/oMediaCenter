@@ -41,6 +41,8 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+/playwright-report
+/test-results
 
 # System Files
 .DS_Store

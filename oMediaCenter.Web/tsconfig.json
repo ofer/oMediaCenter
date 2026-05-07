@@ -26,6 +26,8 @@
     "strictTemplates": true
   },
   "exclude": [
-    "wwwsource/**/*.spec.ts"
+    "wwwsource/**/*.spec.ts",
+    "e2e/**/*",
+    "playwright.config.ts"
   ]
 }

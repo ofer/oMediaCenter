@@ -35,13 +35,7 @@ export class MediaListComponent implements OnInit, OnDestroy {
       .then(fileRecords => {
         this.mediaFileList = this.sort(fileRecords);
         console.log('MediaListComponent getGroupedMediaFileRecords');
-        setTimeout(() => {
-          // require view to be updated
-          console.log('MediaListComponent markForCheck');
-          this.ref.markForCheck();
-
-        }, 1000);
-
+        this.ref.detectChanges();
       });
     this.keyHandler = (event: KeyboardEvent) => {
       // Handle keypress event here

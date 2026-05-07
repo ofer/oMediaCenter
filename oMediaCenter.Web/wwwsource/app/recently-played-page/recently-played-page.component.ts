@@ -23,7 +23,7 @@ export class RecentlyPlayedPageComponent {
     this.mediaDataService.getGroupedMediaFileRecords()
       .then(fileRecords => {
         this.mediaFileList = this.sortAndFilter(fileRecords);
-
+        this.ref.detectChanges();
       });
   }
 

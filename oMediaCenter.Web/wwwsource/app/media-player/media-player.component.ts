@@ -1,4 +1,4 @@
-import { Component, OnInit, HostBinding, ViewChild, Renderer2, ElementRef } from '@angular/core';
+import { Component, OnInit, HostBinding, ViewChild, Renderer2, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Params, ActivatedRoute, Router } from '@angular/router';
 import { MediaDataService } from '../media-data.service';
 import { ClientControlService } from '../client-control.service';
@@ -50,11 +50,7 @@ export class MediaPlayerComponent implements OnInit {
     }
 
     @HostBinding('style.display') get display() {
-        return 'block';
-    }
-
-    @HostBinding('style.position') get position() {
-        return 'absolute';
+        return 'flex';
     }
 
     @ViewChild('videoElement')
@@ -78,14 +74,15 @@ export class MediaPlayerComponent implements OnInit {
         private service: MediaDataService,
         private renderer: Renderer2,
         private elementRef: ElementRef,
-        private clientControlService: ClientControlService) {
+        private clientControlService: ClientControlService,
+        private cdr: ChangeDetectorRef) {
         this.lastUpdatedDate = new Date();
         clientControlService.setPlayer(this);
         this.isFullScreen = false;
     }
 
     ngOnInit() {
-        this.route.params.forEach((params: Params) => {
+        this.route.params.subscribe((params: Params) => {
             this.service.getGroupedMediaFileRecord(params['hash']).then(groupedMediaFileRecord => {
                 // make sure it returned a media file record, otherwise ignore
                 if (groupedMediaFileRecord) {
@@ -101,6 +98,7 @@ export class MediaPlayerComponent implements OnInit {
 
                     // Load related episodes if this is a TV show
                     this.loadRelatedEpisodes();
+                    this.cdr.detectChanges();
                 }
             });
         });
