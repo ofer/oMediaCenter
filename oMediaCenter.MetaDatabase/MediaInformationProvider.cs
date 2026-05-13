@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using oMediaCenter.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,8 @@ namespace oMediaCenter.MetaDatabase
 	public class MediaInformationProvider : IMediaInformationProvider
 	{
 		private IDbContextFactory<MetaDataContext> _dbContextFactory;
+		private ILlmTitleResolver _titleResolver;
+		private ILogger<MediaInformationProvider> _logger;
 
 		// Known junk tokens that indicate the title has ended and technical info follows.
 		// These are standard scene release naming conventions.
@@ -36,9 +39,11 @@ namespace oMediaCenter.MetaDatabase
 			"dubbed", "subbed", "multi", "dual", "readnfo",
 		};
 
-		public MediaInformationProvider(IDbContextFactory<MetaDataContext>  dbContextFactory)
+		public MediaInformationProvider(IDbContextFactory<MetaDataContext> dbContextFactory,  ILogger<MediaInformationProvider> logger, ILlmTitleResolver titleResolver = null)
 		{
 			_dbContextFactory = dbContextFactory;
+			_titleResolver = titleResolver;
+			_logger = logger;
 		}
 
 		/// <summary>
@@ -243,22 +248,59 @@ namespace oMediaCenter.MetaDatabase
 		{
 			var movieCandidate = GetFileMetadataFromFilename(filename);
 			var databaseCandidate = SearchDatabaseForName(movieCandidate);
-			if (databaseCandidate == null)
+			if (databaseCandidate != null)
 			{
-				MediaInformation nonDatabaseMediaInformation = new MediaInformation();
-				nonDatabaseMediaInformation.Episode = movieCandidate.Episode;
-				nonDatabaseMediaInformation.Year = movieCandidate.Year;
-				nonDatabaseMediaInformation.Title = movieCandidate.Title;
-				nonDatabaseMediaInformation.Season = movieCandidate.Season;
-				return nonDatabaseMediaInformation;
-			}
-			else
+				_logger.LogDebug("Found candidate");
 				return databaseCandidate;
+			}
+			_logger.LogInformation("No candidate found");
+
+			// Fallback: try LLM title resolution
+			if (_titleResolver != null)
+			{
+				_logger.LogInformation("Looking for AI candidate fix");
+				var resolvedTitle = _titleResolver.ResolveTitleFromFilename(filename);
+				if (!string.IsNullOrWhiteSpace(resolvedTitle))
+				{
+					// Re-search DB with the resolved title
+					var resolvedMetadata = new FileMetadata
+					{
+						Title = resolvedTitle,
+						Year = movieCandidate.Year,
+						Season = movieCandidate.Season,
+						Episode = movieCandidate.Episode
+					};
+					var resolvedDbCandidate = SearchDatabaseForName(resolvedMetadata);
+					if (resolvedDbCandidate != null)
+						return resolvedDbCandidate;
+
+					// No DB match -- use the resolved title directly
+					return new MediaInformation
+					{
+						Title = resolvedTitle,
+						Year = movieCandidate.Year,
+						Season = movieCandidate.Season,
+						Episode = movieCandidate.Episode
+					};
+				}
+			}
+
+			// Final fallback: use parsed title as-is
+			return new MediaInformation
+			{
+				Episode = movieCandidate.Episode,
+				Year = movieCandidate.Year,
+				Title = movieCandidate.Title,
+				Season = movieCandidate.Season
+			};
 		}
 
 		private MediaInformation SearchDatabaseForName(FileMetadata fileMetadata)
 		{
 			if (string.IsNullOrWhiteSpace(fileMetadata.Title))
+				return null;
+
+			if (_dbContextFactory == null)
 				return null;
 
 			MediaData mediaData = null;

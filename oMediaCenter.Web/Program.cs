@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using oMediaCenter.Interfaces;
 using oMediaCenter.MetaDatabase;
 using oMediaCenter.SubtitleProvidier;
@@ -12,6 +14,7 @@ using oMediaCenter.Web.Model;
 using oMediaCenter.Web.Services;
 using System;
 using System.IO;
+using System.Net.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +34,28 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSignalR();
 
 builder.Services.AddOptions();
+
+builder.Services.Configure<OpenAiOptions>(builder.Configuration.GetSection("OpenAI"));
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton<TitleResolverCache>(sp =>
+{
+	var logger = sp.GetRequiredService<ILogger<TitleResolverCache>>();
+	var cacheDir = Path.GetDirectoryName(typeof(MetaDataContext).Assembly.Location) ?? ".";
+	var cachePath = Path.Combine(cacheDir, "title-resolver-cache.json");
+	return new TitleResolverCache(cachePath, logger);
+});
+builder.Services.AddTransient<ILlmTitleResolver>(sp =>
+{
+	var options = sp.GetRequiredService<IOptions<OpenAiOptions>>().Value;
+	if (string.IsNullOrEmpty(options.BaseUrl))
+		return new NoOpTitleResolver();
+	return new OpenAiTitleResolver(
+		sp.GetRequiredService<IHttpClientFactory>(),
+		sp.GetRequiredService<IOptions<OpenAiOptions>>(),
+		sp.GetRequiredService<TitleResolverCache>(),
+		sp.GetRequiredService<ILogger<OpenAiTitleResolver>>());
+});
+
 builder.Services.AddSingleton<ClientConnectionDictionary>();
 builder.Services.AddSingleton<IFileReaderPluginLoader, SimpleFileReaderPluginLoader>();
 

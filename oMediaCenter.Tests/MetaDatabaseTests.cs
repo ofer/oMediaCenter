@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Logging;
+using Moq;
+using oMediaCenter.Interfaces;
 using oMediaCenter.MetaDatabase;
 using Xunit;
 
@@ -5,6 +8,8 @@ namespace oMediaCenter.Tests
 {
 	public class MetaDatabaseTests
 	{
+		private readonly ILogger<MediaInformationProvider> _logger = new Mock<ILogger<MediaInformationProvider>>().Object;
+
 		[InlineData("Despicable.Me.2.2013.720p.BluRay.x264.YIFY.mp4", "Despicable Me 2", "2013")]
 		[InlineData("Zootopia 2016 1080p HDRip x264 AC3-JYK.mkv", "Zootopia", "2016")]
 		[InlineData("Cars[2006]DvDrip[Eng]-aXXo.avi","Cars","2006")]
@@ -14,7 +19,7 @@ namespace oMediaCenter.Tests
 		[Theory]
 		public void ShouldFindCorrectMovieNameWithParanSurroundedYearInFilename(string inputFilename, string moviename, string year)
 		{
-			MediaInformationProvider mip = new MediaInformationProvider(null);
+			MediaInformationProvider mip = new MediaInformationProvider(null, _logger);
 			FileMetadata metaData = mip.GetFileMetadataFromFilename(inputFilename);
 			Assert.Equal(moviename, metaData.Title);
 			Assert.Equal(year, metaData.Year);
@@ -26,7 +31,7 @@ namespace oMediaCenter.Tests
 		[Theory]
 		public void ShouldFindCorrectShowNameWithEpisodeAndSeason(string inputFilename, string moviename, string season, string episode)
 		{
-			MediaInformationProvider mip = new MediaInformationProvider(null);
+			MediaInformationProvider mip = new MediaInformationProvider(null, _logger);
 			FileMetadata metaData = mip.GetFileMetadataFromFilename(inputFilename);
 			Assert.Equal(moviename, metaData.Title);
 			Assert.Equal(episode, metaData.Episode);
@@ -40,7 +45,7 @@ namespace oMediaCenter.Tests
 		[Theory]
 		public void ShouldStripReleaseGroupPrefixAndJunkTokens(string inputFilename, string moviename)
 		{
-			MediaInformationProvider mip = new MediaInformationProvider(null);
+			MediaInformationProvider mip = new MediaInformationProvider(null, _logger);
 			FileMetadata metaData = mip.GetFileMetadataFromFilename(inputFilename);
 			Assert.Equal(moviename, metaData.Title);
 		}
@@ -51,12 +56,79 @@ namespace oMediaCenter.Tests
 		[Theory]
 		public void ShouldHandleMultiEpisodeFormats(string inputFilename, string moviename, string season, string episode)
 		{
-			MediaInformationProvider mip = new MediaInformationProvider(null);
+			MediaInformationProvider mip = new MediaInformationProvider(null, _logger);
 			FileMetadata metaData = mip.GetFileMetadataFromFilename(inputFilename);
 			Assert.Equal(moviename, metaData.Title);
 			Assert.Equal(season, metaData.Season);
 			Assert.Equal(episode, metaData.Episode);
 		}
 
+		// -- Fallback integration tests --
+
+		[Fact]
+		public void WhenDbLookupFailsAndResolverReturnsTitleTheResolvedTitleIsUsed()
+		{
+			var resolver = new Mock<ILlmTitleResolver>();
+			resolver.Setup(r => r.ResolveTitleFromFilename(It.IsAny<string>()))
+				.Returns("Sherlock Holmes");
+
+			// No DB (null factory) so DB lookup always fails
+			var mip = new MediaInformationProvider(null, _logger, resolver.Object);
+			var result = mip.GetEpisodeInfoForFilename("Sherlock.Holms.2009.mp4");
+
+			Assert.Equal("Sherlock Holmes", result.Title);
+			Assert.Equal("2009", result.Year);
+		}
+
+		[Fact]
+		public void WhenDbLookupFailsAndResolverReturnsNullParsedTitleIsUsed()
+		{
+			var resolver = new Mock<ILlmTitleResolver>();
+			resolver.Setup(r => r.ResolveTitleFromFilename(It.IsAny<string>()))
+				.Returns((string)null);
+
+			var mip = new MediaInformationProvider(null, _logger, resolver.Object);
+			var result = mip.GetEpisodeInfoForFilename("Sherlock.Holms.2009.mp4");
+
+			Assert.Equal("Sherlock Holms", result.Title);
+			Assert.Equal("2009", result.Year);
+		}
+
+		[Fact]
+		public void WhenResolverIsNullBehaviorIsIdenticalToCurrent()
+		{
+			var mip = new MediaInformationProvider(null, _logger);
+			var result = mip.GetEpisodeInfoForFilename("Sherlock.Holms.2009.mp4");
+
+			Assert.Equal("Sherlock Holms", result.Title);
+			Assert.Equal("2009", result.Year);
+		}
+
+		[Fact]
+		public void WhenResolverIsNotInjectedBehaviorIsIdenticalToCurrent()
+		{
+			var mip = new MediaInformationProvider(null, _logger);
+			var result = mip.GetEpisodeInfoForFilename("Sherlock.Holms.2009.mp4");
+
+			Assert.Equal("Sherlock Holms", result.Title);
+			Assert.Equal("2009", result.Year);
+		}
+
+		[InlineData("Sherlock.Holms.2009.mp4", "Sherlock Holmes", "Sherlock Holmes", "2009")]
+		[InlineData("Z00topia.2.2025.mkv", "Zootopia 2", "Zootopia 2", "2025")]
+		[InlineData("A.Few.Good.Me.1992.BrRip.mp4", "A Few Good Men", "A Few Good Men", "1992")]
+		[Theory]
+		public void ResolverCorrectedTitlesAreUsedForEdgeCases(string filename, string resolvedTitle, string expectedTitle, string expectedYear)
+		{
+			var resolver = new Mock<ILlmTitleResolver>();
+			resolver.Setup(r => r.ResolveTitleFromFilename(filename))
+				.Returns(resolvedTitle);
+
+			var mip = new MediaInformationProvider(null, _logger, resolver.Object);
+			var result = mip.GetEpisodeInfoForFilename(filename);
+
+			Assert.Equal(expectedTitle, result.Title);
+			Assert.Equal(expectedYear, result.Year);
+		}
 	}
 }
