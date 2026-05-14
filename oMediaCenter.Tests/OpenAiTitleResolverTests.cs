@@ -124,6 +124,7 @@ namespace oMediaCenter.Tests
 		[Fact]
 		public void ReturnsNullWhenApiRequestTimesOut()
 		{
+			var cache = CreateCache();
 			var handler = new Mock<HttpMessageHandler>();
 			handler.Protected()
 				.Setup<HttpResponseMessage>("Send",
@@ -131,9 +132,33 @@ namespace oMediaCenter.Tests
 					ItExpr.IsAny<CancellationToken>())
 				.Throws(new TaskCanceledException("Timeout"));
 			var resolver = new OpenAiTitleResolver(
-				CreateMockFactory(handler.Object), CreateOptions(timeout: 1), CreateCache(), _resolverLoggerMock.Object);
+				CreateMockFactory(handler.Object), CreateOptions(timeout: 1), cache, _resolverLoggerMock.Object);
 
 			Assert.Null(resolver.ResolveTitleFromFilename("test.mp4"));
+			Assert.Equal("UNKNOWN", cache.Get("test.mp4"));
+		}
+
+		[Fact]
+		public void CachesUnknownOnExceptionAndSkipsApiOnRetry()
+		{
+			var cache = CreateCache();
+			var handler = new Mock<HttpMessageHandler>();
+			handler.Protected()
+				.Setup<HttpResponseMessage>("Send",
+					ItExpr.IsAny<HttpRequestMessage>(),
+					ItExpr.IsAny<CancellationToken>())
+				.Throws(new HttpRequestException("Connection refused"));
+			var resolver = new OpenAiTitleResolver(
+				CreateMockFactory(handler.Object), CreateOptions(), cache, _resolverLoggerMock.Object);
+
+			// First call: exception thrown, result cached as UNKNOWN
+			Assert.Null(resolver.ResolveTitleFromFilename("fail.mp4"));
+			Assert.Equal("UNKNOWN", cache.Get("fail.mp4"));
+
+			// Second call: should use cache and not call API again
+			Assert.Null(resolver.ResolveTitleFromFilename("fail.mp4"));
+			handler.Protected().Verify("Send", Times.Once(),
+				ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
 		}
 
 		[Fact]

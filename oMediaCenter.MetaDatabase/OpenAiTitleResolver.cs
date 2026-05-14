@@ -56,6 +56,7 @@ namespace oMediaCenter.MetaDatabase
 			catch (Exception ex)
 			{
 				_logger.LogWarning(ex, "OpenAI title resolution failed for '{Filename}'", filename);
+				_cache.Set(filename, "UNKNOWN");
 				return null;
 			}
 		}
