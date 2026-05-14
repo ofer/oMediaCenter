@@ -50,6 +50,31 @@ namespace oMediaCenter.Tests
 			Assert.Equal(moviename, metaData.Title);
 		}
 
+		[Fact]
+		public void FullPathInputsUseFilenameForTitleAndPathForYear()
+		{
+			MediaInformationProvider mip = new MediaInformationProvider(null, _logger);
+			FileMetadata metaData = mip.GetFileMetadataFromFilename("[ UsaBit.com ] - 12.Angry.Men.1997.DVDRip.XviD-SPRiNTER/CD1/sprinter-12angrymen-cd1.avi");
+
+			Assert.Equal("12angrymen", metaData.Title);
+			Assert.Equal("1997", metaData.Year);
+		}
+
+		[Theory]
+		[InlineData("The.Middle/Season 03/The.Middle.hdtv.x264.mkv", "The Middle", "03", null)]
+		[InlineData("The.Middle/S03/The.Middle.hdtv.x264.mkv", "The Middle", "03", null)]
+		[InlineData("The.Middle/Season 03/Episode 02/The.Middle.hdtv.x264.mkv", "The Middle", "03", "02")]
+		[InlineData("The.Middle/S03E02/The.Middle.hdtv.x264.mkv", "The Middle", "03", "02")]
+		public void FullPathInputsUseFilenameForTitleAndPathForTvMetadata(string inputFilename, string moviename, string season, string episode)
+		{
+			MediaInformationProvider mip = new MediaInformationProvider(null, _logger);
+			FileMetadata metaData = mip.GetFileMetadataFromFilename(inputFilename);
+
+			Assert.Equal(moviename, metaData.Title);
+			Assert.Equal(season, metaData.Season);
+			Assert.Equal(episode, metaData.Episode);
+		}
+
 		[InlineData("The.Middle.S03E01+E02.Forced.Family.Fun.Pt.1.+.Pt.2.mp4", "The Middle", "03", "01")]
 		[InlineData("The.Middle.S04E01+E02.Last.Whiff.of.Summer.Pt.1.+.Pt.2.mp4", "The Middle", "04", "01")]
 		[InlineData("The.Middle.S09E23+E24.A.Heck.of.a.Ride.Pt.1.+.Pt.2.mp4", "The Middle", "09", "23")]
@@ -129,6 +154,22 @@ namespace oMediaCenter.Tests
 
 			Assert.Equal(expectedTitle, result.Title);
 			Assert.Equal(expectedYear, result.Year);
+		}
+
+		[Fact]
+		public void AiFallbackReceivesOriginalFullPathInput()
+		{
+			const string fullPath = "[ UsaBit.com ] - 12.Angry.Men.1997.DVDRip.XviD-SPRiNTER/CD1/sprinter-12angrymen-cd1.avi";
+			var resolver = new Mock<ILlmTitleResolver>();
+			resolver.Setup(r => r.ResolveTitleFromFilename(fullPath))
+				.Returns("12 Angry Men");
+
+			var mip = new MediaInformationProvider(null, _logger, resolver.Object);
+			var result = mip.GetEpisodeInfoForFilename(fullPath);
+
+			Assert.Equal("12 Angry Men", result.Title);
+			Assert.Equal("1997", result.Year);
+			resolver.Verify(r => r.ResolveTitleFromFilename(fullPath), Times.Once);
 		}
 	}
 }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using oMediaCenter.Interfaces;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -107,6 +108,8 @@ namespace oMediaCenter.MetaDatabase
 		public FileMetadata GetFileMetadataFromFilename(string filename)
 		{
 			FileMetadata result = new FileMetadata();
+			string originalFilename = filename;
+			filename = GetLeafFilename(filename);
 
 			// Pre-clean the filename before main parsing
 			string cleanedFilename = PreCleanFilename(filename, result);
@@ -181,7 +184,73 @@ namespace oMediaCenter.MetaDatabase
 				}
 			}
 
+			FillMissingMetadataFromPath(originalFilename, result);
+
 			return result;
+		}
+
+		private string GetLeafFilename(string filename)
+		{
+			if (string.IsNullOrEmpty(filename))
+				return filename;
+
+			return Path.GetFileName(filename.Replace('\\', '/'));
+		}
+
+		private void FillMissingMetadataFromPath(string filename, FileMetadata result)
+		{
+			if (string.IsNullOrWhiteSpace(filename))
+				return;
+
+			string normalizedPath = filename.Replace('\\', '/');
+			string[] pathSections = normalizedPath.Split('/').Where(section => !string.IsNullOrWhiteSpace(section)).ToArray();
+			if (pathSections.Length <= 1)
+				return;
+
+			for (int sectionIndex = pathSections.Length - 2; sectionIndex >= 0; sectionIndex--)
+			{
+				FillMissingMetadataFromPathSection(pathSections[sectionIndex], result);
+			}
+		}
+
+		private void FillMissingMetadataFromPathSection(string section, FileMetadata result)
+		{
+			if (string.IsNullOrWhiteSpace(result.Year))
+			{
+				var yearMatch = Regex.Match(section, @"(?:^|[^0-9])((?:19|20)\d{2})(?:[^0-9]|$)");
+				if (yearMatch.Success)
+					result.Year = yearMatch.Groups[1].Value;
+			}
+
+			foreach (string token in Regex.Split(section, @"[\.\s_\-]+"))
+			{
+				if (!IsEpisodeSection(token))
+					continue;
+
+				var pathMetadata = new FileMetadata();
+				ExtractEpisodeSeason(token, pathMetadata);
+				if (string.IsNullOrWhiteSpace(result.Season))
+					result.Season = pathMetadata.Season;
+				if (string.IsNullOrWhiteSpace(result.Episode))
+					result.Episode = pathMetadata.Episode;
+			}
+
+			if (string.IsNullOrWhiteSpace(result.Season))
+			{
+				var seasonMatch = Regex.Match(section, @"(?:^|[\.\s_\-])(?:season|series)[\.\s_\-]*(\d{1,2})(?:$|[\.\s_\-])", RegexOptions.IgnoreCase);
+				if (!seasonMatch.Success)
+					seasonMatch = Regex.Match(section, @"(?:^|[\.\s_\-])S(\d{1,2})(?:$|[\.\s_\-])", RegexOptions.IgnoreCase);
+
+				if (seasonMatch.Success)
+					result.Season = seasonMatch.Groups[1].Value;
+			}
+
+			if (string.IsNullOrWhiteSpace(result.Episode))
+			{
+				var episodeMatch = Regex.Match(section, @"(?:^|[\.\s_\-])(?:episode|ep)[\.\s_\-]*(\d{1,3})(?:$|[\.\s_\-])", RegexOptions.IgnoreCase);
+				if (episodeMatch.Success)
+					result.Episode = episodeMatch.Groups[1].Value;
+			}
 		}
 
 		private void ExtractEpisodeSeason(string section, FileMetadata result)

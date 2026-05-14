@@ -43,8 +43,7 @@ namespace oMediaCenter.Web.Model
     {
       if (_showInfoProvider != null)
       {
-        var filename = Path.GetFileName(mf.GetFullFilePath());
-        var info = _showInfoProvider.GetEpisodeInfoForFilename(filename);
+        var info = _showInfoProvider.GetEpisodeInfoForFilename(mf.GetFullFilePath());
         mf.Metadata = info;
       }
       return mf;
