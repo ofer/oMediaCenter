@@ -148,7 +148,10 @@ namespace oMediaCenter.Web.Controllers
         }
 
         MediaFileProbeInformation probeResult = _prober.GetProbeInfo(mediaFile.GetFullFilePath());
-        string masterPlaylist = _playlistGenerator.GenerateMasterPlaylist(probeResult, actualHash);
+        bool hasSubtitles = probeResult.ContainsSubtitles
+          || mediaFile.GetFullSubtitleFilePath() != null
+          || System.IO.File.Exists(actualHash.ToCacheDirectoryFile(".vtt"));
+        string masterPlaylist = _playlistGenerator.GenerateMasterPlaylist(probeResult, actualHash, hasSubtitles);
 
         return Content(masterPlaylist, MediaFileStreamer.HLS_MEDIA_TYPE, Encoding.UTF8);
       }
@@ -183,6 +186,24 @@ namespace oMediaCenter.Web.Controllers
       string variantPlaylist = _playlistGenerator.GenerateVariantPlaylist(probeResult, hash);
 
       return Content(variantPlaylist, MediaFileStreamer.HLS_MEDIA_TYPE, Encoding.UTF8);
+    }
+
+    [HttpGet]
+    [Route("media/{hash}/hls/subtitles.m3u8")]
+    public async Task<ActionResult> GetHlsSubtitlePlaylist(string hash)
+    {
+      IMediaFile mediaFile = _fileReader.GetByHash(hash);
+      if (mediaFile == null)
+        return NotFound();
+
+      string subtitleFile = await _mediaFileStreamer.GetSubtitleFilePath(mediaFile);
+      if (subtitleFile == null || !System.IO.File.Exists(subtitleFile))
+        return StatusCode((int)HttpStatusCode.NoContent);
+
+      MediaFileProbeInformation probeResult = _prober.GetProbeInfo(mediaFile.GetFullFilePath());
+      string subtitlePlaylist = _playlistGenerator.GenerateSubtitlePlaylist(probeResult, hash);
+
+      return Content(subtitlePlaylist, MediaFileStreamer.HLS_MEDIA_TYPE, Encoding.UTF8);
     }
 
     /// <summary>
@@ -301,27 +322,15 @@ namespace oMediaCenter.Web.Controllers
     {
       IMediaFile selectedMediaFile = _fileReader.GetByHash(hash);
 
-      if (selectedMediaFile != null && selectedMediaFile.GetFullSubtitleFilePath() != null)
-      {
-        _logger.LogInformation("Subtitle path found at {0}, outputting it ", selectedMediaFile.GetFullSubtitleFilePath());
-        string subtitleFile = await _mediaFileStreamer.GetSubtitleFilePath(selectedMediaFile);
-        _logger.LogInformation("Converted file at {0}", subtitleFile);
+      if (selectedMediaFile == null)
+        return NotFound();
 
-        return File(System.IO.File.ReadAllBytes(subtitleFile), "text/vtt");
-      }
-      else
-      {
-        _logger.LogInformation("No subtitles found for hash {0}, asking subtitle provider to give us subtitles", selectedMediaFile.MediaFileRecord.Hash);
-        string cachedSubtitleFile = selectedMediaFile.MediaFileRecord.Hash.ToCacheDirectoryFile(".vtt");
-        _logger.LogInformation("Asking provider to output to {0}", cachedSubtitleFile);
-        // try to fill up the subtitles
-        if (await _subtitleProvider.GetSubtitleInformation(selectedMediaFile, cachedSubtitleFile))
-          return new FileContentResult(System.IO.File.ReadAllBytes(cachedSubtitleFile), "text/vtt");
-        else
-        {
-          return StatusCode((int)HttpStatusCode.NoContent);
-        }
-      }
+      string subtitleFile = await _mediaFileStreamer.GetSubtitleFilePath(selectedMediaFile);
+      if (subtitleFile == null || !System.IO.File.Exists(subtitleFile))
+        return StatusCode((int)HttpStatusCode.NoContent);
+
+      _logger.LogInformation("Subtitle file found at {0}, outputting it", subtitleFile);
+      return File(System.IO.File.ReadAllBytes(subtitleFile), "text/vtt");
     }
 
 

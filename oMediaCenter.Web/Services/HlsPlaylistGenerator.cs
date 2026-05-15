@@ -22,7 +22,7 @@ namespace oMediaCenter.Web.Services
     /// <param name="probeResult">Probe information from ffprobe.</param>
     /// <param name="hash">Media file hash used for URL construction.</param>
     /// <returns>The master playlist as a string.</returns>
-    public string GenerateMasterPlaylist(MediaFileProbeInformation probeResult, string hash)
+    public string GenerateMasterPlaylist(MediaFileProbeInformation probeResult, string hash, bool hasSubtitles = false)
     {
       var sb = new StringBuilder();
       sb.AppendLine("#EXTM3U");
@@ -35,6 +35,9 @@ namespace oMediaCenter.Web.Services
       string resolution = $"{probeResult.Width}x{probeResult.Height}";
       string codecs = BuildCodecString(probeResult);
 
+      if (hasSubtitles)
+        sb.AppendLine($"#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID=\"subs\",NAME=\"English\",DEFAULT=YES,AUTOSELECT=YES,FORCED=NO,LANGUAGE=\"en\",URI=\"/api/v1/media/{hash}/hls/subtitles.m3u8\"");
+
       sb.Append("#EXT-X-STREAM-INF:");
       sb.Append($"BANDWIDTH={bandwidth}");
 
@@ -44,10 +47,31 @@ namespace oMediaCenter.Web.Services
       if (!string.IsNullOrEmpty(codecs))
         sb.Append($",CODECS=\"{codecs}\"");
 
+      if (hasSubtitles)
+        sb.Append(",SUBTITLES=\"subs\"");
+
       sb.AppendLine();
 
       // Point to the variant playlist endpoint
       sb.AppendLine($"/api/v1/media/{hash}/hls/variant.m3u8");
+
+      return sb.ToString();
+    }
+
+    public string GenerateSubtitlePlaylist(MediaFileProbeInformation probeResult, string hash)
+    {
+      double duration = probeResult.DurationSeconds > 0 ? probeResult.DurationSeconds : 1;
+      int targetDuration = Math.Max(1, (int)Math.Ceiling(duration));
+
+      var sb = new StringBuilder();
+      sb.AppendLine("#EXTM3U");
+      sb.AppendLine("#EXT-X-VERSION:3");
+      sb.AppendLine("#EXT-X-PLAYLIST-TYPE:VOD");
+      sb.AppendLine($"#EXT-X-TARGETDURATION:{targetDuration}");
+      sb.AppendLine("#EXT-X-MEDIA-SEQUENCE:0");
+      sb.AppendLine($"#EXTINF:{duration.ToString("F6", CultureInfo.InvariantCulture)},");
+      sb.AppendLine($"/api/v1/media/{hash}/subtitles");
+      sb.AppendLine("#EXT-X-ENDLIST");
 
       return sb.ToString();
     }

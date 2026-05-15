@@ -78,29 +78,52 @@ namespace oMediaCenter.Web.Model
       string cachedSubtitlePath = selectedMediaFile.MediaFileRecord.Hash.ToCacheDirectoryFile(".vtt");
       if (File.Exists(cachedSubtitlePath))
         return cachedSubtitlePath;
-      else
+
+      string subtitlePath = selectedMediaFile.GetFullSubtitleFilePath();
+      if (subtitlePath != null)
       {
-        string subtitlePath = selectedMediaFile.GetFullSubtitleFilePath();
-        if (subtitlePath == null)
-        {
-          // attempt to get a subtitle file online
-          if (await _subtitleProvider.GetSubtitleInformation(selectedMediaFile, cachedSubtitlePath))
-            return cachedSubtitlePath;
-
-          return null;
-        }
-
         if (Path.GetExtension(subtitlePath).ToLowerInvariant() == ".vtt")
           return subtitlePath;
 
-        string subtitleKey = selectedMediaFile.MediaFileRecord.Hash + ".vtt";
-        if (_subtitleConversionsRunning.TryAdd(subtitleKey, true))
-        {
-          await Converter.ConvertSubtitles(subtitlePath, cachedSubtitlePath);
-        }
-
-        return cachedSubtitlePath;
+        return await ConvertSubtitleFile(subtitlePath, cachedSubtitlePath);
       }
+
+      MediaFileProbeInformation probeInfo = Prober.GetProbeInfo(selectedMediaFile.GetFullFilePath());
+      selectedMediaFile.MediaFileRecord.HasEmbeddedSubtitles = probeInfo.ContainsSubtitles;
+      if (probeInfo.ContainsSubtitles)
+        return await ConvertSubtitleFile(selectedMediaFile.GetFullFilePath(), cachedSubtitlePath);
+
+      // attempt to get a subtitle file online
+      if (_subtitleProvider != null && await _subtitleProvider.GetSubtitleInformation(selectedMediaFile, cachedSubtitlePath) && File.Exists(cachedSubtitlePath))
+        return cachedSubtitlePath;
+
+      return null;
+    }
+
+    private async Task<string> ConvertSubtitleFile(string sourcePath, string cachedSubtitlePath)
+    {
+      string subtitleKey = cachedSubtitlePath;
+      if (_subtitleConversionsRunning.TryAdd(subtitleKey, true))
+      {
+        try
+        {
+          await Converter.ConvertSubtitles(sourcePath, cachedSubtitlePath);
+        }
+        finally
+        {
+          _subtitleConversionsRunning.TryRemove(subtitleKey, out _);
+        }
+      }
+      else
+      {
+        while (_subtitleConversionsRunning.ContainsKey(subtitleKey))
+          await Task.Delay(100);
+      }
+
+      if (File.Exists(cachedSubtitlePath))
+        return cachedSubtitlePath;
+
+      return null;
     }
   }
 }
