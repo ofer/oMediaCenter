@@ -7,5 +7,6 @@ namespace oMediaCenter.Web.Hubs
   {
     Task CommandReceived(ClientCommand clientCommand);
     Task ClientIdGenerated(string clientId);
+    Task MediaListUpdated();
   }
 }

@@ -19,7 +19,7 @@ namespace oMediaCenter.Tests
 		private readonly string _tempDir;
 		private readonly string _cachePath;
 		private readonly Mock<ILogger<TitleResolverCache>> _cacheLoggerMock;
-		private readonly Mock<ILogger<OpenAiTitleResolver>> _resolverLoggerMock;
+		private readonly Mock<ILogger<BackgroundTitleResolver>> _backgroundLoggerMock;
 
 		public OpenAiTitleResolverTests()
 		{
@@ -27,7 +27,7 @@ namespace oMediaCenter.Tests
 			Directory.CreateDirectory(_tempDir);
 			_cachePath = Path.Combine(_tempDir, "cache.json");
 			_cacheLoggerMock = new Mock<ILogger<TitleResolverCache>>();
-			_resolverLoggerMock = new Mock<ILogger<OpenAiTitleResolver>>();
+			_backgroundLoggerMock = new Mock<ILogger<BackgroundTitleResolver>>();
 		}
 
 		public void Dispose()
@@ -39,29 +39,35 @@ namespace oMediaCenter.Tests
 		private TitleResolverCache CreateCache() =>
 			new TitleResolverCache(_cachePath, _cacheLoggerMock.Object);
 
-		private IOptions<OpenAiOptions> CreateOptions(string apiKey = "test-key", int timeout = 5) =>
-			Options.Create(new OpenAiOptions { ApiKey = apiKey, Model = "gpt-4.1-nano", TimeoutSeconds = timeout });
+		private static IOptions<OpenAiOptions> CreateOptions() =>
+			Options.Create(new OpenAiOptions
+			{
+				ApiKey = "test-key",
+				BaseUrl = "https://openai.test",
+				Model = "gpt-4.1-nano",
+				TimeoutSeconds = 5
+			});
 
-		private IHttpClientFactory CreateMockFactory(HttpMessageHandler handler)
+		private static IHttpClientFactory CreateMockFactory(HttpMessageHandler handler)
 		{
 			var factory = new Mock<IHttpClientFactory>();
 			factory.Setup(f => f.CreateClient(It.IsAny<string>()))
-				.Returns(new HttpClient(handler));
+				.Returns(() => new HttpClient(handler));
 			return factory.Object;
 		}
 
-		private Mock<HttpMessageHandler> CreateMockHandler(HttpResponseMessage response)
+		private static Mock<HttpMessageHandler> CreateMockHandler(HttpResponseMessage response)
 		{
 			var handler = new Mock<HttpMessageHandler>();
 			handler.Protected()
-				.Setup<HttpResponseMessage>("Send",
+				.Setup<Task<HttpResponseMessage>>("SendAsync",
 					ItExpr.IsAny<HttpRequestMessage>(),
 					ItExpr.IsAny<CancellationToken>())
-				.Returns(response);
+				.ReturnsAsync(response);
 			return handler;
 		}
 
-		private string CreateOpenAiResponse(string title)
+		private static string CreateOpenAiResponse(string title)
 		{
 			return JsonSerializer.Serialize(new
 			{
@@ -72,169 +78,114 @@ namespace oMediaCenter.Tests
 			});
 		}
 
-		[Fact]
-		public void ReturnsParsedTitleFromWellFormedResponse()
+		private BackgroundTitleResolver CreateBackgroundResolver(TitleResolverCache cache, HttpMessageHandler handler)
 		{
-			var handler = CreateMockHandler(new HttpResponseMessage(HttpStatusCode.OK)
+			return new BackgroundTitleResolver(
+				CreateMockFactory(handler),
+				CreateOptions(),
+				cache,
+				new TestTitleResolutionNotifier(),
+				_backgroundLoggerMock.Object);
+		}
+
+		private static async Task WaitFor(Func<bool> condition)
+		{
+			var timeoutAt = DateTime.UtcNow.AddSeconds(3);
+			while (!condition())
 			{
-				Content = new StringContent(CreateOpenAiResponse("Sherlock Holmes"))
-			});
-			var resolver = new OpenAiTitleResolver(
-				CreateMockFactory(handler.Object), CreateOptions(), CreateCache(), _resolverLoggerMock.Object);
+				if (DateTime.UtcNow > timeoutAt)
+					throw new TimeoutException("Timed out waiting for condition.");
 
-			var result = resolver.ResolveTitleFromFilename("Sherlock.Holms.2009.mp4");
-			Assert.Equal("Sherlock Holmes", result);
+				await Task.Delay(20);
+			}
 		}
 
 		[Fact]
-		public void WorksWithoutApiKey()
-		{
-			HttpRequestMessage capturedRequest = null;
-			var handler = new Mock<HttpMessageHandler>();
-			handler.Protected()
-				.Setup<HttpResponseMessage>("Send",
-					ItExpr.IsAny<HttpRequestMessage>(),
-					ItExpr.IsAny<CancellationToken>())
-				.Returns((HttpRequestMessage req, CancellationToken _) =>
-				{
-					capturedRequest = req;
-					return new HttpResponseMessage(HttpStatusCode.OK)
-					{
-						Content = new StringContent(CreateOpenAiResponse("Something"))
-					};
-				});
-			var resolver = new OpenAiTitleResolver(
-				CreateMockFactory(handler.Object), CreateOptions(apiKey: ""), CreateCache(), _resolverLoggerMock.Object);
-
-			var result = resolver.ResolveTitleFromFilename("test.mp4");
-			Assert.Equal("Something", result);
-			Assert.False(capturedRequest.Headers.Contains("Authorization"));
-		}
-
-		[Fact]
-		public void ReturnsNullWhenApiReturnsHttpError()
-		{
-			var handler = CreateMockHandler(new HttpResponseMessage(HttpStatusCode.InternalServerError));
-			var resolver = new OpenAiTitleResolver(
-				CreateMockFactory(handler.Object), CreateOptions(), CreateCache(), _resolverLoggerMock.Object);
-
-			Assert.Null(resolver.ResolveTitleFromFilename("test.mp4"));
-		}
-
-		[Fact]
-		public void ReturnsNullWhenApiRequestTimesOut()
-		{
-			var cache = CreateCache();
-			var handler = new Mock<HttpMessageHandler>();
-			handler.Protected()
-				.Setup<HttpResponseMessage>("Send",
-					ItExpr.IsAny<HttpRequestMessage>(),
-					ItExpr.IsAny<CancellationToken>())
-				.Throws(new TaskCanceledException("Timeout"));
-			var resolver = new OpenAiTitleResolver(
-				CreateMockFactory(handler.Object), CreateOptions(timeout: 1), cache, _resolverLoggerMock.Object);
-
-			Assert.Null(resolver.ResolveTitleFromFilename("test.mp4"));
-			Assert.Equal("UNKNOWN", cache.Get("test.mp4"));
-		}
-
-		[Fact]
-		public void CachesUnknownOnExceptionAndSkipsApiOnRetry()
-		{
-			var cache = CreateCache();
-			var handler = new Mock<HttpMessageHandler>();
-			handler.Protected()
-				.Setup<HttpResponseMessage>("Send",
-					ItExpr.IsAny<HttpRequestMessage>(),
-					ItExpr.IsAny<CancellationToken>())
-				.Throws(new HttpRequestException("Connection refused"));
-			var resolver = new OpenAiTitleResolver(
-				CreateMockFactory(handler.Object), CreateOptions(), cache, _resolverLoggerMock.Object);
-
-			// First call: exception thrown, result cached as UNKNOWN
-			Assert.Null(resolver.ResolveTitleFromFilename("fail.mp4"));
-			Assert.Equal("UNKNOWN", cache.Get("fail.mp4"));
-
-			// Second call: should use cache and not call API again
-			Assert.Null(resolver.ResolveTitleFromFilename("fail.mp4"));
-			handler.Protected().Verify("Send", Times.Once(),
-				ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
-		}
-
-		[Fact]
-		public void ReturnsNullWhenApiReturnsMalformedJson()
-		{
-			var handler = CreateMockHandler(new HttpResponseMessage(HttpStatusCode.OK)
-			{
-				Content = new StringContent("not json at all")
-			});
-			var resolver = new OpenAiTitleResolver(
-				CreateMockFactory(handler.Object), CreateOptions(), CreateCache(), _resolverLoggerMock.Object);
-
-			Assert.Null(resolver.ResolveTitleFromFilename("test.mp4"));
-		}
-
-		[Fact]
-		public void ReturnsNullWhenApiReturnsUnknown()
-		{
-			var handler = CreateMockHandler(new HttpResponseMessage(HttpStatusCode.OK)
-			{
-				Content = new StringContent(CreateOpenAiResponse("UNKNOWN"))
-			});
-			var resolver = new OpenAiTitleResolver(
-				CreateMockFactory(handler.Object), CreateOptions(), CreateCache(), _resolverLoggerMock.Object);
-
-			Assert.Null(resolver.ResolveTitleFromFilename("junk.mp4"));
-		}
-
-		[Fact]
-		public void DoesNotCallApiWhenResultIsAlreadyCached()
+		public void ReturnsCachedTitleWhenPresent()
 		{
 			var cache = CreateCache();
 			cache.Set("cached.mp4", "Cached Movie");
-
 			var handler = CreateMockHandler(new HttpResponseMessage(HttpStatusCode.OK)
 			{
 				Content = new StringContent(CreateOpenAiResponse("Something Else"))
 			});
-			var resolver = new OpenAiTitleResolver(
-				CreateMockFactory(handler.Object), CreateOptions(), cache, _resolverLoggerMock.Object);
+			var backgroundResolver = CreateBackgroundResolver(cache, handler.Object);
+			var resolver = new OpenAiTitleResolver(cache, backgroundResolver);
 
 			var result = resolver.ResolveTitleFromFilename("cached.mp4");
-			Assert.Equal("Cached Movie", result);
 
-			handler.Protected().Verify("Send", Times.Never(),
+			Assert.Equal("Cached Movie", result);
+			handler.Protected().Verify("SendAsync", Times.Never(),
 				ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
 		}
 
 		[Fact]
-		public void CachesSuccessfulResultsAfterApiCall()
+		public void ReturnsNullForCachedUnknown()
 		{
 			var cache = CreateCache();
+			cache.Set("junk.mp4", "UNKNOWN");
 			var handler = CreateMockHandler(new HttpResponseMessage(HttpStatusCode.OK)
 			{
-				Content = new StringContent(CreateOpenAiResponse("The Real Title"))
+				Content = new StringContent(CreateOpenAiResponse("Something Else"))
 			});
-			var resolver = new OpenAiTitleResolver(
-				CreateMockFactory(handler.Object), CreateOptions(), cache, _resolverLoggerMock.Object);
+			var backgroundResolver = CreateBackgroundResolver(cache, handler.Object);
+			var resolver = new OpenAiTitleResolver(cache, backgroundResolver);
 
-			resolver.ResolveTitleFromFilename("movie.mp4");
-			Assert.Equal("The Real Title", cache.Get("movie.mp4"));
+			var result = resolver.ResolveTitleFromFilename("junk.mp4");
+
+			Assert.Null(result);
+			handler.Protected().Verify("SendAsync", Times.Never(),
+				ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
 		}
 
 		[Fact]
-		public void CachesUnknownResultsAfterApiCall()
+		public async Task ReturnsNullAndEnqueuesWhenNotInCache()
 		{
 			var cache = CreateCache();
 			var handler = CreateMockHandler(new HttpResponseMessage(HttpStatusCode.OK)
 			{
-				Content = new StringContent(CreateOpenAiResponse("UNKNOWN"))
+				Content = new StringContent(CreateOpenAiResponse("Sherlock Holmes"))
 			});
-			var resolver = new OpenAiTitleResolver(
-				CreateMockFactory(handler.Object), CreateOptions(), cache, _resolverLoggerMock.Object);
+			var backgroundResolver = CreateBackgroundResolver(cache, handler.Object);
+			var resolver = new OpenAiTitleResolver(cache, backgroundResolver);
 
-			resolver.ResolveTitleFromFilename("junk.mp4");
-			Assert.Equal("UNKNOWN", cache.Get("junk.mp4"));
+			var result = resolver.ResolveTitleFromFilename("Sherlock.Holms.2009.mp4");
+
+			Assert.Null(result);
+			Assert.Null(cache.Get("Sherlock.Holms.2009.mp4"));
+
+			await backgroundResolver.StartAsync(CancellationToken.None);
+			try
+			{
+				await WaitFor(() => cache.Get("Sherlock.Holms.2009.mp4") == "Sherlock Holmes");
+			}
+			finally
+			{
+				await backgroundResolver.StopAsync(CancellationToken.None);
+			}
+		}
+
+		[Fact]
+		public void DoesNotMakeHttpCallsDirectly()
+		{
+			var cache = CreateCache();
+			var handler = CreateMockHandler(new HttpResponseMessage(HttpStatusCode.OK)
+			{
+				Content = new StringContent(CreateOpenAiResponse("Sherlock Holmes"))
+			});
+			var backgroundResolver = CreateBackgroundResolver(cache, handler.Object);
+			var resolver = new OpenAiTitleResolver(cache, backgroundResolver);
+
+			var result = resolver.ResolveTitleFromFilename("Sherlock.Holms.2009.mp4");
+
+			Assert.Null(result);
+			handler.Protected().Verify("SendAsync", Times.Never(),
+				ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
+		}
+
+		private class TestTitleResolutionNotifier : ITitleResolutionNotifier
+		{
+			public Task MediaListUpdated(CancellationToken cancellationToken) => Task.CompletedTask;
 		}
 	}
 }

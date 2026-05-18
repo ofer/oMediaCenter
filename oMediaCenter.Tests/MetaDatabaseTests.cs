@@ -1,7 +1,16 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
+using Moq.Protected;
 using oMediaCenter.Interfaces;
 using oMediaCenter.MetaDatabase;
+using System;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace oMediaCenter.Tests
@@ -170,6 +179,103 @@ namespace oMediaCenter.Tests
 			Assert.Equal("12 Angry Men", result.Title);
 			Assert.Equal("1997", result.Year);
 			resolver.Verify(r => r.ResolveTitleFromFilename(fullPath), Times.Once);
+		}
+
+		[Fact]
+		public void FirstCallForUnresolvedFilenameReturnsParsedTitle()
+		{
+			var resolver = new Mock<ILlmTitleResolver>();
+			resolver.Setup(r => r.ResolveTitleFromFilename(It.IsAny<string>()))
+				.Returns((string)null);
+
+			var mip = new MediaInformationProvider(null, _logger, resolver.Object);
+			var result = mip.GetEpisodeInfoForFilename("Sherlock.Holms.2009.mp4");
+
+			Assert.Equal("Sherlock Holms", result.Title);
+			Assert.Equal("2009", result.Year);
+		}
+
+		[Fact]
+		public async Task AfterBackgroundProcessingSecondCallReturnsAiResolvedTitleFromCache()
+		{
+			var tempDir = Path.Combine(Path.GetTempPath(), $"metadata-resolver-test-{Guid.NewGuid():N}");
+			Directory.CreateDirectory(tempDir);
+			try
+			{
+				var cache = new TitleResolverCache(
+					Path.Combine(tempDir, "cache.json"),
+					new Mock<ILogger<TitleResolverCache>>().Object);
+				var handler = new Mock<HttpMessageHandler>();
+				handler.Protected()
+					.Setup<Task<HttpResponseMessage>>("SendAsync",
+						ItExpr.IsAny<HttpRequestMessage>(),
+						ItExpr.IsAny<CancellationToken>())
+					.ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+					{
+						Content = new StringContent(CreateOpenAiResponse("Sherlock Holmes"))
+					});
+				var httpClientFactory = new Mock<IHttpClientFactory>();
+				httpClientFactory.Setup(f => f.CreateClient(It.IsAny<string>()))
+					.Returns(() => new HttpClient(handler.Object));
+				var backgroundResolver = new BackgroundTitleResolver(
+					httpClientFactory.Object,
+					Options.Create(new OpenAiOptions { BaseUrl = "https://openai.test", ApiKey = "test-key" }),
+					cache,
+					new TestTitleResolutionNotifier(),
+					new Mock<ILogger<BackgroundTitleResolver>>().Object);
+				var resolver = new OpenAiTitleResolver(cache, backgroundResolver);
+				var mip = new MediaInformationProvider(null, _logger, resolver);
+
+				var firstResult = mip.GetEpisodeInfoForFilename("Sherlock.Holms.2009.mp4");
+				Assert.Equal("Sherlock Holms", firstResult.Title);
+
+				await backgroundResolver.StartAsync(CancellationToken.None);
+				try
+				{
+					await WaitFor(() => cache.Get("Sherlock.Holms.2009.mp4") == "Sherlock Holmes");
+				}
+				finally
+				{
+					await backgroundResolver.StopAsync(CancellationToken.None);
+				}
+
+				var secondResult = mip.GetEpisodeInfoForFilename("Sherlock.Holms.2009.mp4");
+				Assert.Equal("Sherlock Holmes", secondResult.Title);
+				Assert.Equal("2009", secondResult.Year);
+			}
+			finally
+			{
+				if (Directory.Exists(tempDir))
+					Directory.Delete(tempDir, true);
+			}
+		}
+
+		private static string CreateOpenAiResponse(string title)
+		{
+			return JsonSerializer.Serialize(new
+			{
+				choices = new[]
+				{
+					new { message = new { content = title } }
+				}
+			});
+		}
+
+		private static async Task WaitFor(Func<bool> condition)
+		{
+			var timeoutAt = DateTime.UtcNow.AddSeconds(3);
+			while (!condition())
+			{
+				if (DateTime.UtcNow > timeoutAt)
+					throw new TimeoutException("Timed out waiting for condition.");
+
+				await Task.Delay(20);
+			}
+		}
+
+		private class TestTitleResolutionNotifier : ITitleResolutionNotifier
+		{
+			public Task MediaListUpdated(CancellationToken cancellationToken) => Task.CompletedTask;
 		}
 	}
 }

@@ -4,8 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ClientCommand } from './client-command';
 import { IPlayerControl } from './i-player-control';
 import { SettingsService } from './settings.service';
-import { Observable } from 'rxjs';
-import { timer } from 'rxjs';
+import { Subject } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
 
 @Injectable()
@@ -18,6 +17,9 @@ export class ClientControlService {
     private lastExecutedDate: Date;
     private playerControl!: IPlayerControl;
     private connection: signalR.HubConnection;
+    private mediaListUpdatedSource = new Subject<void>();
+
+    mediaListUpdated$ = this.mediaListUpdatedSource.asObservable();
 
     constructor(private http: HttpClient,
         private router: Router,
@@ -49,6 +51,11 @@ export class ClientControlService {
         this.connection.on('ClientIdGenerated', (generatedClientId) => {
             console.log('client ID was generated for us ' + generatedClientId);
             this.settingsService.setClientId(generatedClientId);
+        });
+
+        this.connection.on('MediaListUpdated', () => {
+            console.log('media list update received via signalR');
+            this.mediaListUpdatedSource.next();
         });
 
 

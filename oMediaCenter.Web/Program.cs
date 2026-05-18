@@ -14,7 +14,6 @@ using oMediaCenter.Web.Model;
 using oMediaCenter.Web.Services;
 using System;
 using System.IO;
-using System.Net.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,16 +43,17 @@ builder.Services.AddSingleton<TitleResolverCache>(sp =>
 	var cachePath = Path.Combine(cacheDir, "title-resolver-cache.json");
 	return new TitleResolverCache(cachePath, logger);
 });
+builder.Services.AddSingleton<ITitleResolutionNotifier, SignalRTitleResolutionNotifier>();
+builder.Services.AddSingleton<BackgroundTitleResolver>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<BackgroundTitleResolver>());
 builder.Services.AddTransient<ILlmTitleResolver>(sp =>
 {
 	var options = sp.GetRequiredService<IOptions<OpenAiOptions>>().Value;
 	if (string.IsNullOrEmpty(options.BaseUrl))
 		return new NoOpTitleResolver();
 	return new OpenAiTitleResolver(
-		sp.GetRequiredService<IHttpClientFactory>(),
-		sp.GetRequiredService<IOptions<OpenAiOptions>>(),
 		sp.GetRequiredService<TitleResolverCache>(),
-		sp.GetRequiredService<ILogger<OpenAiTitleResolver>>());
+		sp.GetRequiredService<BackgroundTitleResolver>());
 });
 
 builder.Services.AddSingleton<ClientConnectionDictionary>();
@@ -103,4 +103,3 @@ app.MapControllers();
 app.MapFallbackToFile("/index.html");
 
 app.Run();
-

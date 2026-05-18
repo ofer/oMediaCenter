@@ -8,6 +8,15 @@ const JUNK_PATTERNS = [
   /\[\s*www/i, /\[Eng\]/i, /\[1080p\]/i,
 ];
 
+async function waitForMediaListText(page: import('@playwright/test').Page, text: string) {
+  await page.goto('/#/medialist');
+  await page.waitForSelector('.omc-list-item', { timeout: 15000 });
+  await expect.poll(async () => {
+    const content = await page.locator('.omc-list-item').allTextContents();
+    return content.join(' ');
+  }, { timeout: 60000 }).toContain(text);
+}
+
 test.describe('media list - names display correctly', () => {
 
   test('page loads with media items', async ({ page }) => {
@@ -96,28 +105,22 @@ test.describe('OpenAI-resolved names', () => {
   test.skip(!process.env.OPENAI_API_KEY, 'Skipped: OPENAI_API_KEY not set');
 
   test('"Sherlock Holmes" appears (not "Sherlock Holms")', async ({ page }) => {
-    await page.goto('/#/medialist');
-    await page.waitForSelector('.omc-list-item', { timeout: 15000 });
-    const content = await page.locator('.omc-list-item').allTextContents();
-    const joined = content.join(' ');
+    await waitForMediaListText(page, 'Sherlock Holmes');
+    const joined = (await page.locator('.omc-list-item').allTextContents()).join(' ');
     expect(joined).toContain('Sherlock Holmes');
     expect(joined).not.toContain('Sherlock Holms');
   });
 
   test('"A Few Good Men" appears (not "A Few Good Me")', async ({ page }) => {
-    await page.goto('/#/medialist');
-    await page.waitForSelector('.omc-list-item', { timeout: 15000 });
-    const content = await page.locator('.omc-list-item').allTextContents();
-    const joined = content.join(' ');
+    await waitForMediaListText(page, 'A Few Good Men');
+    const joined = (await page.locator('.omc-list-item').allTextContents()).join(' ');
     expect(joined).toContain('A Few Good Men');
     expect(joined).not.toContain('A Few Good Me');
   });
 
   test('"Zootopia 2" appears (not "Z00topia 2")', async ({ page }) => {
-    await page.goto('/#/medialist');
-    await page.waitForSelector('.omc-list-item', { timeout: 15000 });
-    const content = await page.locator('.omc-list-item').allTextContents();
-    const joined = content.join(' ');
+    await waitForMediaListText(page, 'Zootopia 2');
+    const joined = (await page.locator('.omc-list-item').allTextContents()).join(' ');
     expect(joined).toContain('Zootopia 2');
     expect(joined).not.toContain('Z00topia');
   });
