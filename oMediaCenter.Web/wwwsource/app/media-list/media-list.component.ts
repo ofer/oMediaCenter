@@ -3,6 +3,8 @@ import { MediaFileRecord } from '../media-file-record';
 import { MediaDataService } from '../media-data.service';
 import { Router } from '@angular/router';
 import { GroupedMediaFileRecords } from '../grouped-media-file-records';
+import { ClientControlService } from '../client-control.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-media-list',
@@ -18,25 +20,21 @@ import { GroupedMediaFileRecords } from '../grouped-media-file-records';
  */
 export class MediaListComponent implements OnInit, OnDestroy {
   title = 'media List';
-  mediaFileList!: GroupedMediaFileRecords[];
+  mediaFileList: GroupedMediaFileRecords[] = [];
   @Output() mediaSelected: EventEmitter<string> = new EventEmitter<string>();
   selectedMediaIndex: number = 0;
 
   keyHandler: any;
+  private mediaListUpdatedSubscription?: Subscription;
 
 
   constructor(
     private mediaDataService: MediaDataService,
     private router: Router,
+    private clientControlService: ClientControlService,
     private ref: ChangeDetectorRef
   ) {
     console.log('MediaListComponent constructor');
-    this.mediaDataService.getGroupedMediaFileRecords()
-      .then(fileRecords => {
-        this.mediaFileList = this.sort(fileRecords);
-        console.log('MediaListComponent getGroupedMediaFileRecords');
-        this.ref.detectChanges();
-      });
     this.keyHandler = (event: KeyboardEvent) => {
       // Handle keypress event here
       this.HandleKeydown(event);
@@ -179,6 +177,9 @@ export class MediaListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     console.log('MediaListComponent ngOnInit');
+    this.mediaListUpdatedSubscription = this.clientControlService.mediaListUpdated$
+      .subscribe(() => this.refresh());
+    this.refresh();
     setTimeout(() => {
       // require view to be updated
       console.log('MediaListComponent markForCheck');
@@ -189,6 +190,19 @@ export class MediaListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     document.removeEventListener('keydown', this.keyHandler);
+    this.mediaListUpdatedSubscription?.unsubscribe();
+  }
+
+  refresh(): void {
+    this.mediaDataService.getGroupedMediaFileRecords()
+      .then(fileRecords => {
+        this.mediaFileList = this.sort(fileRecords);
+        if (this.selectedMediaIndex >= this.mediaFileList.length) {
+          this.selectedMediaIndex = Math.max(this.mediaFileList.length - 1, 0);
+        }
+        console.log('MediaListComponent getGroupedMediaFileRecords');
+        this.ref.detectChanges();
+      });
   }
 
   getSeasons(fileList: MediaFileRecord[]): MediaFileRecord[][] {

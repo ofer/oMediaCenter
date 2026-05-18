@@ -28,8 +28,11 @@ namespace oMediaCenter.SubtitleProvidier
 
     public async Task<bool> GetSubtitleInformation(IMediaFile mf, string targetFilename)
     {
-      if (File.Exists(targetFilename) || mf.MediaFileRecord.HasEmbeddedSubtitles)
+      if (File.Exists(targetFilename))
         return true;
+
+      if (mf.MediaFileRecord.HasEmbeddedSubtitles)
+        return false;
 
       try
       {

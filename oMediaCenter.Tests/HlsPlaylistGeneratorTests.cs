@@ -87,6 +87,30 @@ namespace oMediaCenter.Tests
       Assert.Contains("/api/v1/media/abc123/hls/variant.m3u8", playlist);
     }
 
+    [Fact]
+    public void GenerateMasterPlaylist_WithSubtitles_AdvertisesSubtitleRendition()
+    {
+      var probe = CreateProbeResult();
+
+      string playlist = _generator.GenerateMasterPlaylist(probe, "abc123", hasSubtitles: true);
+
+      Assert.Contains("#EXT-X-MEDIA:TYPE=SUBTITLES", playlist);
+      Assert.Contains("SUBTITLES=\"subs\"", playlist);
+      Assert.Contains("/api/v1/media/abc123/hls/subtitles.m3u8", playlist);
+    }
+
+    [Fact]
+    public void GenerateSubtitlePlaylist_ReferencesSubtitleEndpoint()
+    {
+      var probe = CreateProbeResult(durationSeconds: 120.0);
+
+      string playlist = _generator.GenerateSubtitlePlaylist(probe, "abc123");
+
+      Assert.Contains("#EXT-X-PLAYLIST-TYPE:VOD", playlist);
+      Assert.Contains("#EXT-X-TARGETDURATION:120", playlist);
+      Assert.Contains("/api/v1/media/abc123/subtitles", playlist);
+    }
+
     // --- Variant Playlist Tests ---
 
     [Fact]
